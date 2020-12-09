@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2012-2015 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2012-2015 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -23,7 +23,7 @@
 #include <cmath>
 #include <iomanip>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -77,7 +77,7 @@ operator<< (std::ostream& os,
     {
         // measure in hundredths
         auto const c =
-            dropsPerXRP<int>::value / 100;
+            dropsPerXDV<int>::value / 100;
         auto const n = amount.value().mantissa();
         if(n < c)
         {
@@ -88,11 +88,11 @@ operator<< (std::ostream& os,
             return os;
         }
         auto const d = double(n) /
-            dropsPerXRP<int>::value;
+            dropsPerXDV<int>::value;
         if (amount.value().negative())
             os << "-";
 
-        os << to_places(d, 6) << " XRP";
+        os << to_places(d, 6) << " XDV";
     }
     else
     {
@@ -106,7 +106,7 @@ operator<< (std::ostream& os,
 
 //------------------------------------------------------------------------------
 
-XRP_t const XRP {};
+XDV_t const XDV {};
 
 PrettyAmount
 IOU::operator()(epsilon_t) const
@@ -137,4 +137,4 @@ any_t const any { };
 
 } // jtx
 } // test
-} // ripple
+} // divvy

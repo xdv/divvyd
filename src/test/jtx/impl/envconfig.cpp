@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -19,9 +19,9 @@
 
 #include <test/jtx/envconfig.h>
 #include <test/jtx/Env.h>
-#include <ripple/core/ConfigSections.h>
+#include <divvy/core/ConfigSections.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 int port_base = 8000;
@@ -100,4 +100,4 @@ port_increment(std::unique_ptr<Config> cfg, int increment)
 
 } // jtx
 } // test
-} // ripple
+} // divvy

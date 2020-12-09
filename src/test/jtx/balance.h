@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,20 +17,20 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_BALANCE_H_INCLUDED
-#define RIPPLE_TEST_JTX_BALANCE_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_BALANCE_H_INCLUDED
+#define DIVVY_TEST_JTX_BALANCE_H_INCLUDED
 
 #include <test/jtx/tags.h>
 #include <test/jtx/Env.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
 /** A balance matches.
 
     This allows "none" which means either the account
-    doesn't exist (no XRP) or the trust line does not
+    doesn't exist (no XDV) or the trust line does not
     exist. If an amount is specified, the SLE must
     exist even if the amount is 0, or else the test
     fails.
@@ -47,7 +47,7 @@ public:
             none_t)
         : none_(true)
         , account_(account)
-        , value_(XRP)
+        , value_(XDV)
     {
     }
 
@@ -73,6 +73,6 @@ public:
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif

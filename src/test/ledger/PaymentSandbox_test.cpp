@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2012-2015 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2012-2015 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 */
 //==============================================================================
 
-#include <ripple/ledger/ApplyViewImpl.h>
-#include <ripple/ledger/PaymentSandbox.h>
+#include <divvy/ledger/ApplyViewImpl.h>
+#include <divvy/ledger/PaymentSandbox.h>
 #include <test/jtx/PathSet.h>
-#include <ripple/ledger/View.h>
-#include <ripple/protocol/AmountConversions.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/ledger/View.h>
+#include <divvy/protocol/AmountConversions.h>
+#include <divvy/protocol/Feature.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class PaymentSandbox_test : public beast::unit_test::suite
@@ -65,7 +65,7 @@ class PaymentSandbox_test : public beast::unit_test::suite
         Account const snd ("snd");
         Account const rcv ("rcv");
 
-        env.fund (XRP (10000), snd, rcv, gw1, gw2);
+        env.fund (XDV (10000), snd, rcv, gw1, gw2);
 
         auto const USD_gw1 = gw1["USD"];
         auto const USD_gw2 = gw2["USD"];
@@ -89,7 +89,7 @@ class PaymentSandbox_test : public beast::unit_test::suite
 
         env (pay (snd, rcv, any (USD_gw1 (4))),
             json (paths.json ()),
-            txflags (tfNoRippleDirect | tfPartialPayment));
+            txflags (tfNoDivvyDirect | tfPartialPayment));
 
         env.require (balance ("rcv", USD_gw1 (0)));
         env.require (balance ("rcv", USD_gw2 (2)));
@@ -105,7 +105,7 @@ class PaymentSandbox_test : public beast::unit_test::suite
         Account const gw2 ("gw2");
         Account const alice ("alice");
 
-        env.fund (XRP (10000), alice, gw1, gw2);
+        env.fund (XDV (10000), alice, gw1, gw2);
 
         auto j = env.app().journal ("View");
 
@@ -140,19 +140,19 @@ class PaymentSandbox_test : public beast::unit_test::suite
         }
 
         {
-            // rippleCredit, no deferredCredits
+            // divvyCredit, no deferredCredits
             ApplyViewImpl av (&*env.current(), tapNONE);
 
             auto const iss = USD_gw1.issue ();
             auto const startingAmount = accountHolds (
                 av, alice, iss.currency, iss.account, fhIGNORE_FREEZE, j);
 
-            rippleCredit (av, gw1, alice, toCredit, true, j);
+            divvyCredit (av, gw1, alice, toCredit, true, j);
             BEAST_EXPECT(accountHolds (av, alice, iss.currency, iss.account,
                         fhIGNORE_FREEZE, j) ==
                     startingAmount + toCredit);
 
-            rippleCredit (av, alice, gw1, toDebit, true, j);
+            divvyCredit (av, alice, gw1, toDebit, true, j);
             BEAST_EXPECT(accountHolds (av, alice, iss.currency, iss.account,
                         fhIGNORE_FREEZE, j) ==
                     startingAmount + toCredit - toDebit);
@@ -179,7 +179,7 @@ class PaymentSandbox_test : public beast::unit_test::suite
         }
 
         {
-            // rippleCredit, w/ deferredCredits
+            // divvyCredit, w/ deferredCredits
             ApplyViewImpl av (&*env.current(), tapNONE);
             PaymentSandbox pv (&av);
 
@@ -187,7 +187,7 @@ class PaymentSandbox_test : public beast::unit_test::suite
             auto const startingAmount = accountHolds (
                 pv, alice, iss.currency, iss.account, fhIGNORE_FREEZE, j);
 
-            rippleCredit (pv, gw1, alice, toCredit, true, j);
+            divvyCredit (pv, gw1, alice, toCredit, true, j);
             BEAST_EXPECT(accountHolds (pv, alice, iss.currency, iss.account,
                         fhIGNORE_FREEZE, j) ==
                     startingAmount);
@@ -299,14 +299,14 @@ class PaymentSandbox_test : public beast::unit_test::suite
 
         beast::Journal dj;
 
-        auto accountFundsXRP = [&dj](
-            ReadView const& view, AccountID const& id) -> XRPAmount
+        auto accountFundsXDV = [&dj](
+            ReadView const& view, AccountID const& id) -> XDVAmount
         {
-            return toAmount<XRPAmount> (accountHolds (
-                view, id, xrpCurrency (), xrpAccount (), fhZERO_IF_FROZEN, dj));
+            return toAmount<XDVAmount> (accountHolds (
+                view, id, xdvCurrency (), xdvAccount (), fhZERO_IF_FROZEN, dj));
         };
 
-        auto reserve = [](jtx::Env& env, std::uint32_t count) -> XRPAmount
+        auto reserve = [](jtx::Env& env, std::uint32_t count) -> XDVAmount
         {
             return env.current ()->fees ().accountReserve (count);
         };
@@ -326,9 +326,9 @@ class PaymentSandbox_test : public beast::unit_test::suite
             // to drop below the reserve. Make sure her funds are zero (there was a bug that
             // caused her funds to become negative).
 
-            accountSend (sb, xrpAccount (), alice, XRP(100), dj);
-            accountSend (sb, alice, xrpAccount (), XRP(100), dj);
-            BEAST_EXPECT(accountFundsXRP (sb, alice) == beast::zero);
+            accountSend (sb, xdvAccount (), alice, XDV(100), dj);
+            accountSend (sb, alice, xdvAccount (), XDV(100), dj);
+            BEAST_EXPECT(accountFundsXDV (sb, alice) == beast::zero);
         }
     }
 
@@ -384,7 +384,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (PaymentSandbox, ledger, ripple);
+BEAST_DEFINE_TESTSUITE (PaymentSandbox, ledger, divvy);
 
 }  // test
-}  // ripple
+}  // divvy

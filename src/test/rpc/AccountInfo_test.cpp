@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,11 +17,11 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/JsonFields.h>     // jss:: definitions
-#include <ripple/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>     // jss:: definitions
+#include <divvy/protocol/Feature.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class AccountInfo_test : public beast::unit_test::suite
@@ -61,7 +61,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice"};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
 
         auto const withoutSigners = std::string ("{ ") +
             "\"account\": \"" + alice.human() + "\"}";
@@ -167,11 +167,11 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice"};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
 
         auto const withoutSigners = std::string ("{ ") +
             "\"jsonrpc\": \"2.0\", "
-            "\"ripplerpc\": \"2.0\", "
+            "\"divvyrpc\": \"2.0\", "
             "\"id\": 5, "
             "\"method\": \"account_info\", "
             "\"params\": { "
@@ -179,7 +179,7 @@ public:
 
         auto const withSigners = std::string ("{ ") +
             "\"jsonrpc\": \"2.0\", "
-            "\"ripplerpc\": \"2.0\", "
+            "\"divvyrpc\": \"2.0\", "
             "\"id\": 6, "
             "\"method\": \"account_info\", "
             "\"params\": { "
@@ -194,7 +194,7 @@ public:
             BEAST_EXPECT(! info[jss::result][jss::account_data].
                 isMember (jss::signer_lists));
             BEAST_EXPECT(info.isMember(jss::jsonrpc) && info[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info.isMember(jss::ripplerpc) && info[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info.isMember(jss::divvyrpc) && info[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info.isMember(jss::id) && info[jss::id] == 5);
         }
         {
@@ -208,7 +208,7 @@ public:
             BEAST_EXPECT(signerLists.isArray());
             BEAST_EXPECT(signerLists.size() == 0);
             BEAST_EXPECT(info.isMember(jss::jsonrpc) && info[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info.isMember(jss::ripplerpc) && info[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info.isMember(jss::divvyrpc) && info[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info.isMember(jss::id) && info[jss::id] == 6);
         }
         {
@@ -220,7 +220,7 @@ public:
             BEAST_EXPECT(! info[0u][jss::result][jss::account_data].
                 isMember (jss::signer_lists));
             BEAST_EXPECT(info[0u].isMember(jss::jsonrpc) && info[0u][jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info[0u].isMember(jss::ripplerpc) && info[0u][jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info[0u].isMember(jss::divvyrpc) && info[0u][jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info[0u].isMember(jss::id) && info[0u][jss::id] == 5);
 
             BEAST_EXPECT(info[1u].isMember(jss::result) &&
@@ -231,7 +231,7 @@ public:
             BEAST_EXPECT(signerLists.isArray());
             BEAST_EXPECT(signerLists.size() == 0);
             BEAST_EXPECT(info[1u].isMember(jss::jsonrpc) && info[1u][jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info[1u].isMember(jss::ripplerpc) && info[1u][jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info[1u].isMember(jss::divvyrpc) && info[1u][jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info[1u].isMember(jss::id) && info[1u][jss::id] == 6);
         }
 
@@ -248,7 +248,7 @@ public:
             BEAST_EXPECT(! info[jss::result][jss::account_data].
                 isMember (jss::signer_lists));
             BEAST_EXPECT(info.isMember(jss::jsonrpc) && info[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info.isMember(jss::ripplerpc) && info[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info.isMember(jss::divvyrpc) && info[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info.isMember(jss::id) && info[jss::id] == 5);
         }
         {
@@ -269,7 +269,7 @@ public:
             auto const& entry0 = signerEntries[0u][sfSignerEntry.jsonName];
             BEAST_EXPECT(entry0[sfSignerWeight.jsonName] == 3);
             BEAST_EXPECT(info.isMember(jss::jsonrpc) && info[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info.isMember(jss::ripplerpc) && info[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info.isMember(jss::divvyrpc) && info[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info.isMember(jss::id) && info[jss::id] == 6);
         }
 
@@ -309,7 +309,7 @@ public:
                 BEAST_EXPECT(entry[sfSignerWeight.jsonName] == 1);
             }
             BEAST_EXPECT(info.isMember(jss::jsonrpc) && info[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(info.isMember(jss::ripplerpc) && info[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(info.isMember(jss::divvyrpc) && info[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(info.isMember(jss::id) && info[jss::id] == 6);
         }
     }
@@ -322,7 +322,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(AccountInfo,app,ripple);
+BEAST_DEFINE_TESTSUITE(AccountInfo,app,divvy);
 
 }
 }

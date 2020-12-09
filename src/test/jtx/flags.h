@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,15 +17,15 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_FLAGS_H_INCLUDED
-#define RIPPLE_TEST_JTX_FLAGS_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_FLAGS_H_INCLUDED
+#define DIVVY_TEST_JTX_FLAGS_H_INCLUDED
 
 #include <test/jtx/Env.h>
-#include <ripple/protocol/LedgerFormats.h>
-#include <ripple/protocol/TxFlags.h>
-#include <ripple/basics/contract.h>
+#include <divvy/protocol/LedgerFormats.h>
+#include <divvy/protocol/TxFlags.h>
+#include <divvy/basics/contract.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -66,12 +66,12 @@ private:
         {
         case asfRequireDest:    mask_ |= lsfRequireDestTag; break;
         case asfRequireAuth:    mask_ |= lsfRequireAuth;    break;
-        case asfDisallowXRP:    mask_ |= lsfDisallowXRP;    break;
+        case asfDisallowXDV:    mask_ |= lsfDisallowXDV;    break;
         case asfDisableMaster:  mask_ |= lsfDisableMaster;  break;
         //case asfAccountTxnID: // ???
         case asfNoFreeze:       mask_ |= lsfNoFreeze;       break;
         case asfGlobalFreeze:   mask_ |= lsfGlobalFreeze;   break;
-        case asfDefaultRipple:  mask_ |= lsfDefaultRipple;  break;
+        case asfDefaultDivvy:  mask_ |= lsfDefaultDivvy;  break;
         case asfDepositAuth:    mask_ |= lsfDepositAuth;    break;
         default:
         Throw<std::runtime_error> (
@@ -139,6 +139,6 @@ public:
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2012-2017 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2012-2017 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -18,11 +18,11 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/TxFlags.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/TxFlags.h>
 
-namespace ripple {
+namespace divvy {
 
 // For the time being Checks seem pretty much self contained.  So the
 // functions that operate on jtx are defined here, locally.  If they are
@@ -236,15 +236,15 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), alice);
+            env.fund (XDV(1000), alice);
 
             uint256 const checkId {
                 getCheckIndex (env.master, env.seq (env.master))};
-            env (check::create (env.master, alice, XRP(100)),
+            env (check::create (env.master, alice, XDV(100)),
                 ter(temDISABLED));
             env.close();
 
-            env (check::cash (alice, checkId, XRP(100)),
+            env (check::cash (alice, checkId, XDV(100)),
                 ter (temDISABLED));
             env.close();
 
@@ -259,19 +259,19 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), alice);
+            env.fund (XDV(1000), alice);
 
             uint256 const checkId1 {
                 getCheckIndex (env.master, env.seq (env.master))};
-            env (check::create (env.master, alice, XRP(100)));
+            env (check::create (env.master, alice, XDV(100)));
             env.close();
 
-            env (check::cash (alice, checkId1, XRP(100)));
+            env (check::cash (alice, checkId1, XDV(100)));
             env.close();
 
             uint256 const checkId2 {
                 getCheckIndex (env.master, env.seq (env.master))};
-            env (check::create (env.master, alice, XRP(100)));
+            env (check::create (env.master, alice, XDV(100)));
             env.close();
 
             env (check::cancel (alice, checkId2));
@@ -296,7 +296,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        STAmount const startBalance {XRP(1000).value()};
+        STAmount const startBalance {XDV(1000).value()};
         env.fund (startBalance, gw, alice, bob);
 
         // Note that no trust line has been set up for alice, but alice can
@@ -311,7 +311,7 @@ class Check_test : public beast::unit_test::suite
             std::size_t const fromCkCount {checksOnAccount (env, from).size()};
             std::size_t const toCkCount   {checksOnAccount (env, to  ).size()};
 
-            env (check::create (from, to, XRP(2000)));
+            env (check::create (from, to, XDV(2000)));
             env.close();
 
             env (check::create (from, to, USD(50)));
@@ -397,7 +397,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        STAmount const startBalance {XRP(1000).value()};
+        STAmount const startBalance {XDV(1000).value()};
         env.fund (startBalance, gw1, gwF, alice, bob);
 
         // Bad fee.
@@ -411,7 +411,7 @@ class Check_test : public beast::unit_test::suite
         env.close();
 
         // Check to self.
-        env (check::create (alice, alice, XRP(10)), ter (temREDUNDANT));
+        env (check::create (alice, alice, XDV(10)), ter (temREDUNDANT));
         env.close();
 
         // Bad amount.
@@ -562,10 +562,10 @@ class Check_test : public beast::unit_test::suite
         env.close();
     }
 
-    void testCashXRP()
+    void testCashXDV()
     {
-        // Explore many of the valid ways to cash a check for XRP.
-        testcase ("Cash XRP");
+        // Explore many of the valid ways to cash a check for XDV.
+        testcase ("Cash XDV");
 
         using namespace test::jtx;
 
@@ -578,12 +578,12 @@ class Check_test : public beast::unit_test::suite
         env.close (closeTime);
 
         std::uint64_t const baseFeeDrops {env.current()->fees().base};
-        STAmount const startBalance {XRP(300).value()};
+        STAmount const startBalance {XDV(300).value()};
         env.fund (startBalance, alice, bob);
         {
-            // Basic XRP check.
+            // Basic XDV check.
             uint256 const chkId {getCheckIndex (alice, env.seq (alice))};
-            env (check::create (alice, bob, XRP(10)));
+            env (check::create (alice, bob, XDV(10)));
             env.close();
             env.require (balance (alice, startBalance - drops (baseFeeDrops)));
             env.require (balance (bob,   startBalance));
@@ -592,20 +592,20 @@ class Check_test : public beast::unit_test::suite
             BEAST_EXPECT (ownerCount (env, alice) == 1);
             BEAST_EXPECT (ownerCount (env, bob  ) == 0);
 
-            env (check::cash (bob, chkId, XRP(10)));
+            env (check::cash (bob, chkId, XDV(10)));
             env.close();
             env.require (balance (alice,
-                startBalance - XRP(10) - drops (baseFeeDrops)));
+                startBalance - XDV(10) - drops (baseFeeDrops)));
             env.require (balance (bob,
-                startBalance + XRP(10) - drops (baseFeeDrops)));
+                startBalance + XDV(10) - drops (baseFeeDrops)));
             BEAST_EXPECT (checksOnAccount (env, alice).size() == 0);
             BEAST_EXPECT (checksOnAccount (env, bob  ).size() == 0);
             BEAST_EXPECT (ownerCount (env, alice) == 0);
             BEAST_EXPECT (ownerCount (env, bob  ) == 0);
 
             // Make alice's and bob's balances easy to think about.
-            env (pay (env.master, alice, XRP(10) + drops (baseFeeDrops)));
-            env (pay (bob, env.master,   XRP(10) - drops (baseFeeDrops * 2)));
+            env (pay (env.master, alice, XDV(10) + drops (baseFeeDrops)));
+            env (pay (bob, env.master,   XDV(10) - drops (baseFeeDrops * 2)));
             env.close();
             env.require (balance (alice, startBalance));
             env.require (balance (bob,   startBalance));
@@ -702,7 +702,7 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), gw, alice, bob);
+            env.fund (XDV(1000), gw, alice, bob);
 
             // alice writes the check before she gets the funds.
             uint256 const chkId1 {getCheckIndex (alice, env.seq (alice))};
@@ -824,7 +824,7 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), gw, alice, bob);
+            env.fund (XDV(1000), gw, alice, bob);
 
             env (trust (alice, USD(20)));
             env (trust (bob, USD(20)));
@@ -910,7 +910,7 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), gw, alice, bob);
+            env.fund (XDV(1000), gw, alice, bob);
             env (fset (gw, asfRequireAuth));
             env.close();
             env (trust (gw, alice["USD"](100)), txflags (tfSetfAuth));
@@ -963,7 +963,7 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), gw, alice, bob);
+            env.fund (XDV(1000), gw, alice, bob);
 
             // alice creates her checks ahead of time.
             uint256 const chkId1 {getCheckIndex (alice, env.seq (alice))};
@@ -1032,7 +1032,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        env.fund (XRP(1000), gw, alice, bob);
+        env.fund (XDV(1000), gw, alice, bob);
 
         env (trust (alice, USD(1000)));
         env (trust (bob, USD(1000)));
@@ -1104,7 +1104,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        env.fund (XRP(1000), gw, alice, bob);
+        env.fund (XDV(1000), gw, alice, bob);
 
         env (trust (alice, USD(1000)));
         env (trust (bob, USD(1000)));
@@ -1304,7 +1304,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        env.fund (XRP(1000), gw, alice, bob, zoe);
+        env.fund (XDV(1000), gw, alice, bob, zoe);
 
         // Now set up alice's trustline.
         env (trust (alice, USD(20)));
@@ -1340,12 +1340,12 @@ class Check_test : public beast::unit_test::suite
         env.close();
 
         uint256 const chkIdX {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)));
+        env (check::create (alice, bob, XDV(10)));
         env.close();
 
         using namespace std::chrono_literals;
         uint256 const chkIdExp {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)), expiration (env.now() + 1s));
+        env (check::create (alice, bob, XDV(10)), expiration (env.now() + 1s));
         env.close();
 
         uint256 const chkIdFroz1 {getCheckIndex (alice, env.seq (alice))};
@@ -1372,7 +1372,7 @@ class Check_test : public beast::unit_test::suite
         env (check::create (alice, bob, USD(2)), dest_tag (7));
         env.close();
 
-        // Same set of failing cases for both IOU and XRP check cashing.
+        // Same set of failing cases for both IOU and XDV check cashing.
         auto failingCases = [&env, &gw, &alice, &bob] (
             uint256 const& chkId, STAmount const& amount)
         {
@@ -1459,17 +1459,17 @@ class Check_test : public beast::unit_test::suite
             env.close();
         };
 
-        failingCases (chkIdX, XRP(10));
+        failingCases (chkIdX, XDV(10));
         failingCases (chkIdU, USD(20));
 
         // Verify that those two checks really were cashable.
         env (check::cash (bob, chkIdU, USD(20)));
         env.close();
-        env (check::cash (bob, chkIdX, check::DeliverMin (XRP(10))));
-        verifyDeliveredAmount (env, XRP(10));
+        env (check::cash (bob, chkIdX, check::DeliverMin (XDV(10))));
+        verifyDeliveredAmount (env, XDV(10));
 
         // Try to cash an expired check.
-        env (check::cash (bob, chkIdExp, XRP(10)), ter (tecEXPIRED));
+        env (check::cash (bob, chkIdExp, XDV(10)), ter (tecEXPIRED));
         env.close();
 
         // Cancel the expired check.  Anyone can cancel an expired check.
@@ -1601,7 +1601,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        env.fund (XRP(1000), gw, alice, bob, zoe);
+        env.fund (XDV(1000), gw, alice, bob, zoe);
 
         // alice creates her checks ahead of time.
         // Three ordinary checks with no expiration.
@@ -1610,7 +1610,7 @@ class Check_test : public beast::unit_test::suite
         env.close();
 
         uint256 const chkId2 {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)));
+        env (check::create (alice, bob, XDV(10)));
         env.close();
 
         uint256 const chkId3 {getCheckIndex (alice, env.seq (alice))};
@@ -1620,7 +1620,7 @@ class Check_test : public beast::unit_test::suite
         // Three checks that expire in 10 minutes.
         using namespace std::chrono_literals;
         uint256 const chkIdNotExp1 {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)), expiration (env.now()+600s));
+        env (check::create (alice, bob, XDV(10)), expiration (env.now()+600s));
         env.close();
 
         uint256 const chkIdNotExp2 {getCheckIndex (alice, env.seq (alice))};
@@ -1628,7 +1628,7 @@ class Check_test : public beast::unit_test::suite
         env.close();
 
         uint256 const chkIdNotExp3 {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)), expiration (env.now()+600s));
+        env (check::create (alice, bob, XDV(10)), expiration (env.now()+600s));
         env.close();
 
         // Three checks that expire in one second.
@@ -1637,7 +1637,7 @@ class Check_test : public beast::unit_test::suite
         env.close();
 
         uint256 const chkIdExp2 {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)), expiration (env.now()+1s));
+        env (check::create (alice, bob, XDV(10)), expiration (env.now()+1s));
         env.close();
 
         uint256 const chkIdExp3 {getCheckIndex (alice, env.seq (alice))};
@@ -1650,7 +1650,7 @@ class Check_test : public beast::unit_test::suite
         env.close();
 
         uint256 const chkIdMSig {getCheckIndex (alice, env.seq (alice))};
-        env (check::create (alice, bob, XRP(10)));
+        env (check::create (alice, bob, XDV(10)));
         env.close();
         BEAST_EXPECT (checksOnAccount (env, alice).size() == 11);
         BEAST_EXPECT (ownerCount (env, alice) == 11);
@@ -1754,7 +1754,7 @@ class Check_test : public beast::unit_test::suite
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close (closeTime);
 
-        env.fund (XRP(1000), alice, bob);
+        env.fund (XDV(1000), alice, bob);
 
         // Bad fee.
         env (check::cancel (bob, getCheckIndex (alice, env.seq (alice))),
@@ -1791,14 +1791,14 @@ class Check_test : public beast::unit_test::suite
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close (closeTime);
 
-            env.fund (XRP(1000), alice, bob);
+            env.fund (XDV(1000), alice, bob);
             env.close();
 
             uint256 const chkId {getCheckIndex (alice, env.seq (alice))};
-            env (check::create (alice, bob, XRP(200)));
+            env (check::create (alice, bob, XDV(200)));
             env.close();
 
-            env (check::cash (bob, chkId, check::DeliverMin (XRP(100))));
+            env (check::cash (bob, chkId, check::DeliverMin (XDV(100))));
 
             // Get the hash for the most recent transaction.
             std::string const txHash {
@@ -1826,7 +1826,7 @@ public:
         testEnabled();
         testCreateValid();
         testCreateInvalid();
-        testCashXRP();
+        testCashXDV();
         testCashIOU();
         testCashXferFee();
         testCashQuality();
@@ -1837,7 +1837,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (Check, tx, ripple);
+BEAST_DEFINE_TESTSUITE (Check, tx, divvy);
 
-}  // ripple
+}  // divvy
 

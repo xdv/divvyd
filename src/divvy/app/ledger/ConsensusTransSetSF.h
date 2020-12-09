@@ -1,0 +1,58 @@
+//------------------------------------------------------------------------------
+/*
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose  with  or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE  SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH  REGARD  TO  THIS  SOFTWARE  INCLUDING  ALL  IMPLIED  WARRANTIES  OF
+    MERCHANTABILITY  AND  FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY  SPECIAL ,  DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER  RESULTING  FROM  LOSS  OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION  OF  CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+//==============================================================================
+
+#ifndef DIVVY_APP_LEDGER_CONSENSUSTRANSSETSF_H_INCLUDED
+#define DIVVY_APP_LEDGER_CONSENSUSTRANSSETSF_H_INCLUDED
+
+#include <divvy/app/main/Application.h>
+#include <divvy/shamap/SHAMapSyncFilter.h>
+#include <divvy/basics/TaggedCache.h>
+
+namespace divvy {
+
+// Sync filters allow low-level SHAMapSync code to interact correctly with
+// higher-level structures such as caches and transaction stores
+
+// This class is needed on both add and check functions
+// sync filter for transaction sets during consensus building
+class ConsensusTransSetSF : public SHAMapSyncFilter
+{
+public:
+    using NodeCache = TaggedCache <SHAMapHash, Blob>;
+
+    ConsensusTransSetSF (Application& app, NodeCache& nodeCache);
+
+    // Note that the nodeData is overwritten by this call
+    void
+    gotNode(bool fromFilter, SHAMapHash const& nodeHash,
+        std::uint32_t ledgerSeq, Blob&& nodeData,
+            SHAMapTreeNode::TNType type) const override;
+
+    boost::optional<Blob>
+    getNode (SHAMapHash const& nodeHash) const override;
+
+private:
+    Application& app_;
+    NodeCache& m_nodeCache;
+    beast::Journal j_;
+};
+
+} // divvy
+
+#endif

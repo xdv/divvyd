@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/beast/unit_test.h>
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/JsonFields.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 
 namespace test {
 
@@ -35,7 +35,7 @@ class AccountTX_test : public beast::unit_test::suite
 
         Env env(*this);
         Account A1{"A1"};
-        env.fund(XRP(10000), A1);
+        env.fund(XDV(10000), A1);
         env.close();
 
         // Ledger 3 has the two txs associated with funding the account
@@ -171,8 +171,8 @@ public:
         testParameters();
     }
 };
-BEAST_DEFINE_TESTSUITE(AccountTX, app, ripple);
+BEAST_DEFINE_TESTSUITE(AccountTX, app, divvy);
 
 }  // namespace test
 
-}  // namespace ripple
+}  // namespace divvy

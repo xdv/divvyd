@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2018 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2018 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -16,8 +16,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 //==============================================================================
-#include <ripple/beast/asio/io_latency_probe.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/asio/io_latency_probe.h>
+#include <divvy/beast/unit_test.h>
 #include <beast/test/yield_to.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <chrono>

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 */
 //==============================================================================
 
-#include <ripple/basics/chrono.h>
-#include <ripple/basics/Slice.h>
-#include <ripple/protocol/PublicKey.h>
-#include <ripple/protocol/SecretKey.h>
-#include <ripple/peerfinder/impl/Logic.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/chrono.h>
+#include <divvy/basics/Slice.h>
+#include <divvy/protocol/PublicKey.h>
+#include <divvy/protocol/SecretKey.h>
+#include <divvy/peerfinder/impl/Logic.h>
+#include <divvy/beast/unit_test.h>
 
-namespace ripple {
+namespace divvy {
 namespace PeerFinder {
 
 class Logic_test : public beast::unit_test::suite
@@ -156,7 +156,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Logic,PeerFinder,ripple);
+BEAST_DEFINE_TESTSUITE(Logic,PeerFinder,divvy);
 
 }
 }

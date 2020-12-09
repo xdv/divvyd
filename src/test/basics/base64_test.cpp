@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2018 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2018 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -26,10 +26,10 @@
 // Official repository: https://github.com/boostorg/beast
 //
 
-#include <ripple/basics/base64.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/base64.h>
+#include <divvy/beast/unit_test.h>
 
-namespace ripple {
+namespace divvy {
 
 class base64_test : public beast::unit_test::suite
 {
@@ -72,6 +72,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(base64, ripple_basics, ripple);
+BEAST_DEFINE_TESTSUITE(base64, divvy_basics, divvy);
 
-} // ripple
+} // divvy

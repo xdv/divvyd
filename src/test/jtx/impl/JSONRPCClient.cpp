@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,10 +17,10 @@
 */
 //==============================================================================
 #include <test/jtx/JSONRPCClient.h>
-#include <ripple/json/json_reader.h>
-#include <ripple/json/to_string.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/server/Port.h>
+#include <divvy/json/json_reader.h>
+#include <divvy/json/to_string.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/server/Port.h>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/dynamic_body.hpp>
 #include <boost/beast/http/string_body.hpp>
@@ -29,7 +29,7 @@
 #include <boost/asio.hpp>
 #include <string>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class JSONRPCClient : public AbstractClient
@@ -119,7 +119,7 @@ public:
             if (rpc_version_ == 2)
             {
                 jr[jss::jsonrpc] = "2.0";
-                jr[jss::ripplerpc] = "2.0";
+                jr[jss::divvyrpc] = "2.0";
                 jr[jss::id] = 5;
             }
             if(params)
@@ -158,4 +158,4 @@ makeJSONRPCClient(Config const& cfg, unsigned rpc_version)
 }
 
 } // test
-} // ripple
+} // divvy

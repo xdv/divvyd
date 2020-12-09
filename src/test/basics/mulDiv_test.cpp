@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,10 +17,10 @@
 */
 //==============================================================================
 
-#include <ripple/basics/mulDiv.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/mulDiv.h>
+#include <divvy/beast/unit_test.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct mulDiv_test : beast::unit_test::suite
@@ -55,7 +55,7 @@ struct mulDiv_test : beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(mulDiv, ripple_basics, ripple);
+BEAST_DEFINE_TESTSUITE(mulDiv, divvy_basics, divvy);
 
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy

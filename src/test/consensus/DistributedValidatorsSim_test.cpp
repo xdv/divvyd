@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -16,8 +16,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 //==============================================================================
-#include <ripple/beast/clock/manual_clock.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/clock/manual_clock.h>
+#include <divvy/beast/unit_test.h>
 #include <test/csf.h>
 #include <utility>
 
@@ -28,7 +28,7 @@
 #include <fstream>
 #include <string>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 /** In progress simulations for diversifying and distributing validators
@@ -266,7 +266,7 @@ class DistributedValidators_test : public beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(DistributedValidators, consensus, ripple, 2);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(DistributedValidators, consensus, divvy, 2);
 
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy

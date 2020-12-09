@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -15,17 +15,17 @@
 */
 //==============================================================================
 
-#include <ripple/basics/random.h>
-#include <ripple/ledger/BookDirs.h>
-#include <ripple/ledger/Directory.h>
-#include <ripple/ledger/Sandbox.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Protocol.h>
+#include <divvy/basics/random.h>
+#include <divvy/ledger/BookDirs.h>
+#include <divvy/ledger/Directory.h>
+#include <divvy/ledger/Sandbox.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Protocol.h>
 #include <test/jtx.h>
 #include <algorithm>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct Directory_test : public beast::unit_test::suite
@@ -91,11 +91,11 @@ struct Directory_test : public beast::unit_test::suite
             Env env(
                 *this,
                 supported_amendments().reset(featureSortedDirectories));
-            env.fund(XRP(10000000), alice, bob, gw);
+            env.fund(XDV(10000000), alice, bob, gw);
 
             // Insert 400 offers from Alice, then one from Bob:
             for (std::size_t i = 1; i <= 400; ++i)
-                env(offer(alice, USD(10), XRP(10)));
+                env(offer(alice, USD(10), XDV(10)));
 
             // Check Alice's directory: it should contain one
             // entry for each offer she added. Within each
@@ -119,10 +119,10 @@ struct Directory_test : public beast::unit_test::suite
             testcase ("Directory Ordering (with 'SortedDirectories' amendment)");
 
             Env env(*this);
-            env.fund(XRP(10000000), alice, gw);
+            env.fund(XDV(10000000), alice, gw);
 
             for (std::size_t i = 1; i <= 400; ++i)
-                env(offer(alice, USD(i), XRP(i)));
+                env(offer(alice, USD(i), XDV(i)));
             env.close();
 
             // Check Alice's directory: it should contain one
@@ -161,14 +161,14 @@ struct Directory_test : public beast::unit_test::suite
             // Now check the orderbook: it should be in the order we placed
             // the offers.
             auto book = BookDirs(*env.current(),
-                Book({xrpIssue(), USD.issue()}));
+                Book({xdvIssue(), USD.issue()}));
             int count = 1;
 
             for (auto const& offer : book)
             {
                 count++;
                 BEAST_EXPECT(offer->getFieldAmount(sfTakerPays) == USD(count));
-                BEAST_EXPECT(offer->getFieldAmount(sfTakerGets) == XRP(count));
+                BEAST_EXPECT(offer->getFieldAmount(sfTakerGets) == XDV(count));
             }
         }
     }
@@ -186,7 +186,7 @@ struct Directory_test : public beast::unit_test::suite
 
         Env env(*this);
 
-        env.fund(XRP(1000000), alice, charlie, gw);
+        env.fund(XDV(1000000), alice, charlie, gw);
         env.close();
 
         // alice should have an empty directory.
@@ -250,7 +250,7 @@ struct Directory_test : public beast::unit_test::suite
                 env.close();
                 env(pay(gw, charlie, c(50)));
                 env.close();
-                env(offer(alice, c(50), XRP(50)));
+                env(offer(alice, c(50), XDV(50)));
                 env.close();
             }
 
@@ -263,7 +263,7 @@ struct Directory_test : public beast::unit_test::suite
 
             for (auto const& c : cl)
             {
-                env(offer(charlie, XRP(50), c(50)));
+                env(offer(charlie, XDV(50), c(50)));
                 env.close();
             }
             BEAST_EXPECT(! dirIsEmpty (*env.closed(), keylet::ownerDir(alice)));
@@ -294,7 +294,7 @@ struct Directory_test : public beast::unit_test::suite
         auto const alice = Account{"alice"};
         auto const USD = gw["USD"];
 
-        env.fund(XRP(10000), alice, gw);
+        env.fund(XDV(10000), alice, gw);
         env.trust(USD(1000), alice);
         env(pay(gw, alice, USD(1000)));
 
@@ -303,7 +303,7 @@ struct Directory_test : public beast::unit_test::suite
         // Fill up three pages of offers
         for (int i = 0; i < 3; ++i)
             for (int j = 0; j < dirNodeMaxEntries; ++j)
-                env(offer(alice, XRP(1), USD(1)));
+                env(offer(alice, XDV(1), USD(1)));
         env.close();
 
         // remove all the offers. Remove the middle page last
@@ -325,7 +325,7 @@ struct Directory_test : public beast::unit_test::suite
         // should have no entries and be empty:
         {
             Sandbox sb(env.closed().get(), tapNONE);
-            uint256 const bookBase = getBookBase({xrpIssue(), USD.issue()});
+            uint256 const bookBase = getBookBase({xdvIssue(), USD.issue()});
 
             BEAST_EXPECT(dirIsEmpty (sb, keylet::page(bookBase)));
             BEAST_EXPECT (!sb.succ(bookBase, getQualityNext(bookBase)));
@@ -354,7 +354,7 @@ struct Directory_test : public beast::unit_test::suite
         auto const alice = Account{"alice"};
         auto const USD = gw["USD"];
 
-        env.fund(XRP(10000), alice);
+        env.fund(XDV(10000), alice);
         env.close();
 
         uint256 base;
@@ -439,7 +439,7 @@ struct Directory_test : public beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE_PRIO(Directory,ledger,ripple,1);
+BEAST_DEFINE_TESTSUITE_PRIO(Directory,ledger,divvy,1);
 
 }
 }

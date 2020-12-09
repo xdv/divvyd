@@ -72,5 +72,5 @@ notifications:
     false
   irc:
     channels:
-      - "chat.freenode.net#ripple-dev"
+      - "chat.freenode.net#divvy-dev"
 

@@ -19,9 +19,9 @@
 
 // MODULES: ../impl/IPEndpoint.cpp ../impl/IPAddressV4.cpp ../impl/IPAddressV6.cpp
 
-#include <ripple/beast/net/IPEndpoint.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/basics/random.h>
+#include <divvy/beast/net/IPEndpoint.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/basics/random.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/predef.h>
@@ -381,7 +381,7 @@ public:
         float max_lf {0};
         for (auto i = 0; i < items; ++i)
         {
-            eps.insert(randomEP(ripple::rand_int(0,1) == 1));
+            eps.insert(randomEP(divvy::rand_int(0,1) == 1));
             max_lf = std::max(max_lf, eps.load_factor());
         }
         BEAST_EXPECT(eps.bucket_count() >= items);

@@ -28,4 +28,4 @@ RUN mkdir -p /opt/plantuml
 RUN wget -O /opt/plantuml/plantuml.jar http://sourceforge.net/projects/plantuml/files/plantuml.jar/download
 ENV PLANTUML_JAR=/opt/plantuml/plantuml.jar
 
-CMD cd /opt/rippled/docs && doxygen source.dox
+CMD cd /opt/divvyd/docs && doxygen source.dox

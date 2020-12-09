@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,20 +17,20 @@
 */
 //==============================================================================
 
-#include <ripple/app/main/BasicApp.h>
-#include <ripple/app/misc/ValidatorSite.h>
-#include <ripple/basics/base64.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/core/ConfigSections.h>
-#include <ripple/json/json_value.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Sign.h>
+#include <divvy/app/main/BasicApp.h>
+#include <divvy/app/misc/ValidatorSite.h>
+#include <divvy/basics/base64.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/core/ConfigSections.h>
+#include <divvy/json/json_value.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Sign.h>
 #include <test/jtx.h>
 #include <test/jtx/TrustedPublisherServer.h>
 
 #include <set>
 
-namespace ripple {
+namespace divvy {
 
 namespace test {
 
@@ -410,7 +410,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(ValidatorRPC, app, ripple);
+BEAST_DEFINE_TESTSUITE(ValidatorRPC, app, divvy);
 
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy

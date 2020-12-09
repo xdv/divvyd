@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,11 +17,11 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/Quality.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/protocol/Quality.h>
+#include <divvy/beast/unit_test.h>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 
 class Quality_test : public beast::unit_test::suite
 {
@@ -227,7 +227,7 @@ public:
         {
             Quality q (0x5d048191fb9130daull);      // 126836389.7680090
             Amounts const value (
-                amount(349469768),                  // 349.469768 XRP
+                amount(349469768),                  // 349.469768 XDV
                 raw (2755280000000000ull, -15));    // 2.75528
             STAmount const limit (
                 raw (4131113916555555, -16));       // .4131113916555555
@@ -359,6 +359,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Quality,protocol,ripple);
+BEAST_DEFINE_TESTSUITE(Quality,protocol,divvy);
 
 }

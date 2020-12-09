@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2015 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2015 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,22 +17,22 @@
 */
 //==============================================================================
 
-#include <ripple/basics/contract.h>
-#include <ripple/core/Config.h>
-#include <ripple/core/ConfigSections.h>
-#include <ripple/server/Port.h>
+#include <divvy/basics/contract.h>
+#include <divvy/core/Config.h>
+#include <divvy/core/ConfigSections.h>
+#include <divvy/server/Port.h>
 #include <test/jtx/TestSuite.h>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <fstream>
 #include <iostream>
 
-namespace ripple {
+namespace divvy {
 namespace detail {
 std::string configContents (std::string const& dbPath,
     std::string const& validatorsFile)
 {
-    static boost::format configContentsTemplate (R"rippleConfig(
+    static boost::format configContentsTemplate (R"divvyConfig(
 [server]
 port_rpc
 port_peer
@@ -65,14 +65,14 @@ protocol = wss
 [node_size]
 medium
 
-# This is primary persistent datastore for rippled.  This includes transaction
+# This is primary persistent datastore for divvyd.  This includes transaction
 # metadata, account states, and ledger headers.  Helpful information can be
-# found here: https://ripple.com/wiki/NodeBackEnd
+# found here: https://xdv.io/wiki/NodeBackEnd
 # delete old ledgers while maintaining at least 2000. Do not require an
 # external administrative command to initiate deletion.
 [node_db]
 type=memory
-path=/Users/dummy/ripple/config/db/rocksdb
+path=/Users/dummy/divvy/config/db/rocksdb
 open_files=2000
 filter_bits=12
 cache_mb=256
@@ -86,7 +86,7 @@ file_size_mult=2
 # This needs to be an absolute directory reference, not a relative one.
 # Modify this value as required.
 [debug_logfile]
-/Users/dummy/ripple/config/log/debug.log
+/Users/dummy/divvy/config/log/debug.log
 
 [sntp_servers]
 time.windows.com
@@ -94,10 +94,10 @@ time.apple.com
 time.nist.gov
 pool.ntp.org
 
-# Where to find some other servers speaking the Ripple protocol.
+# Where to find some other servers speaking the Divvy protocol.
 #
 [ips]
-r.ripple.com 51235
+r.xdv.io 51235
 
 # Turn down default logging to save disk space in the long run.
 # Valid values here are trace, debug, info, warning, error, and fatal
@@ -111,7 +111,7 @@ r.ripple.com 51235
 
 [sqdb]
 backend=sqlite
-)rippleConfig");
+)divvyConfig");
 
     std::string dbPathSection =
         dbPath.empty () ? "" : "[database_path]\n" + dbPath;
@@ -197,9 +197,9 @@ public:
 };
 
 /**
-   Write a rippled config file and remove when done.
+   Write a divvyd config file and remove when done.
  */
-class RippledCfgGuard : public ConfigGuard
+class DivvydCfgGuard : public ConfigGuard
 {
 private:
     path configFile_;
@@ -210,7 +210,7 @@ private:
     Config config_;
 
 public:
-    RippledCfgGuard (beast::unit_test::suite& test,
+    DivvydCfgGuard (beast::unit_test::suite& test,
         path subDir, path const& dbPath,
             path const& validatorsFile,
                 bool useCounter = true)
@@ -259,7 +259,7 @@ public:
         return boost::filesystem::exists (configFile_);
     }
 
-    ~RippledCfgGuard ()
+    ~DivvydCfgGuard ()
     {
         try
         {
@@ -279,7 +279,7 @@ public:
         catch (std::exception& e)
         {
             // if we throw here, just let it die.
-            test_.log << "Error in ~RippledCfgGuard: "
+            test_.log << "Error in ~DivvydCfgGuard: "
                       << e.what () << std::endl;
         };
     }
@@ -287,7 +287,7 @@ public:
 
 std::string valFileContents ()
 {
-    std::string configContents (R"rippleConfig(
+    std::string configContents (R"divvyConfig(
 [validators]
 n949f75evCHwgyP4fPVgaHqNHxUVN15PsJEZ3B3HnXPcPjcZAoy7
 n9MD5h24qrQqiyBC8aeqqCWvpiBiYQ3jxSr91uiDvmrkyHRdYLUj
@@ -301,13 +301,13 @@ nHBu9PTL9dn2GuZtdW4U2WzBwffyX9qsQCd9CNU4Z5YG3PQfViM8
 nHUPDdcdb2Y5DZAJne4c2iabFuAP3F34xZUgYQT2NH7qfkdapgnz
 
 [validator_list_sites]
-recommendedripplevalidators.com
-moreripplevalidators.net
+recommendeddivvyvalidators.com
+moredivvyvalidators.net
 
 [validator_list_keys]
 03E74EE14CB525AFBB9F1B7D86CD58ECC4B91452294B42AB4E78F260BD905C091D
 030775A669685BD6ABCEBD80385921C7851783D991A8055FD21D2F3966C96F1B56
-)rippleConfig");
+)divvyConfig");
     return configContents;
 }
 
@@ -385,7 +385,7 @@ public:
 
         Config c;
 
-        std::string toLoad(R"rippleConfig(
+        std::string toLoad(R"divvyConfig(
 [server]
 port_rpc
 port_peer
@@ -393,7 +393,7 @@ port_wss_admin
 
 [ssl_verify]
 0
-)rippleConfig");
+)divvyConfig");
 
         c.loadFromString (toLoad);
 
@@ -443,7 +443,7 @@ port_wss_admin
             detail::ConfigGuard const g0(*this, "test_db");
             path const dataDirRel ("test_data_dir");
             path const dataDirAbs(cwd / g0.subdir () / dataDirRel);
-            detail::RippledCfgGuard const g (*this, g0.subdir(),
+            detail::DivvydCfgGuard const g (*this, g0.subdir(),
                 dataDirAbs, "", false);
             auto const& c (g.config ());
             BEAST_EXPECT(g.dataDirExists ());
@@ -453,7 +453,7 @@ port_wss_admin
         {
             // read from file relative path
             std::string const dbPath ("my_db");
-            detail::RippledCfgGuard const g (*this, "test_db", dbPath, "");
+            detail::DivvydCfgGuard const g (*this, "test_db", dbPath, "");
             auto const& c (g.config ());
             std::string const nativeDbPath = absolute (path (dbPath)).string ();
             BEAST_EXPECT(g.dataDirExists ());
@@ -462,7 +462,7 @@ port_wss_admin
         }
         {
             // read from file no path
-            detail::RippledCfgGuard const g (*this, "test_db", "", "");
+            detail::DivvydCfgGuard const g (*this, "test_db", "", "");
             auto const& c (g.config ());
             std::string const nativeDbPath =
                 absolute (g.subdir () /
@@ -492,13 +492,13 @@ port_wss_admin
 
         {
             Config c;
-            static boost::format configTemplate (R"rippleConfig(
+            static boost::format configTemplate (R"divvyConfig(
 [validation_seed]
 %1%
 
 [validator_token]
 %2%
-)rippleConfig");
+)divvyConfig");
             std::string error;
             auto const expectedError =
                 "Cannot have both [validation_seed] "
@@ -555,7 +555,7 @@ port_wss_admin
         {
             // load validators from config into single section
             Config c;
-            std::string toLoad(R"rippleConfig(
+            std::string toLoad(R"divvyConfig(
 [validators]
 n949f75evCHwgyP4fPVgaHqNHxUVN15PsJEZ3B3HnXPcPjcZAoy7
 n9MD5h24qrQqiyBC8aeqqCWvpiBiYQ3jxSr91uiDvmrkyHRdYLUj
@@ -564,7 +564,7 @@ n9L81uNCaPgtUJfaHh89gmdvXKAmSt5Gdsw2g1iPWaPkAHW5Nm4C
 [validator_keys]
 nHUhG1PgAG8H8myUENypM35JgfqXAKNQvRVVAFDRzJrny5eZN8d5
 nHBu9PTL9dn2GuZtdW4U2WzBwffyX9qsQCd9CNU4Z5YG3PQfViM8
-)rippleConfig");
+)divvyConfig");
             c.loadFromString (toLoad);
             BEAST_EXPECT(c.legacy ("validators_file").empty ());
             BEAST_EXPECT(c.section (SECTION_VALIDATORS).values ().size () == 5);
@@ -572,20 +572,20 @@ nHBu9PTL9dn2GuZtdW4U2WzBwffyX9qsQCd9CNU4Z5YG3PQfViM8
         {
             // load validator list sites and keys from config
             Config c;
-            std::string toLoad(R"rippleConfig(
+            std::string toLoad(R"divvyConfig(
 [validator_list_sites]
-ripplevalidators.com
+divvyvalidators.com
 trustthesevalidators.gov
 
 [validator_list_keys]
 021A99A537FDEBC34E4FCA03B39BEADD04299BB19E85097EC92B15A3518801E566
-)rippleConfig");
+)divvyConfig");
             c.loadFromString (toLoad);
             BEAST_EXPECT(
                 c.section (SECTION_VALIDATOR_LIST_SITES).values ().size () == 2);
             BEAST_EXPECT(
                 c.section (SECTION_VALIDATOR_LIST_SITES).values ()[0] ==
-                    "ripplevalidators.com");
+                    "divvyvalidators.com");
             BEAST_EXPECT(
                 c.section (SECTION_VALIDATOR_LIST_SITES).values ()[1] ==
                     "trustthesevalidators.gov");
@@ -599,11 +599,11 @@ trustthesevalidators.gov
             // load should throw if [validator_list_sites] is configured but
             // [validator_list_keys] is not
             Config c;
-            std::string toLoad(R"rippleConfig(
+            std::string toLoad(R"divvyConfig(
 [validator_list_sites]
-ripplevalidators.com
+divvyvalidators.com
 trustthesevalidators.gov
-)rippleConfig");
+)divvyConfig");
             std::string error;
             auto const expectedError =
                 "[validator_list_keys] config section is missing";
@@ -635,7 +635,7 @@ trustthesevalidators.gov
             std::string const valFileName = "validators.txt";
             detail::ValidatorsTxtGuard const vtg (
                 *this, "test_cfg", valFileName);
-            detail::RippledCfgGuard const rcg (
+            detail::DivvydCfgGuard const rcg (
                 *this, vtg.subdir (), "", valFileName, false);
             BEAST_EXPECT(vtg.validatorsFileExists ());
             BEAST_EXPECT(rcg.configFileExists ());
@@ -653,7 +653,7 @@ trustthesevalidators.gov
             detail::ValidatorsTxtGuard const vtg (
                 *this, "test_cfg", "validators.txt");
             auto const valFilePath = ".." / vtg.subdir() / "validators.txt";
-            detail::RippledCfgGuard const rcg (
+            detail::DivvydCfgGuard const rcg (
                 *this, vtg.subdir (), "", valFilePath, false);
             BEAST_EXPECT(vtg.validatorsFileExists ());
             BEAST_EXPECT(rcg.configFileExists ());
@@ -669,7 +669,7 @@ trustthesevalidators.gov
             // load from validators file in default location
             detail::ValidatorsTxtGuard const vtg (
                 *this, "test_cfg", "validators.txt");
-            detail::RippledCfgGuard const rcg (*this, vtg.subdir (),
+            detail::DivvydCfgGuard const rcg (*this, vtg.subdir (),
                 "", "", false);
             BEAST_EXPECT(vtg.validatorsFileExists ());
             BEAST_EXPECT(rcg.configFileExists ());
@@ -690,7 +690,7 @@ trustthesevalidators.gov
             detail::ValidatorsTxtGuard const vtgDefault (
                 *this, vtg.subdir (), "validators.txt", false);
             BEAST_EXPECT(vtgDefault.validatorsFileExists ());
-            detail::RippledCfgGuard const rcg (
+            detail::DivvydCfgGuard const rcg (
                 *this, vtg.subdir (), "", vtg.validatorsFile (), false);
             BEAST_EXPECT(rcg.configFileExists ());
             auto const& c (rcg.config ());
@@ -704,7 +704,7 @@ trustthesevalidators.gov
 
         {
             // load validators from both config and validators file
-            boost::format cc (R"rippleConfig(
+            boost::format cc (R"divvyConfig(
 [validators_file]
 %1%
 
@@ -720,12 +720,12 @@ nHB1X37qrniVugfQcuBTAjswphC1drx7QjFFojJPZwKHHnt8kU7v
 nHUkAWDR4cB8AgPg7VXMX6et8xRTQb2KJfgv1aBEXozwrawRKgMB
 
 [validator_list_sites]
-ripplevalidators.com
+divvyvalidators.com
 trustthesevalidators.gov
 
 [validator_list_keys]
 021A99A537FDEBC34E4FCA03B39BEADD04299BB19E85097EC92B15A3518801E566
-)rippleConfig");
+)divvyConfig");
             detail::ValidatorsTxtGuard const vtg (
                 *this, "test_cfg", "validators.cfg");
             BEAST_EXPECT(vtg.validatorsFileExists ());
@@ -740,7 +740,7 @@ trustthesevalidators.gov
         }
         {
             // load should throw if [validators], [validator_keys] and
-            // [validator_list_keys] are missing from rippled cfg and
+            // [validator_list_keys] are missing from divvyd cfg and
             // validators file
             Config c;
             boost::format cc ("[validators_file]\n%1%\n");
@@ -765,7 +765,7 @@ trustthesevalidators.gov
 
     void testSetup(bool explicitPath)
     {
-        detail::RippledCfgGuard const cfg(*this, "testSetup",
+        detail::DivvydCfgGuard const cfg(*this, "testSetup",
             explicitPath ? "test_db" : "", "");
         /* ConfigGuard has a Config object that gets loaded on construction,
             but Config::setup is not reentrant, so we need a fresh config
@@ -855,7 +855,7 @@ trustthesevalidators.gov
 
     void testPort ()
     {
-        detail::RippledCfgGuard const cfg(*this, "testPort", "", "");
+        detail::DivvydCfgGuard const cfg(*this, "testPort", "", "");
         auto const& conf = cfg.config();
         if (!BEAST_EXPECT(conf.exists("port_rpc")))
             return;
@@ -883,6 +883,6 @@ trustthesevalidators.gov
     }
 };
 
-BEAST_DEFINE_TESTSUITE (Config, core, ripple);
+BEAST_DEFINE_TESTSUITE (Config, core, divvy);
 
-}  // ripple
+}  // divvy

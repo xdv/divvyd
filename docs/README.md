@@ -44,7 +44,7 @@ functionality for docs, so it's largely optional. Requirements:
 
 ### all platforms
 
-From the rippled root folder:
+From the divvyd root folder:
 ```
 cd docs
 mkdir -p html_doc
@@ -60,16 +60,16 @@ Instead of installing the doxygen tools locally, you can use the provided `Docke
 an ubuntu based image for running the tools:
 
 1. Install [Docker](https://docs.docker.com/engine/installation/)
-2. Build Docker image. From the rippled root folder:
+2. Build Docker image. From the divvyd root folder:
 
 ```
-sudo docker build -t rippled-docs docs/
+sudo docker build -t divvyd-docs docs/
 ```
 
-Then to run the image, from the rippled root folder:
+Then to run the image, from the divvyd root folder:
 
 ```
-sudo docker run -v $PWD:/opt/rippled --rm rippled-docs
+sudo docker run -v $PWD:/opt/divvyd --rm divvyd-docs
 ```
 
 The output will be in `docs/html_doc`.

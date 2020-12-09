@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_PATHS_H_INCLUDED
-#define RIPPLE_TEST_JTX_PATHS_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_PATHS_H_INCLUDED
+#define DIVVY_TEST_JTX_PATHS_H_INCLUDED
 
 #include <test/jtx/Env.h>
-#include <ripple/protocol/Issue.h>
+#include <divvy/protocol/Issue.h>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -119,6 +119,6 @@ path::append (T const& t, Args const&... args)
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif

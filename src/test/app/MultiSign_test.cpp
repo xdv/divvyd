@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -15,12 +15,12 @@
 */
 //==============================================================================
 
-#include <ripple/core/ConfigSections.h>
-#include <ripple/protocol/JsonFields.h>     // jss:: definitions
-#include <ripple/protocol/Feature.h>
+#include <divvy/core/ConfigSections.h>
+#include <divvy/protocol/JsonFields.h>     // jss:: definitions
+#include <divvy/protocol/Feature.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class MultiSign_test : public beast::unit_test::suite
@@ -44,7 +44,7 @@ public:
 
         // Pay alice enough to meet the initial reserve, but not enough to
         // meet the reserve for a SignerListSet.
-        env.fund(XRP(200), alice);
+        env.fund(XDV(200), alice);
         env.close();
         env.require (owners (alice, 0));
 
@@ -56,7 +56,7 @@ public:
             env.require (owners (alice, 0));
 
             // Fund alice enough to set the signer list, then attach signers.
-            env(pay(env.master, alice, XRP(151)));
+            env(pay(env.master, alice, XDV(151)));
             env.close();
             env(smallSigners);
             env.close();
@@ -72,7 +72,7 @@ public:
             env.require (owners (alice, 3));
 
             // Fund alice and succeed.
-            env(pay(env.master, alice, XRP(350)));
+            env(pay(env.master, alice, XDV(350)));
             env.close();
             env(bigSigners);
             env.close();
@@ -89,7 +89,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice", KeyType::ed25519};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
 
         // Add alice as a multisigner for herself.  Should fail.
         env(signers(alice, 1, { { alice, 1} }), ter (temBAD_SIGNER));
@@ -134,7 +134,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice", KeyType::ed25519};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
         env.close();
 
         // Attach phantom signers to alice and use them for a transaction.
@@ -198,7 +198,7 @@ public:
             }), FeatureBitset{});
 
         Account const alice {"alice", KeyType::ed25519};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
         env.close();
 
         // NOTE: These six tests will fail when multisign is default enabled.
@@ -240,7 +240,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice", KeyType::ed25519};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
         env.close();
 
         // Attach maximum possible number of signers to alice.
@@ -290,7 +290,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice", KeyType::ed25519};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
         env.close();
 
         // The signatures in a transaction must be submitted in sorted order.
@@ -314,7 +314,7 @@ public:
         Account const alice {"alice", KeyType::ed25519};
         Account const becky {"becky", KeyType::secp256k1};
         Account const cheri {"cheri", KeyType::ed25519};
-        env.fund(XRP(1000), alice, becky, cheri);
+        env.fund(XDV(1000), alice, becky, cheri);
         env.close();
 
         // For a different situation, give alice a regular key but don't use it.
@@ -366,7 +366,7 @@ public:
         Account const alice {"alice", KeyType::secp256k1};
         Account const becky {"becky", KeyType::ed25519};
         Account const cheri {"cheri", KeyType::secp256k1};
-        env.fund(XRP(1000), alice, becky, cheri);
+        env.fund(XDV(1000), alice, becky, cheri);
         env.close();
 
         // Attach signers to alice.
@@ -428,7 +428,7 @@ public:
         Account const alice {"alice", KeyType::secp256k1};
         Account const becky {"becky", KeyType::ed25519};
         Account const cheri {"cheri", KeyType::secp256k1};
-        env.fund(XRP(1000), alice, becky, cheri);
+        env.fund(XDV(1000), alice, becky, cheri);
         env.close();
 
         // Attach signers to alice.
@@ -632,7 +632,7 @@ public:
         Account const becky {"becky", KeyType::ed25519};
         Account const cheri {"cheri", KeyType::secp256k1};
         Account const daria {"daria", KeyType::ed25519};
-        env.fund(XRP(1000), alice, becky, cheri, daria);
+        env.fund(XDV(1000), alice, becky, cheri, daria);
         env.close();
 
         // alice uses a regular key with the master disabled.
@@ -744,7 +744,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice", KeyType::ed25519};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
 
         // There are three negative tests we need to make:
         //  M0. A lone master key cannot be disabled.
@@ -819,7 +819,7 @@ public:
         using namespace jtx;
         Env env(*this);
         Account const alice {"alice", KeyType::secp256k1};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
 
         // Give alice a regular key with a zero fee.  Should succeed.  Once.
         Account const alie {"alie", KeyType::ed25519};
@@ -835,7 +835,7 @@ public:
         // In contrast, trying to multisign for a regular key with a zero
         // fee should always fail.  Even the first time.
         Account const becky {"becky", KeyType::ed25519};
-        env.fund(XRP(1000), becky);
+        env.fund(XDV(1000), becky);
 
         env(signers(becky, 1, {{alice, 1}}), sig (becky));
         env(regkey (becky, alie), msig (alice), fee (0), ter(telINSUF_FEE_P));
@@ -855,7 +855,7 @@ public:
         Account const zelda {"zelda", KeyType::secp256k1};
         Account const gw {"gw"};
         auto const USD = gw["USD"];
-        env.fund(XRP(1000), alice, becky, zelda, gw);
+        env.fund(XDV(1000), alice, becky, zelda, gw);
         env.close();
 
         // alice uses a regular key with the master disabled.
@@ -871,7 +871,7 @@ public:
         // Multisign a ttPAYMENT.
         auto const baseFee = env.current()->fees().base;
         std::uint32_t aliceSeq = env.seq (alice);
-        env(pay(alice, env.master, XRP(1)),
+        env(pay(alice, env.master, XDV(1)),
             msig(becky, bogie), fee(3 * baseFee));
         env.close();
         BEAST_EXPECT(env.seq(alice) == aliceSeq + 1);
@@ -902,7 +902,7 @@ public:
         env.require(balance(gw, alice["USD"](-50)));
 
         std::uint32_t const offerSeq = env.seq (alice);
-        env(offer(alice, XRP(50), USD(50)),
+        env(offer(alice, XDV(50), USD(50)),
             msig (becky, bogie), fee(3 * baseFee));
         env.close();
         env.require(owners(alice, 6));
@@ -944,7 +944,7 @@ public:
         };
 
         Account const alice {"alice"};
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
         env(signers(alice, 1, {{bogie, 1}, {demon, 1}}), sig (alice));
 
         auto const baseFee = env.current()->fees().base;
@@ -1070,7 +1070,7 @@ public:
         Env env {*this};
         Account const alice {"alice", KeyType::ed25519};
         Account const becky {"becky", KeyType::secp256k1};
-        env.fund(XRP(1000), alice, becky);
+        env.fund(XDV(1000), alice, becky);
         env.close();
 
         auto const baseFee = env.current()->fees().base;
@@ -1088,7 +1088,7 @@ public:
         Env env (*this);
         Account const alice {"alice", KeyType::ed25519};
         Account const becky {"becky", KeyType::secp256k1};
-        env.fund (XRP(1000), alice, becky);
+        env.fund (XDV(1000), alice, becky);
         env.close();
 
         // alice sets up a signer list with becky as a signer.
@@ -1157,13 +1157,13 @@ public:
                 cfg->loadFromString ("[" SECTION_SIGNING_SUPPORT "]\ntrue");
                 return cfg;
             }));
-        env.fund (XRP(1000), alice);
+        env.fund (XDV(1000), alice);
         env.close();
 
         env (signers (alice, 2, {{bogie, 1}, {ghost, 1}}));
         env.close();
 
-        // Use sign_for to sign a transaction where alice pays 10 XRP to
+        // Use sign_for to sign a transaction where alice pays 10 XDV to
         // masterpassphrase.
         std::uint32_t baseFee = env.current()->fees().base;
         Json::Value jvSig1;
@@ -1243,7 +1243,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(MultiSign, app, ripple);
+BEAST_DEFINE_TESTSUITE(MultiSign, app, divvy);
 
 } // test
-} // ripple
+} // divvy

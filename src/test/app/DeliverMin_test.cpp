@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2012-2015 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2012-2015 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -18,10 +18,10 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/protocol/Feature.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class DeliverMin_test : public beast::unit_test::suite
@@ -38,12 +38,12 @@ public:
 
         {
             Env env(*this, features);
-            env.fund(XRP(10000), "alice", "bob", "carol", gw);
+            env.fund(XDV(10000), "alice", "bob", "carol", gw);
             env.trust(USD(100), "alice", "bob", "carol");
             env(pay("alice", "bob", USD(10)), delivermin(USD(10)),  ter(temBAD_AMOUNT));
             env(pay("alice", "bob", USD(10)), delivermin(USD(-5)),
                 txflags(tfPartialPayment),                          ter(temBAD_AMOUNT));
-            env(pay("alice", "bob", USD(10)), delivermin(XRP(5)),
+            env(pay("alice", "bob", USD(10)), delivermin(XDV(5)),
                 txflags(tfPartialPayment),                          ter(temBAD_AMOUNT));
             env(pay("alice", "bob", USD(10)),
                 delivermin(Account("carol")["USD"](5)),
@@ -51,56 +51,56 @@ public:
             env(pay("alice", "bob", USD(10)), delivermin(USD(15)),
                 txflags(tfPartialPayment),                          ter(temBAD_AMOUNT));
             env(pay(gw, "carol", USD(50)));
-            env(offer("carol", XRP(5), USD(5)));
-            env(pay("alice", "bob", USD(10)), paths(XRP),
+            env(offer("carol", XDV(5), USD(5)));
+            env(pay("alice", "bob", USD(10)), paths(XDV),
                 delivermin(USD(7)), txflags(tfPartialPayment),
-                sendmax(XRP(5)),                                   ter(tecPATH_PARTIAL));
-            env.require(balance("alice", XRP(9999.99999)));
-            env.require(balance("bob", XRP(10000)));
+                sendmax(XDV(5)),                                   ter(tecPATH_PARTIAL));
+            env.require(balance("alice", XDV(9999.99999)));
+            env.require(balance("bob", XDV(10000)));
         }
 
         {
             Env env(*this, features);
-            env.fund(XRP(10000), "alice", "bob", gw);
+            env.fund(XDV(10000), "alice", "bob", gw);
             env.trust(USD(1000), "alice", "bob");
             env(pay(gw, "bob", USD(100)));
-            env(offer("bob", XRP(100), USD(100)));
-            env(pay("alice", "alice", USD(10000)), paths(XRP),
+            env(offer("bob", XDV(100), USD(100)));
+            env(pay("alice", "alice", USD(10000)), paths(XDV),
                 delivermin(USD(100)), txflags(tfPartialPayment),
-                sendmax(XRP(100)));
+                sendmax(XDV(100)));
             env.require(balance("alice", USD(100)));
         }
 
         {
             Env env(*this, features);
-            env.fund(XRP(10000), "alice", "bob", "carol", gw);
+            env.fund(XDV(10000), "alice", "bob", "carol", gw);
             env.trust(USD(1000), "bob", "carol");
             env(pay(gw, "bob", USD(200)));
-            env(offer("bob", XRP(100), USD(100)));
-            env(offer("bob", XRP(1000), USD(100)));
-            env(offer("bob", XRP(10000), USD(100)));
-            env(pay("alice", "carol", USD(10000)), paths(XRP),
+            env(offer("bob", XDV(100), USD(100)));
+            env(offer("bob", XDV(1000), USD(100)));
+            env(offer("bob", XDV(10000), USD(100)));
+            env(pay("alice", "carol", USD(10000)), paths(XDV),
                 delivermin(USD(200)), txflags(tfPartialPayment),
-                sendmax(XRP(1000)),                                 ter(tecPATH_PARTIAL));
-            env(pay("alice", "carol", USD(10000)), paths(XRP),
+                sendmax(XDV(1000)),                                 ter(tecPATH_PARTIAL));
+            env(pay("alice", "carol", USD(10000)), paths(XDV),
                 delivermin(USD(200)), txflags(tfPartialPayment),
-                sendmax(XRP(1100)));
+                sendmax(XDV(1100)));
             env.require(balance("bob", USD(0)));
             env.require(balance("carol", USD(200)));
         }
 
         {
             Env env(*this, features);
-            env.fund(XRP(10000), "alice", "bob", "carol", "dan", gw);
+            env.fund(XDV(10000), "alice", "bob", "carol", "dan", gw);
             env.trust(USD(1000), "bob", "carol", "dan");
             env(pay(gw, "bob", USD(100)));
             env(pay(gw, "dan", USD(100)));
-            env(offer("bob", XRP(100), USD(100)));
-            env(offer("bob", XRP(1000), USD(100)));
-            env(offer("dan", XRP(100), USD(100)));
-            env(pay("alice", "carol", USD(10000)), paths(XRP),
+            env(offer("bob", XDV(100), USD(100)));
+            env(offer("bob", XDV(1000), USD(100)));
+            env(offer("dan", XDV(100), USD(100)));
+            env(pay("alice", "carol", USD(10000)), paths(XDV),
                 delivermin(USD(200)), txflags(tfPartialPayment),
-                sendmax(XRP(200)));
+                sendmax(XDV(200)));
             env.require(balance("bob", USD(0)));
             env.require(balance("carol", USD(200)));
             env.require(balance("dan", USD(0)));
@@ -119,7 +119,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(DeliverMin,app,ripple);
+BEAST_DEFINE_TESTSUITE(DeliverMin,app,divvy);
 
 } // test
-} // ripple
+} // divvy

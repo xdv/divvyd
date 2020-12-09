@@ -1,7 +1,7 @@
 ﻿//------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -19,9 +19,9 @@
 
 #include <test/jtx/WSClient.h>
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class WSClient_test : public beast::unit_test::suite
@@ -37,14 +37,14 @@ public:
             jv["streams"] = Json::arrayValue;
             jv["streams"].append("ledger");
         }
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         env.close();
         auto jv = wsc->getMsg(std::chrono::seconds(1));
         pass();
     }
 };
 
-BEAST_DEFINE_TESTSUITE(WSClient,test,ripple);
+BEAST_DEFINE_TESTSUITE(WSClient,test,divvy);
 
 } // test
-} // ripple
+} // divvy

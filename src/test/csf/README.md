@@ -2,7 +2,7 @@
 
 The Consensus Simulation Framework is a set of software components for
 describing, running and analyzing simulations of the consensus algorithm in a
-controlled manner. It is also used to unit test the generic Ripple consensus
+controlled manner. It is also used to unit test the generic Divvy consensus
 algorithm implementation. The framework is in its early stages, so the design
 and supported features are subject to change.
 
@@ -11,7 +11,7 @@ and supported features are subject to change.
 The simulation framework focuses on simulating the core consensus and validation
 algorithms as a [discrete event
 simulation](https://en.wikipedia.org/wiki/Discrete_event_simulation). It is
-completely abstracted from the details of the XRP ledger and transactions. In
+completely abstracted from the details of the XDV ledger and transactions. In
 the simulation, a ledger is simply a set of observed integers and transactions
 are single integers. The consensus process works to agree on the set of integers
 to include in the next ledger.

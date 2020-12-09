@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,10 +18,10 @@
 //==============================================================================
 
 #include <test/jtx/quality.h>
-#include <ripple/protocol/SField.h>
-#include <ripple/protocol/Quality.h>
+#include <divvy/protocol/SField.h>
+#include <divvy/protocol/Quality.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -69,4 +69,4 @@ qualityOutPercent::operator()(Env&, JTx& jt) const
 
 } // jtx
 } // test
-} // ripple
+} // divvy

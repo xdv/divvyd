@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 */
 //==============================================================================
 
-#include <ripple/basics/chrono.h>
-#include <ripple/peerfinder/impl/Livecache.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/beast/clock/manual_clock.h>
+#include <divvy/basics/chrono.h>
+#include <divvy/peerfinder/impl/Livecache.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/beast/clock/manual_clock.h>
 #include <test/beast/IPEndpointCommon.h>
 #include <boost/algorithm/string.hpp>
 
-namespace ripple {
+namespace divvy {
 namespace PeerFinder {
 
 bool operator== (Endpoint const& a, Endpoint const& b)
@@ -128,7 +128,7 @@ public:
             add(
                 beast::IP::randomEP(true),
                 c,
-                ripple::rand_int(0, static_cast<int>(Tuning::maxHops + 1)));
+                divvy::rand_int(0, static_cast<int>(Tuning::maxHops + 1)));
         auto h = c.hops.histogram();
         if(! BEAST_EXPECT(! h.empty()))
             return;
@@ -153,9 +153,9 @@ public:
             add(
                 beast::IP::randomEP(true),
                 c,
-                ripple::rand_int(0, static_cast<int>(Tuning::maxHops + 1)));
+                divvy::rand_int(0, static_cast<int>(Tuning::maxHops + 1)));
 
-        using at_hop = std::vector <ripple::PeerFinder::Endpoint>;
+        using at_hop = std::vector <divvy::PeerFinder::Endpoint>;
         using all_hops = std::array <at_hop, 1 + Tuning::maxHops + 1>;
 
         auto cmp_EP = [](Endpoint const& a, Endpoint const& b) {
@@ -215,7 +215,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Livecache,peerfinder,ripple);
+BEAST_DEFINE_TESTSUITE(Livecache,peerfinder,divvy);
 
 }
 }

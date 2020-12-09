@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -15,14 +15,14 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Indexes.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Indexes.h>
 #include <test/jtx/WSClient.h>
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/rpc/impl/Tuning.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/rpc/impl/Tuning.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class Book_test : public beast::unit_test::suite
@@ -54,7 +54,7 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto wsc = makeWSClient(env.app().config());
         Json::Value books;
@@ -65,7 +65,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -74,7 +74,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -87,7 +87,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 1)));
             env.close();
 
@@ -98,13 +98,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 2)));
             env.close();
             BEAST_EXPECT(! wsc->getMsg(10ms));
@@ -116,7 +116,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -128,17 +128,17 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto wsc = makeWSClient(env.app().config());
         Json::Value books;
 
         // Create an ask: TakerPays 500, TakerGets 100/USD
-        env(offer("alice", XRP(500), USD(100)),
+        env(offer("alice", XDV(500), USD(100)),
             require(owners("alice", 1)));
 
         // Create a bid: TakerPays 100/USD, TakerGets 200
-        env(offer("alice", USD(100), XRP(200)),
+        env(offer("alice", USD(100), XDV(200)),
             require(owners("alice", 2)));
         env.close();
 
@@ -148,7 +148,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -157,7 +157,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -165,7 +165,7 @@ public:
             BEAST_EXPECT(jv[jss::result].isMember(jss::offers) &&
                 jv[jss::result][jss::offers].size() == 1);
             BEAST_EXPECT(jv[jss::result][jss::offers][0u][jss::TakerGets] ==
-                XRP(200).value().getJson(0));
+                XDV(200).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::offers][0u][jss::TakerPays] ==
                 USD(100).value().getJson(0));
             BEAST_EXPECT(! jv[jss::result].isMember(jss::asks));
@@ -174,7 +174,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 3)));
             env.close();
 
@@ -185,13 +185,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 4)));
             env.close();
             BEAST_EXPECT(! wsc->getMsg(10ms));
@@ -203,7 +203,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -215,7 +215,7 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto wsc = makeWSClient(env.app().config());
         Json::Value books;
@@ -227,7 +227,7 @@ public:
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
                 j[jss::both] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -236,7 +236,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -250,7 +250,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 1)));
             env.close();
 
@@ -261,13 +261,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 2)));
             env.close();
 
@@ -277,7 +277,7 @@ public:
                 {
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
-                        t[jss::TakerGets] == XRP(75).value().getJson(0) &&
+                        t[jss::TakerGets] == XDV(75).value().getJson(0) &&
                             t[jss::TakerPays] == USD(100).value().getJson(0);
                 }));
         }
@@ -288,7 +288,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -300,17 +300,17 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto wsc = makeWSClient(env.app().config());
         Json::Value books;
 
         // Create an ask: TakerPays 500, TakerGets 100/USD
-        env(offer("alice", XRP(500), USD(100)),
+        env(offer("alice", XDV(500), USD(100)),
             require(owners("alice", 1)));
 
         // Create a bid: TakerPays 100/USD, TakerGets 200
-        env(offer("alice", USD(100), XRP(200)),
+        env(offer("alice", USD(100), XDV(200)),
             require(owners("alice", 2)));
         env.close();
 
@@ -321,7 +321,7 @@ public:
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
                 j[jss::both] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -330,7 +330,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -342,9 +342,9 @@ public:
             BEAST_EXPECT(jv[jss::result][jss::asks][0u][jss::TakerGets] ==
                 USD(100).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::asks][0u][jss::TakerPays] ==
-                XRP(500).value().getJson(0));
+                XDV(500).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::bids][0u][jss::TakerGets] ==
-                XRP(200).value().getJson(0));
+                XDV(200).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::bids][0u][jss::TakerPays] ==
                 USD(100).value().getJson(0));
             BEAST_EXPECT(! jv[jss::result].isMember(jss::offers));
@@ -352,7 +352,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 3)));
             env.close();
 
@@ -363,13 +363,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 4)));
             env.close();
 
@@ -379,7 +379,7 @@ public:
                 {
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
-                        t[jss::TakerGets] == XRP(75).value().getJson(0) &&
+                        t[jss::TakerGets] == XDV(75).value().getJson(0) &&
                             t[jss::TakerPays] == USD(100).value().getJson(0);
                 }));
         }
@@ -390,7 +390,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -402,7 +402,7 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto CNY = Account("alice")["CNY"];
         auto JPY = Account("alice")["JPY"];
@@ -415,7 +415,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -432,7 +432,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -445,7 +445,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 1)));
             env.close();
 
@@ -456,13 +456,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 2)));
             env.close();
             BEAST_EXPECT(! wsc->getMsg(10ms));
@@ -499,7 +499,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -511,7 +511,7 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto CNY = Account("alice")["CNY"];
         auto JPY = Account("alice")["JPY"];
@@ -519,7 +519,7 @@ public:
         Json::Value books;
 
         // Create an ask: TakerPays 500, TakerGets 100/USD
-        env(offer("alice", XRP(500), USD(100)),
+        env(offer("alice", XDV(500), USD(100)),
             require(owners("alice", 1)));
 
         // Create an ask: TakerPays 500/CNY, TakerGets 100/JPY
@@ -527,7 +527,7 @@ public:
             require(owners("alice", 2)));
 
         // Create a bid: TakerPays 100/USD, TakerGets 200
-        env(offer("alice", USD(100), XRP(200)),
+        env(offer("alice", USD(100), XDV(200)),
             require(owners("alice", 3)));
 
         // Create a bid: TakerPays 100/JPY, TakerGets 200/CNY
@@ -541,7 +541,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -558,7 +558,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -566,7 +566,7 @@ public:
             BEAST_EXPECT(jv[jss::result].isMember(jss::offers) &&
                 jv[jss::result][jss::offers].size() == 2);
             BEAST_EXPECT(jv[jss::result][jss::offers][0u][jss::TakerGets] ==
-                XRP(200).value().getJson(0));
+                XDV(200).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::offers][0u][jss::TakerPays] ==
                 USD(100).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::offers][1u][jss::TakerGets] ==
@@ -579,7 +579,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 5)));
             env.close();
 
@@ -590,13 +590,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 6)));
             env.close();
             BEAST_EXPECT(! wsc->getMsg(10ms));
@@ -633,7 +633,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -645,7 +645,7 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto CNY = Account("alice")["CNY"];
         auto JPY = Account("alice")["JPY"];
@@ -659,7 +659,7 @@ public:
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
                 j[jss::both] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -677,7 +677,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -691,7 +691,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 1)));
             env.close();
 
@@ -702,13 +702,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 2)));
             env.close();
 
@@ -718,7 +718,7 @@ public:
                 {
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
-                        t[jss::TakerGets] == XRP(75).value().getJson(0) &&
+                        t[jss::TakerGets] == XDV(75).value().getJson(0) &&
                             t[jss::TakerPays] == USD(100).value().getJson(0);
                 }));
         }
@@ -763,7 +763,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -775,7 +775,7 @@ public:
         using namespace std::chrono_literals;
         using namespace jtx;
         Env env(*this);
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = Account("alice")["USD"];
         auto CNY = Account("alice")["CNY"];
         auto JPY = Account("alice")["JPY"];
@@ -783,7 +783,7 @@ public:
         Json::Value books;
 
         // Create an ask: TakerPays 500, TakerGets 100/USD
-        env(offer("alice", XRP(500), USD(100)),
+        env(offer("alice", XDV(500), USD(100)),
             require(owners("alice", 1)));
 
         // Create an ask: TakerPays 500/CNY, TakerGets 100/JPY
@@ -791,7 +791,7 @@ public:
             require(owners("alice", 2)));
 
         // Create a bid: TakerPays 100/USD, TakerGets 200
-        env(offer("alice", USD(100), XRP(200)),
+        env(offer("alice", USD(100), XDV(200)),
             require(owners("alice", 3)));
 
         // Create a bid: TakerPays 100/JPY, TakerGets 200/CNY
@@ -806,7 +806,7 @@ public:
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
                 j[jss::both] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = Account("alice").human();
             }
@@ -825,7 +825,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -837,13 +837,13 @@ public:
             BEAST_EXPECT(jv[jss::result][jss::asks][0u][jss::TakerGets] ==
                 USD(100).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::asks][0u][jss::TakerPays] ==
-                XRP(500).value().getJson(0));
+                XDV(500).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::asks][1u][jss::TakerGets] ==
                 JPY(100).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::asks][1u][jss::TakerPays] ==
                 CNY(500).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::bids][0u][jss::TakerGets] ==
-                XRP(200).value().getJson(0));
+                XDV(200).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::bids][0u][jss::TakerPays] ==
                 USD(100).value().getJson(0));
             BEAST_EXPECT(jv[jss::result][jss::bids][1u][jss::TakerGets] ==
@@ -855,7 +855,7 @@ public:
 
         {
             // Create an ask: TakerPays 700, TakerGets 100/USD
-            env(offer("alice", XRP(700), USD(100)),
+            env(offer("alice", XDV(700), USD(100)),
                 require(owners("alice", 5)));
             env.close();
 
@@ -866,13 +866,13 @@ public:
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
                         t[jss::TakerGets] == USD(100).value().getJson(0) &&
-                            t[jss::TakerPays] == XRP(700).value().getJson(0);
+                            t[jss::TakerPays] == XDV(700).value().getJson(0);
                 }));
         }
 
         {
             // Create a bid: TakerPays 100/USD, TakerGets 75
-            env(offer("alice", USD(100), XRP(75)),
+            env(offer("alice", USD(100), XDV(75)),
                 require(owners("alice", 6)));
             env.close();
 
@@ -882,7 +882,7 @@ public:
                 {
                     auto const& t = jv[jss::transaction];
                     return t[jss::TransactionType] == "OfferCreate" &&
-                        t[jss::TakerGets] == XRP(75).value().getJson(0) &&
+                        t[jss::TakerGets] == XDV(75).value().getJson(0) &&
                             t[jss::TakerPays] == USD(100).value().getJson(0);
                 }));
         }
@@ -927,7 +927,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
     }
@@ -942,7 +942,7 @@ public:
         Account alice {"alice"};
         Account bob {"bob"};
         auto wsc = makeWSClient(env.app().config());
-        env.fund(XRP(20000), alice, bob, gw);
+        env.fund(XDV(20000), alice, bob, gw);
         env.close();
         auto USD = gw["USD"];
 
@@ -952,7 +952,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = true;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = gw.human();
             }
@@ -961,7 +961,7 @@ public:
             if (wsc->version() == 2)
             {
                 BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-                BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+                BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
                 BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
             }
             if(! BEAST_EXPECT(jv[jss::status] == "success"))
@@ -978,12 +978,12 @@ public:
         env.trust(USD(1000), bob);
         env(pay(gw, alice, USD(100)));
         env(pay(gw, bob, USD(50)));
-        env(offer(alice, XRP(4000), USD(10)));
+        env(offer(alice, XDV(4000), USD(10)));
         env.close();
 
         Json::Value jvParams;
         jvParams[jss::taker] = env.master.human();
-        jvParams[jss::taker_pays][jss::currency] = "XRP";
+        jvParams[jss::taker_pays][jss::currency] = "XDV";
         jvParams[jss::ledger_index] = "validated";
         jvParams[jss::taker_gets][jss::currency] = "USD";
         jvParams[jss::taker_gets][jss::issuer] = gw.human();
@@ -992,7 +992,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
         auto jrr = jv[jss::result];
@@ -1002,14 +1002,14 @@ public:
         auto const jrOffer = jrr[jss::offers][0u];
         BEAST_EXPECT(jrOffer[sfAccount.fieldName] == alice.human());
         BEAST_EXPECT(jrOffer[sfBookDirectory.fieldName] ==
-            getBookDir(env, XRP, USD.issue()));
+            getBookDir(env, XDV, USD.issue()));
         BEAST_EXPECT(jrOffer[sfBookNode.fieldName] == "0000000000000000");
         BEAST_EXPECT(jrOffer[jss::Flags] == 0);
         BEAST_EXPECT(jrOffer[sfLedgerEntryType.fieldName] == "Offer");
         BEAST_EXPECT(jrOffer[sfOwnerNode.fieldName] == "0000000000000000");
         BEAST_EXPECT(jrOffer[sfSequence.fieldName] == 3);
         BEAST_EXPECT(jrOffer[jss::TakerGets] == USD(10).value().getJson(0));
-        BEAST_EXPECT(jrOffer[jss::TakerPays] == XRP(4000).value().getJson(0));
+        BEAST_EXPECT(jrOffer[jss::TakerPays] == XDV(4000).value().getJson(0));
         BEAST_EXPECT(jrOffer[jss::owner_funds] == "100");
         BEAST_EXPECT(jrOffer[jss::quality] == "400000000");
 
@@ -1021,10 +1021,10 @@ public:
                 return t[jss::TransactionType] == "OfferCreate" &&
                        t[jss::TakerGets] == USD(10).value().getJson(0) &&
                        t[jss::owner_funds] == "100" &&
-                       t[jss::TakerPays] == XRP(4000).value().getJson(0);
+                       t[jss::TakerPays] == XDV(4000).value().getJson(0);
             }));
 
-        env(offer(bob, XRP(2000), USD(5)));
+        env(offer(bob, XDV(2000), USD(5)));
         env.close();
 
         BEAST_EXPECT(wsc->findMsg(5s,
@@ -1034,14 +1034,14 @@ public:
                 return t[jss::TransactionType] == "OfferCreate" &&
                        t[jss::TakerGets] == USD(5).value().getJson(0) &&
                        t[jss::owner_funds] == "50" &&
-                       t[jss::TakerPays] == XRP(2000).value().getJson(0);
+                       t[jss::TakerPays] == XDV(2000).value().getJson(0);
             }));
 
         jv = wsc->invoke("book_offers", jvParams);
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
         jrr = jv[jss::result];
@@ -1051,14 +1051,14 @@ public:
         auto const jrNextOffer = jrr[jss::offers][1u];
         BEAST_EXPECT(jrNextOffer[sfAccount.fieldName] == bob.human());
         BEAST_EXPECT(jrNextOffer[sfBookDirectory.fieldName] ==
-            getBookDir(env, XRP, USD.issue()));
+            getBookDir(env, XDV, USD.issue()));
         BEAST_EXPECT(jrNextOffer[sfBookNode.fieldName] == "0000000000000000");
         BEAST_EXPECT(jrNextOffer[jss::Flags] == 0);
         BEAST_EXPECT(jrNextOffer[sfLedgerEntryType.fieldName] == "Offer");
         BEAST_EXPECT(jrNextOffer[sfOwnerNode.fieldName] == "0000000000000000");
         BEAST_EXPECT(jrNextOffer[sfSequence.fieldName] == 3);
         BEAST_EXPECT(jrNextOffer[jss::TakerGets] == USD(5).value().getJson(0));
-        BEAST_EXPECT(jrNextOffer[jss::TakerPays] == XRP(2000).value().getJson(0));
+        BEAST_EXPECT(jrNextOffer[jss::TakerPays] == XDV(2000).value().getJson(0));
         BEAST_EXPECT(jrNextOffer[jss::owner_funds] == "50");
         BEAST_EXPECT(jrNextOffer[jss::quality] == "400000000");
 
@@ -1066,7 +1066,7 @@ public:
         if (wsc->version() == 2)
         {
             BEAST_EXPECT(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
         BEAST_EXPECT(jv[jss::status] == "success");
@@ -1110,7 +1110,7 @@ public:
         Env env(*this);
 
         // Scenario is:
-        //  - Alice and Bob place identical offers for USD -> XRP
+        //  - Alice and Bob place identical offers for USD -> XDV
         //  - Charlie places a crossing order that takes both Alice and Bob's
 
         auto const gw = Account("gateway");
@@ -1119,7 +1119,7 @@ public:
         auto const charlie = Account("charlie");
         auto const USD = gw["USD"];
 
-        env.fund (XRP(1000000), gw, alice, bob, charlie);
+        env.fund (XDV(1000000), gw, alice, bob, charlie);
         env.close();
 
         env (trust(alice, USD(500)));
@@ -1130,9 +1130,9 @@ public:
         env (pay(gw, bob, USD(500)));
         env.close();
 
-        // Alice and Bob offer $500 for 500 XRP
-        env (offer (alice, XRP(500), USD(500)));
-        env (offer (bob, XRP(500), USD(500)));
+        // Alice and Bob offer $500 for 500 XDV
+        env (offer (alice, XDV(500), USD(500)));
+        env (offer (bob, XDV(500), USD(500)));
         env.close();
 
         auto wsc = makeWSClient(env.app().config());
@@ -1143,7 +1143,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = false;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = gw.human();
             }
@@ -1154,11 +1154,11 @@ public:
         }
 
         // Charlie places an offer that crosses Alice and Charlie's offers
-        env(offer(charlie, USD(1000), XRP(1000)));
+        env(offer(charlie, USD(1000), XDV(1000)));
         env.close();
         env.require(offers(alice, 0), offers(bob, 0), offers(charlie, 0));
         using namespace std::chrono_literals;
-        BEAST_EXPECT(offerOnlyOnceInStream(wsc, 1s, XRP(1000), USD(1000)));
+        BEAST_EXPECT(offerOnlyOnceInStream(wsc, 1s, XDV(1000), USD(1000)));
 
         // RPC unsubscribe
         auto jv = wsc->invoke("unsubscribe", books);
@@ -1178,8 +1178,8 @@ public:
         Env env(*this);
 
         // Scenario is:
-        //  - Alice has 1 USD and wants 100 XRP
-        //  - Bob has 100 XRP and wants 1 EUR
+        //  - Alice has 1 USD and wants 100 XDV
+        //  - Bob has 100 XDV and wants 1 EUR
         //  - Charlie has 1 EUR and wants 1 USD and should auto-bridge through
         //    Alice and Bob
 
@@ -1190,7 +1190,7 @@ public:
         auto const USD = gw["USD"];
         auto const EUR = gw["EUR"];
 
-        env.fund(XRP(1000000), gw, alice, bob, charlie);
+        env.fund(XDV(1000000), gw, alice, bob, charlie);
         env.close();
 
         for (auto const& account : {alice, bob, charlie})
@@ -1206,8 +1206,8 @@ public:
         env(pay(gw, charlie, EUR(1)));
         env.close();
 
-        env(offer(alice, XRP(100), USD(1)));
-        env(offer(bob, EUR(1), XRP(100)));
+        env(offer(alice, XDV(100), USD(1)));
+        env(offer(bob, EUR(1), XDV(100)));
         env.close();
 
         auto wsc = makeWSClient(env.app().config());
@@ -1219,7 +1219,7 @@ public:
             {
                 auto& j = books[jss::books].append(Json::objectValue);
                 j[jss::snapshot] = false;
-                j[jss::taker_gets][jss::currency] = "XRP";
+                j[jss::taker_gets][jss::currency] = "XDV";
                 j[jss::taker_pays][jss::currency] = "USD";
                 j[jss::taker_pays][jss::issuer] = gw.human();
             }
@@ -1229,7 +1229,7 @@ public:
                 j[jss::snapshot] = false;
                 j[jss::taker_gets][jss::currency] = "EUR";
                 j[jss::taker_gets][jss::issuer] = gw.human();
-                j[jss::taker_pays][jss::currency] = "XRP";
+                j[jss::taker_pays][jss::currency] = "XDV";
             }
 
             auto jv = wsc->invoke("subscribe", books);
@@ -1256,7 +1256,7 @@ public:
         Env env(*this);
         Account gw {"gw"};
         Account alice {"alice"};
-        env.fund(XRP(10000), alice, gw);
+        env.fund(XDV(10000), alice, gw);
         env.close();
         auto USD = gw["USD"];
 
@@ -1341,7 +1341,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets] = Json::objectValue;
             auto const jrr = env.rpc(
                 "json", "book_offers", to_string(jvParams)) [jss::result];
@@ -1353,7 +1353,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = 1;
             auto const jrr = env.rpc(
                 "json", "book_offers", to_string(jvParams)) [jss::result];
@@ -1366,7 +1366,7 @@ public:
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
             jvParams[jss::taker_pays][jss::currency] = "NOT_VALID";
-            jvParams[jss::taker_gets][jss::currency] = "XRP";
+            jvParams[jss::taker_gets][jss::currency] = "XDV";
             auto const jrr = env.rpc(
                 "json", "book_offers", to_string(jvParams)) [jss::result];
             BEAST_EXPECT(jrr[jss::error] == "srcCurMalformed");
@@ -1377,7 +1377,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "NOT_VALID";
             auto const jrr = env.rpc(
                 "json", "book_offers", to_string(jvParams)) [jss::result];
@@ -1389,7 +1389,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = 1;
             auto const jrr = env.rpc(
@@ -1402,7 +1402,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_pays][jss::issuer]   = 1;
             jvParams[jss::taker_gets][jss::currency] = "USD";
             auto const jrr = env.rpc(
@@ -1415,7 +1415,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_pays][jss::issuer]   = gw.human() + "DEAD";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             auto const jrr = env.rpc(
@@ -1428,7 +1428,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_pays][jss::issuer]   = toBase58(noAccount());
             jvParams[jss::taker_gets][jss::currency] = "USD";
             auto const jrr = env.rpc(
@@ -1441,7 +1441,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human() + "DEAD";
             auto const jrr = env.rpc(
@@ -1454,7 +1454,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = toBase58(noAccount());
             auto const jrr = env.rpc(
@@ -1467,7 +1467,7 @@ public:
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_pays][jss::issuer]   = alice.human();
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human();
@@ -1476,28 +1476,28 @@ public:
             BEAST_EXPECT(jrr[jss::error] == "srcIsrMalformed");
             BEAST_EXPECT(jrr[jss::error_message] ==
                 "Unneeded field 'taker_pays.issuer' "
-                "for XRP currency specification.");
+                "for XDV currency specification.");
         }
 
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
             jvParams[jss::taker_pays][jss::currency] = "USD";
-            jvParams[jss::taker_pays][jss::issuer]   = toBase58(xrpAccount());
+            jvParams[jss::taker_pays][jss::issuer]   = toBase58(xdvAccount());
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human();
             auto const jrr = env.rpc(
                 "json", "book_offers", to_string(jvParams)) [jss::result];
             BEAST_EXPECT(jrr[jss::error] == "srcIsrMalformed");
             BEAST_EXPECT(jrr[jss::error_message] ==
-                "Invalid field 'taker_pays.issuer', expected non-XRP issuer.");
+                "Invalid field 'taker_pays.issuer', expected non-XDV issuer.");
         }
 
         {
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
             jvParams[jss::taker] = 1;
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human();
             auto const jrr = env.rpc(
@@ -1511,7 +1511,7 @@ public:
             Json::Value jvParams;
             jvParams[jss::ledger_index] = "validated";
             jvParams[jss::taker] = env.master.human() + "DEAD";
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human();
             auto const jrr = env.rpc(
@@ -1540,7 +1540,7 @@ public:
             jvParams[jss::ledger_index] = "validated";
             jvParams[jss::taker] = env.master.human();
             jvParams[jss::limit]   = "0"; // NOT an integer
-            jvParams[jss::taker_pays][jss::currency] = "XRP";
+            jvParams[jss::taker_pays][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::currency] = "USD";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human();
             auto const jrr = env.rpc(
@@ -1561,7 +1561,7 @@ public:
             BEAST_EXPECT(jrr[jss::error] == "dstIsrMalformed");
             BEAST_EXPECT(jrr[jss::error_message] ==
                 "Invalid field 'taker_gets.issuer', "
-                "expected non-XRP issuer.");
+                "expected non-XDV issuer.");
         }
 
         {
@@ -1569,14 +1569,14 @@ public:
             jvParams[jss::ledger_index] = "validated";
             jvParams[jss::taker_pays][jss::currency] = "USD";
             jvParams[jss::taker_pays][jss::issuer]   = gw.human();
-            jvParams[jss::taker_gets][jss::currency] = "XRP";
+            jvParams[jss::taker_gets][jss::currency] = "XDV";
             jvParams[jss::taker_gets][jss::issuer]   = gw.human();
             auto const jrr = env.rpc(
                 "json", "book_offers", to_string(jvParams)) [jss::result];
             BEAST_EXPECT(jrr[jss::error] == "dstIsrMalformed");
             BEAST_EXPECT(jrr[jss::error_message] ==
                 "Unneeded field 'taker_gets.issuer' "
-                "for XRP currency specification.");
+                "for XDV currency specification.");
         }
 
     }
@@ -1588,18 +1588,18 @@ public:
         using namespace jtx;
         Env env {*this, asAdmin ? envconfig() : envconfig(no_admin)};
         Account gw {"gw"};
-        env.fund(XRP(200000), gw);
+        env.fund(XDV(200000), gw);
         env.close();
         auto USD = gw["USD"];
 
         for(auto i = 0; i <= RPC::Tuning::bookOffers.rmax; i++)
-            env(offer(gw, XRP(50 + 1*i), USD(1.0 + 0.1*i)));
+            env(offer(gw, XDV(50 + 1*i), USD(1.0 + 0.1*i)));
         env.close();
 
         Json::Value jvParams;
         jvParams[jss::limit] = 1;
         jvParams[jss::ledger_index] = "validated";
-        jvParams[jss::taker_pays][jss::currency] = "XRP";
+        jvParams[jss::taker_pays][jss::currency] = "XDV";
         jvParams[jss::taker_gets][jss::currency] = "USD";
         jvParams[jss::taker_gets][jss::issuer] = gw.human();
         auto jrr =
@@ -1650,8 +1650,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_PRIO(Book,app,ripple,1);
+BEAST_DEFINE_TESTSUITE_PRIO(Book,app,divvy,1);
 
 } // test
-} // ripple
+} // divvy
 

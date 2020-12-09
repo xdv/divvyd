@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 */
 //==============================================================================
 
-#include <ripple/basics/base_uint.h>
-#include <ripple/basics/hardened_hash.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/base_uint.h>
+#include <divvy/basics/hardened_hash.h>
+#include <divvy/beast/unit_test.h>
 #include <boost/algorithm/string.hpp>
 
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 // a non-hashing Hasher that just copies the bytes.
@@ -198,7 +198,7 @@ struct base_uint_test : beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(base_uint, ripple_basics, ripple);
+BEAST_DEFINE_TESTSUITE(base_uint, divvy_basics, divvy);
 
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy

@@ -1,0 +1,69 @@
+//------------------------------------------------------------------------------
+/*
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2014 Divvy Labs Inc.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose  with  or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE  SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH  REGARD  TO  THIS  SOFTWARE  INCLUDING  ALL  IMPLIED  WARRANTIES  OF
+    MERCHANTABILITY  AND  FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY  SPECIAL ,  DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER  RESULTING  FROM  LOSS  OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION  OF  CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+//==============================================================================
+
+#include <divvy/basics/Log.h>
+#include <divvy/net/RPCErr.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Seed.h>
+#include <divvy/rpc/Context.h>
+
+namespace divvy {
+
+static
+boost::optional<Seed>
+validationSeed (Json::Value const& params)
+{
+    if (!params.isMember (jss::secret))
+        return randomSeed ();
+
+    return parseGenericSeed (params[jss::secret].asString ());
+}
+
+// {
+//   secret: <string>   // optional
+// }
+//
+// This command requires Role::ADMIN access because it makes
+// no sense to ask an untrusted server for this.
+Json::Value doValidationCreate (RPC::Context& context)
+{
+    Json::Value     obj (Json::objectValue);
+
+    auto seed = validationSeed(context.params);
+
+    if (!seed)
+        return rpcError (rpcBAD_SEED);
+
+    auto const private_key = generateSecretKey (KeyType::secp256k1, *seed);
+
+    obj[jss::validation_public_key] = toBase58 (
+        TokenType::NodePublic,
+        derivePublicKey (KeyType::secp256k1, private_key));
+
+    obj[jss::validation_private_key] = toBase58 (
+        TokenType::NodePrivate, private_key);
+
+    obj[jss::validation_seed] = toBase58 (*seed);
+    obj[jss::validation_key] = seedAs1751 (*seed);
+
+    return obj;
+}
+
+} // divvy

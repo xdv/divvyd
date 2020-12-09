@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/basics/chrono.h>
-#include <ripple/basics/TaggedCache.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/beast/clock/manual_clock.h>
+#include <divvy/basics/chrono.h>
+#include <divvy/basics/TaggedCache.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/beast/clock/manual_clock.h>
 
-namespace ripple {
+namespace divvy {
 
 /*
 I guess you can put some items in, make sure they're still there. Let some
@@ -147,6 +147,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(TaggedCache,common,ripple);
+BEAST_DEFINE_TESTSUITE(TaggedCache,common,divvy);
 
 }

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright 2015 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright 2015 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#include <ripple/basics/BasicConfig.h>
+#include <divvy/basics/BasicConfig.h>
 #include <test/jtx/TestSuite.h>
-#include <ripple/overlay/Cluster.h>
-#include <ripple/overlay/ClusterNode.h>
-#include <ripple/protocol/SecretKey.h>
+#include <divvy/overlay/Cluster.h>
+#include <divvy/overlay/ClusterNode.h>
+#include <divvy/protocol/SecretKey.h>
 
-namespace ripple {
+namespace divvy {
 namespace tests {
 
-class cluster_test : public ripple::TestSuite
+class cluster_test : public divvy::TestSuite
 {
 public:
     std::unique_ptr<Cluster>
@@ -266,7 +266,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(cluster,overlay,ripple);
+BEAST_DEFINE_TESTSUITE(cluster,overlay,divvy);
 
 } // tests
-} // ripple
+} // divvy

@@ -17,8 +17,8 @@
 */
 //==============================================================================
 
-#include <ripple/basics/hardened_hash.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/hardened_hash.h>
+#include <divvy/beast/unit_test.h>
 #include <boost/functional/hash.hpp>
 #include <array>
 #include <cstdint>
@@ -27,7 +27,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace ripple {
+namespace divvy {
 namespace detail {
 
 template <class T>
@@ -71,11 +71,11 @@ public:
 };
 
 } // detail
-} // ripple
+} // divvy
 
 //------------------------------------------------------------------------------
 
-namespace ripple {
+namespace divvy {
 
 namespace detail {
 
@@ -174,11 +174,11 @@ static_assert (sha256_t::bits == 256,
     "sha256_t must have 256 bits");
 #endif
 
-} // ripple
+} // divvy
 
 //------------------------------------------------------------------------------
 
-namespace ripple {
+namespace divvy {
 
 class hardened_hash_test
     : public beast::unit_test::suite
@@ -261,6 +261,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(hardened_hash,basics,ripple);
+BEAST_DEFINE_TESTSUITE(hardened_hash,basics,divvy);
 
-} // ripple
+} // divvy

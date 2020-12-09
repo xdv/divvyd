@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -16,10 +16,10 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 //==============================================================================
-#ifndef RIPPLE_TEST_CSF_COLLECTORS_H_INCLUDED
-#define RIPPLE_TEST_CSF_COLLECTORS_H_INCLUDED
+#ifndef DIVVY_TEST_CSF_COLLECTORS_H_INCLUDED
+#define DIVVY_TEST_CSF_COLLECTORS_H_INCLUDED
 
-#include <ripple/basics/UnorderedContainers.h>
+#include <divvy/basics/UnorderedContainers.h>
 #include <boost/optional.hpp>
 #include <chrono>
 #include <ostream>
@@ -28,7 +28,7 @@
 #include <test/csf/events.h>
 #include <tuple>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace csf {
 
@@ -735,6 +735,6 @@ struct JumpCollector
 
 }  // namespace csf
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy
 
 #endif

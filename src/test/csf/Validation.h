@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -16,16 +16,16 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 //==============================================================================
-#ifndef RIPPLE_TEST_CSF_VALIDATION_H_INCLUDED
-#define RIPPLE_TEST_CSF_VALIDATION_H_INCLUDED
+#ifndef DIVVY_TEST_CSF_VALIDATION_H_INCLUDED
+#define DIVVY_TEST_CSF_VALIDATION_H_INCLUDED
 
 #include <boost/optional.hpp>
 #include <memory>
-#include <ripple/basics/tagged_integer.h>
+#include <divvy/basics/tagged_integer.h>
 #include <test/csf/ledgers.h>
 #include <utility>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace csf {
 
@@ -138,7 +138,7 @@ public:
     Validation const&
     unwrap() const
     {
-        // For the rippled implementation in which RCLValidation wraps
+        // For the divvyd implementation in which RCLValidation wraps
         // STValidation, the csf::Validation has no more specific type it
         // wraps, so csf::Validation unwraps to itself
         return *this;
@@ -189,7 +189,7 @@ public:
     }
 };
 
-}  // ripple
+}  // divvy
 }  // test
 }  // csf
 #endif

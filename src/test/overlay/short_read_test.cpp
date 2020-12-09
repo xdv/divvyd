@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
+    This file is part of divvyd: https://github.com/xdv/divvyd
 
-    Copyright 2014 Ripple Labs Inc.
+    Copyright 2014 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -17,9 +17,9 @@
 */
 //==============================================================================
 
-#include <ripple/basics/make_SSLContext.h>
-#include <ripple/beast/core/CurrentThreadName.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/make_SSLContext.h>
+#include <divvy/beast/core/CurrentThreadName.h>
+#include <divvy/beast/unit_test.h>
 #include <test/jtx/envconfig.h>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
@@ -32,7 +32,7 @@
 #include <thread>
 #include <utility>
 
-namespace ripple {
+namespace divvy {
 /*
 
 Findings from the test:
@@ -580,6 +580,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(short_read,overlay,ripple);
+BEAST_DEFINE_TESTSUITE(short_read,overlay,divvy);
 
 }

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,13 +17,13 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/TxFlags.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/TxFlags.h>
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 
-namespace ripple {
+namespace divvy {
 
 namespace RPC {
 
@@ -58,7 +58,7 @@ public:
             BEAST_EXPECT(lines[jss::result][jss::error_message] ==
                 RPC::make_error(rpcACT_NOT_FOUND)[jss::error_message]);
         }
-        env.fund(XRP(10000), alice);
+        env.fund(XDV(10000), alice);
         env.close();
         LedgerInfo const ledger3Info = env.closed()->info();
         BEAST_EXPECT(ledger3Info.seq == 3);
@@ -88,7 +88,7 @@ public:
         }
         // Create trust lines to share with alice.
         Account const gw1 {"gw1"};
-        env.fund(XRP(10000), gw1);
+        env.fund(XDV(10000), gw1);
         std::vector<IOU> gw1Currencies;
 
         for (char c = 0; c <= ('Z' - 'A'); ++c)
@@ -109,7 +109,7 @@ public:
         // Add another set of trust lines in another ledger so we can see
         // differences in historic ledgers.
         Account const gw2 {"gw2"};
-        env.fund(XRP(10000), gw2);
+        env.fund(XDV(10000), gw2);
 
         // gw2 requires authorization.
         env(fset(gw2, asfRequireAuth));
@@ -131,7 +131,7 @@ public:
             env.close();
 
             // Set flags on gw2 trust lines so we can look for them.
-            env(trust(alice, gw2Currency(0), gw2, tfSetNoRipple | tfSetFreeze));
+            env(trust(alice, gw2Currency(0), gw2, tfSetNoDivvy | tfSetFreeze));
         }
         env.close();
         LedgerInfo const ledger58Info = env.closed()->info();
@@ -255,7 +255,7 @@ public:
                 R"("peer": ")" + gw2.human() + R"("})");
             auto const& line = lines[jss::result][jss::lines][0u];
             BEAST_EXPECT(line[jss::freeze].asBool() == true);
-            BEAST_EXPECT(line[jss::no_ripple].asBool() == true);
+            BEAST_EXPECT(line[jss::no_divvy].asBool() == true);
             BEAST_EXPECT(line[jss::peer_authorized].asBool() == true);
         }
         {
@@ -266,7 +266,7 @@ public:
                 R"("peer": ")" + alice.human() + R"("})");
             auto const& lineA = linesA[jss::result][jss::lines][0u];
             BEAST_EXPECT(lineA[jss::freeze_peer].asBool() == true);
-            BEAST_EXPECT(lineA[jss::no_ripple_peer].asBool() == true);
+            BEAST_EXPECT(lineA[jss::no_divvy_peer].asBool() == true);
             BEAST_EXPECT(lineA[jss::authorized].asBool() == true);
 
             // Continue from the returned marker to make sure that works.
@@ -295,8 +295,8 @@ public:
         // It isn't easy to explicitly delete a trust line, so we do so in a
         // round-about fashion.  It takes 4 actors:
         //   o Gateway gw1 issues USD
-        //   o alice offers to buy 100 USD for 100 XRP.
-        //   o becky offers to sell 100 USD for 100 XRP.
+        //   o alice offers to buy 100 USD for 100 XDV.
+        //   o becky offers to sell 100 USD for 100 XDV.
         // There will now be an inferred trustline between alice and gw1.
         //   o alice pays her 100 USD to cheri.
         // alice should now have no USD and no trustline to gw1.
@@ -305,7 +305,7 @@ public:
         Account const cheri {"cheri"};
         Account const gw1 {"gw1"};
         Account const gw2 {"gw2"};
-        env.fund(XRP(10000), alice, becky, cheri, gw1, gw2);
+        env.fund(XDV(10000), alice, becky, cheri, gw1, gw2);
         env.close();
 
         auto const USD = gw1["USD"];
@@ -319,12 +319,12 @@ public:
         env(pay(gw2, becky, EUR(100)));
         env.close();
 
-        // alice offers to buy 100 EUR for 100 XRP.
-        env(offer(alice, EUR(100), XRP(100)));
+        // alice offers to buy 100 EUR for 100 XDV.
+        env(offer(alice, EUR(100), XDV(100)));
         env.close();
 
-        // becky offers to buy 100 XRP for 100 EUR.
-        env(offer(becky, XRP(100), EUR(100)));
+        // becky offers to buy 100 XDV for 100 EUR.
+        env(offer(becky, XDV(100), EUR(100)));
         env.close();
 
         // Get account_lines for alice.  Limit at 1, so we get a marker.
@@ -360,23 +360,23 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0")"
+                R"("divvyrpc" : "2.0")"
                 " }");
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
         }
         {
             // account_lines with no account.
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5)"
                 " }");
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 RPC::missing_field_error(jss::account)[jss::error_message]);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -384,7 +384,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": )"
@@ -392,7 +392,7 @@ public:
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 RPC::make_error(rpcBAD_SEED)[jss::error_message]);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         Account const alice {"alice"};
@@ -401,17 +401,17 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"("}})");
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 RPC::make_error(rpcACT_NOT_FOUND)[jss::error_message]);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
-        env.fund(XRP(10000), alice);
+        env.fund(XDV(10000), alice);
         env.close();
         LedgerInfo const ledger3Info = env.closed()->info();
         BEAST_EXPECT(ledger3Info.seq == 3);
@@ -421,14 +421,14 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"("}})");
             BEAST_EXPECT(lines[jss::result][jss::lines].isArray());
             BEAST_EXPECT(lines[jss::result][jss::lines].size() == 0);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -436,7 +436,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -444,7 +444,7 @@ public:
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 "ledgerIndexMalformed");
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -452,7 +452,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -460,12 +460,12 @@ public:
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 "ledgerNotFound");
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         // Create trust lines to share with alice.
         Account const gw1 {"gw1"};
-        env.fund(XRP(10000), gw1);
+        env.fund(XDV(10000), gw1);
         std::vector<IOU> gw1Currencies;
 
         for (char c = 0; c <= ('Z' - 'A'); ++c)
@@ -486,7 +486,7 @@ public:
         // Add another set of trust lines in another ledger so we can see
         // differences in historic ledgers.
         Account const gw2 {"gw2"};
-        env.fund(XRP(10000), gw2);
+        env.fund(XDV(10000), gw2);
 
         // gw2 requires authorization.
         env(fset(gw2, asfRequireAuth));
@@ -508,7 +508,7 @@ public:
             env.close();
 
             // Set flags on gw2 trust lines so we can look for them.
-            env(trust(alice, gw2Currency(0), gw2, tfSetNoRipple | tfSetFreeze));
+            env(trust(alice, gw2Currency(0), gw2, tfSetNoDivvy | tfSetFreeze));
         }
         env.close();
         LedgerInfo const ledger58Info = env.closed()->info();
@@ -522,7 +522,7 @@ public:
             auto const linesSeq = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + account.human() + R"(", )"
@@ -530,14 +530,14 @@ public:
             BEAST_EXPECT(linesSeq[jss::result][jss::lines].isArray());
             BEAST_EXPECT(linesSeq[jss::result][jss::lines].size() == count);
             BEAST_EXPECT(linesSeq.isMember(jss::jsonrpc) && linesSeq[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesSeq.isMember(jss::ripplerpc) && linesSeq[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesSeq.isMember(jss::divvyrpc) && linesSeq[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesSeq.isMember(jss::id) && linesSeq[jss::id] == 5);
 
             // Get account_lines by ledger hash.
             auto const linesHash = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + account.human() + R"(", )"
@@ -545,7 +545,7 @@ public:
             BEAST_EXPECT(linesHash[jss::result][jss::lines].isArray());
             BEAST_EXPECT(linesHash[jss::result][jss::lines].size() == count);
             BEAST_EXPECT(linesHash.isMember(jss::jsonrpc) && linesHash[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesHash.isMember(jss::ripplerpc) && linesHash[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesHash.isMember(jss::divvyrpc) && linesHash[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesHash.isMember(jss::id) && linesHash[jss::id] == 5);
         };
 
@@ -564,7 +564,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -573,7 +573,7 @@ public:
             BEAST_EXPECT(lines[jss::result][jss::lines].isArray());
             BEAST_EXPECT(lines[jss::result][jss::lines].size() == 26);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -581,14 +581,14 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"("}})");
             BEAST_EXPECT(lines[jss::result][jss::lines].isArray());
             BEAST_EXPECT(lines[jss::result][jss::lines].size() == 52);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -596,7 +596,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -604,7 +604,7 @@ public:
             BEAST_EXPECT(lines[jss::result][jss::lines].isArray());
             BEAST_EXPECT(lines[jss::result][jss::lines].size() == 26);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -612,7 +612,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -621,7 +621,7 @@ public:
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 RPC::make_error(rpcBAD_SEED)[jss::error_message]);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -629,7 +629,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -637,7 +637,7 @@ public:
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 RPC::expected_field_message(jss::limit, "unsigned integer"));
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -645,7 +645,7 @@ public:
             auto const linesA = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -653,7 +653,7 @@ public:
             BEAST_EXPECT(linesA[jss::result][jss::lines].isArray());
             BEAST_EXPECT(linesA[jss::result][jss::lines].size() == 1);
             BEAST_EXPECT(linesA.isMember(jss::jsonrpc) && linesA[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesA.isMember(jss::ripplerpc) && linesA[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesA.isMember(jss::divvyrpc) && linesA[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesA.isMember(jss::id) && linesA[jss::id] == 5);
 
             // Pick up from where the marker left off.  We should get 51.
@@ -661,7 +661,7 @@ public:
             auto const linesB = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -669,14 +669,14 @@ public:
             BEAST_EXPECT(linesB[jss::result][jss::lines].isArray());
             BEAST_EXPECT(linesB[jss::result][jss::lines].size() == 51);
             BEAST_EXPECT(linesB.isMember(jss::jsonrpc) && linesB[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesB.isMember(jss::ripplerpc) && linesB[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesB.isMember(jss::divvyrpc) && linesB[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesB.isMember(jss::id) && linesB[jss::id] == 5);
 
             // Go again from where the marker left off, but set a limit of 3.
             auto const linesC = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -685,7 +685,7 @@ public:
             BEAST_EXPECT(linesC[jss::result][jss::lines].isArray());
             BEAST_EXPECT(linesC[jss::result][jss::lines].size() == 3);
             BEAST_EXPECT(linesC.isMember(jss::jsonrpc) && linesC[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesC.isMember(jss::ripplerpc) && linesC[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesC.isMember(jss::divvyrpc) && linesC[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesC.isMember(jss::id) && linesC[jss::id] == 5);
 
             // Mess with the marker so it becomes bad and check for the error.
@@ -693,7 +693,7 @@ public:
             auto const linesD = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -701,7 +701,7 @@ public:
             BEAST_EXPECT(linesD[jss::error][jss::message] ==
                 RPC::make_error(rpcINVALID_PARAMS)[jss::error_message]);
             BEAST_EXPECT(linesD.isMember(jss::jsonrpc) && linesD[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesD.isMember(jss::ripplerpc) && linesD[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesD.isMember(jss::divvyrpc) && linesD[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesD.isMember(jss::id) && linesD[jss::id] == 5);
         }
         {
@@ -709,7 +709,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -717,7 +717,7 @@ public:
             BEAST_EXPECT(lines[jss::error][jss::message] ==
                 RPC::expected_field_message(jss::marker, "string"));
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -725,7 +725,7 @@ public:
             auto const lines = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + alice.human() + R"(", )"
@@ -733,10 +733,10 @@ public:
                 R"("peer": ")" + gw2.human() + R"("}})");
             auto const& line = lines[jss::result][jss::lines][0u];
             BEAST_EXPECT(line[jss::freeze].asBool() == true);
-            BEAST_EXPECT(line[jss::no_ripple].asBool() == true);
+            BEAST_EXPECT(line[jss::no_divvy].asBool() == true);
             BEAST_EXPECT(line[jss::peer_authorized].asBool() == true);
             BEAST_EXPECT(lines.isMember(jss::jsonrpc) && lines[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(lines.isMember(jss::ripplerpc) && lines[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(lines.isMember(jss::divvyrpc) && lines[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(lines.isMember(jss::id) && lines[jss::id] == 5);
         }
         {
@@ -744,7 +744,7 @@ public:
             auto const linesA = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + gw2.human() + R"(", )"
@@ -752,10 +752,10 @@ public:
                 R"("peer": ")" + alice.human() + R"("}})");
             auto const& lineA = linesA[jss::result][jss::lines][0u];
             BEAST_EXPECT(lineA[jss::freeze_peer].asBool() == true);
-            BEAST_EXPECT(lineA[jss::no_ripple_peer].asBool() == true);
+            BEAST_EXPECT(lineA[jss::no_divvy_peer].asBool() == true);
             BEAST_EXPECT(lineA[jss::authorized].asBool() == true);
             BEAST_EXPECT(linesA.isMember(jss::jsonrpc) && linesA[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesA.isMember(jss::ripplerpc) && linesA[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesA.isMember(jss::divvyrpc) && linesA[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesA.isMember(jss::id) && linesA[jss::id] == 5);
 
             // Continue from the returned marker to make sure that works.
@@ -764,7 +764,7 @@ public:
             auto const linesB = env.rpc ("json2", "{ "
                 R"("method" : "account_lines",)"
                 R"("jsonrpc" : "2.0",)"
-                R"("ripplerpc" : "2.0",)"
+                R"("divvyrpc" : "2.0",)"
                 R"("id" : 5,)"
                 R"("params": )"
                 R"({"account": ")" + gw2.human() + R"(", )"
@@ -775,7 +775,7 @@ public:
             BEAST_EXPECT(linesB[jss::result][jss::lines].size() == 25);
             BEAST_EXPECT(! linesB[jss::result].isMember(jss::marker));
             BEAST_EXPECT(linesB.isMember(jss::jsonrpc) && linesB[jss::jsonrpc] == "2.0");
-            BEAST_EXPECT(linesB.isMember(jss::ripplerpc) && linesB[jss::ripplerpc] == "2.0");
+            BEAST_EXPECT(linesB.isMember(jss::divvyrpc) && linesB[jss::divvyrpc] == "2.0");
             BEAST_EXPECT(linesB.isMember(jss::id) && linesB[jss::id] == 5);
         }
     }
@@ -794,8 +794,8 @@ public:
         // It isn't easy to explicitly delete a trust line, so we do so in a
         // round-about fashion.  It takes 4 actors:
         //   o Gateway gw1 issues EUR
-        //   o alice offers to buy 100 EUR for 100 XRP.
-        //   o becky offers to sell 100 EUR for 100 XRP.
+        //   o alice offers to buy 100 EUR for 100 XDV.
+        //   o becky offers to sell 100 EUR for 100 XDV.
         // There will now be an inferred trustline between alice and gw2.
         //   o alice pays her 100 EUR to cheri.
         // alice should now have no EUR and no trustline to gw2.
@@ -804,7 +804,7 @@ public:
         Account const cheri {"cheri"};
         Account const gw1 {"gw1"};
         Account const gw2 {"gw2"};
-        env.fund(XRP(10000), alice, becky, cheri, gw1, gw2);
+        env.fund(XDV(10000), alice, becky, cheri, gw1, gw2);
         env.close();
 
         auto const USD = gw1["USD"];
@@ -818,19 +818,19 @@ public:
         env(pay(gw2, becky, EUR(100)));
         env.close();
 
-        // alice offers to buy 100 EUR for 100 XRP.
-        env(offer(alice, EUR(100), XRP(100)));
+        // alice offers to buy 100 EUR for 100 XDV.
+        env(offer(alice, EUR(100), XDV(100)));
         env.close();
 
-        // becky offers to buy 100 XRP for 100 EUR.
-        env(offer(becky, XRP(100), EUR(100)));
+        // becky offers to buy 100 XDV for 100 EUR.
+        env(offer(becky, XDV(100), EUR(100)));
         env.close();
 
         // Get account_lines for alice.  Limit at 1, so we get a marker.
         auto const linesBeg = env.rpc ("json2", "{ "
             R"("method" : "account_lines",)"
             R"("jsonrpc" : "2.0",)"
-            R"("ripplerpc" : "2.0",)"
+            R"("divvyrpc" : "2.0",)"
             R"("id" : 5,)"
             R"("params": )"
             R"({"account": ")" + alice.human() + R"(", )"
@@ -838,7 +838,7 @@ public:
         BEAST_EXPECT(linesBeg[jss::result][jss::lines][0u][jss::currency] == "USD");
         BEAST_EXPECT(linesBeg[jss::result].isMember(jss::marker));
         BEAST_EXPECT(linesBeg.isMember(jss::jsonrpc) && linesBeg[jss::jsonrpc] == "2.0");
-        BEAST_EXPECT(linesBeg.isMember(jss::ripplerpc) && linesBeg[jss::ripplerpc] == "2.0");
+        BEAST_EXPECT(linesBeg.isMember(jss::divvyrpc) && linesBeg[jss::divvyrpc] == "2.0");
         BEAST_EXPECT(linesBeg.isMember(jss::id) && linesBeg[jss::id] == 5);
 
         // alice pays 100 USD to cheri.
@@ -850,7 +850,7 @@ public:
         auto const linesEnd = env.rpc ("json2", "{ "
             R"("method" : "account_lines",)"
             R"("jsonrpc" : "2.0",)"
-            R"("ripplerpc" : "2.0",)"
+            R"("divvyrpc" : "2.0",)"
             R"("id" : 5,)"
             R"("params": )"
             R"({"account": ")" + alice.human() + R"(", )"
@@ -859,7 +859,7 @@ public:
         BEAST_EXPECT(linesEnd[jss::error][jss::message] ==
                 RPC::make_error(rpcINVALID_PARAMS)[jss::error_message]);
         BEAST_EXPECT(linesEnd.isMember(jss::jsonrpc) && linesEnd[jss::jsonrpc] == "2.0");
-        BEAST_EXPECT(linesEnd.isMember(jss::ripplerpc) && linesEnd[jss::ripplerpc] == "2.0");
+        BEAST_EXPECT(linesEnd.isMember(jss::divvyrpc) && linesEnd[jss::divvyrpc] == "2.0");
         BEAST_EXPECT(linesEnd.isMember(jss::id) && linesEnd[jss::id] == 5);
     }
 
@@ -872,8 +872,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(AccountLinesRPC,app,ripple);
+BEAST_DEFINE_TESTSUITE(AccountLinesRPC,app,divvy);
 
 } // RPC
-} // ripple
+} // divvy
 

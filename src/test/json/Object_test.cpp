@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,13 +17,13 @@
 */
 //==============================================================================
 
-#include <ripple/json/Object.h>
+#include <divvy/json/Object.h>
 #include <test/json/TestOutputSuite.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 
 namespace Json {
 
-class JsonObject_test : public ripple::test::TestOutputSuite
+class JsonObject_test : public divvy::test::TestOutputSuite
 {
     void setup (std::string const& testName)
     {
@@ -234,6 +234,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(JsonObject, ripple_basics, ripple);
+BEAST_DEFINE_TESTSUITE(JsonObject, divvy_basics, divvy);
 
 } // Json

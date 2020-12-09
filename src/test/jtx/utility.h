@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_UTILITY_H_INCLUDED
-#define RIPPLE_TEST_JTX_UTILITY_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_UTILITY_H_INCLUDED
+#define DIVVY_TEST_JTX_UTILITY_H_INCLUDED
 
 #include <test/jtx/Account.h>
-#include <ripple/json/json_value.h>
-#include <ripple/app/ledger/Ledger.h>
-#include <ripple/protocol/STObject.h>
+#include <divvy/json/json_value.h>
+#include <divvy/app/ledger/Ledger.h>
+#include <divvy/protocol/STObject.h>
 #include <stdexcept>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -68,6 +68,6 @@ fill_seq (Json::Value& jv,
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/protocol/SField.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/protocol/SField.h>
+#include <divvy/protocol/JsonFields.h>
 #include <cstdlib>
 
-namespace ripple {
+namespace divvy {
 
 class AccountTxPaging_test : public beast::unit_test::suite
 {
@@ -66,7 +66,7 @@ class AccountTxPaging_test : public beast::unit_test::suite
         Account A2 {"A2"};
         Account A3 {"A3"};
 
-        env.fund(XRP(10000), A1, A2, A3);
+        env.fund(XDV(10000), A1, A2, A3);
         env.close();
 
         env.trust(A3["USD"](1000), A1);
@@ -78,9 +78,9 @@ class AccountTxPaging_test : public beast::unit_test::suite
         {
             env(pay(A2, A1, A2["USD"](2)));
             env(pay(A3, A1, A3["USD"](2)));
-            env(offer(A1, XRP(11), A1["USD"](1)));
-            env(offer(A2, XRP(10), A2["USD"](1)));
-            env(offer(A3, XRP(9),  A3["USD"](1)));
+            env(offer(A1, XDV(11), A1["USD"](1)));
+            env(offer(A2, XDV(10), A2["USD"](1)));
+            env(offer(A3, XDV(9),  A3["USD"](1)));
             env.close();
         }
 
@@ -266,7 +266,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(AccountTxPaging,app,ripple);
+BEAST_DEFINE_TESTSUITE(AccountTxPaging,app,divvy);
 
 }
 

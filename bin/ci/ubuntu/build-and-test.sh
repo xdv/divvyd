@@ -17,8 +17,8 @@ fi
 : ${BUILD_TYPE:=Debug}
 echo "BUILD TYPE: $BUILD_TYPE"
 
-# Ensure APP defaults to rippled if it's not set.
-: ${APP:=rippled}
+# Ensure APP defaults to divvyd if it's not set.
+: ${APP:=divvyd}
 echo "using APP: $APP"
 
 JOBS=${NUM_PROCESSORS:-2}
@@ -97,34 +97,34 @@ ldd $APP_PATH
 function join_by { local IFS="$1"; shift; echo "$*"; }
 
 # This is a list of manual tests
-# in rippled that we want to run
+# in divvyd that we want to run
 declare -a manual_tests=(
   "beast.chrono.abstract_clock"
   "beast.unit_test.print"
-  "ripple.NodeStore.Timing"
-  "ripple.app.Flow_manual"
-  "ripple.app.NoRippleCheckLimits"
-  "ripple.app.PayStrandAllPairs"
-  "ripple.consensus.ByzantineFailureSim"
-  "ripple.consensus.DistributedValidators"
-  "ripple.consensus.ScaleFreeSim"
-  "ripple.ripple_data.digest"
-  "ripple.tx.CrossingLimits"
-  "ripple.tx.FindOversizeCross"
-  "ripple.tx.Offer_manual"
-  "ripple.tx.OversizeMeta"
-  "ripple.tx.PlumpBook"
+  "divvy.NodeStore.Timing"
+  "divvy.app.Flow_manual"
+  "divvy.app.NoDivvyCheckLimits"
+  "divvy.app.PayStrandAllPairs"
+  "divvy.consensus.ByzantineFailureSim"
+  "divvy.consensus.DistributedValidators"
+  "divvy.consensus.ScaleFreeSim"
+  "divvy.divvy_data.digest"
+  "divvy.tx.CrossingLimits"
+  "divvy.tx.FindOversizeCross"
+  "divvy.tx.Offer_manual"
+  "divvy.tx.OversizeMeta"
+  "divvy.tx.PlumpBook"
 )
 
 : ${APP_ARGS:=}
-if [[ ${APP} == "rippled" ]]; then
+if [[ ${APP} == "divvyd" ]]; then
   if [[ ${MANUAL_TESTS:-} == true ]]; then
     APP_ARGS+=" --unittest=$(join_by , "${manual_tests[@]}")"
   else
     APP_ARGS+=" --unittest --quiet --unittest-log"
   fi
-  # Only report on src/ripple files
-  export LCOV_FILES="*/src/ripple/*"
+  # Only report on src/divvy files
+  export LCOV_FILES="*/src/divvy/*"
   # Nothing to explicitly exclude
   export LCOV_EXCLUDE_FILES="LCOV_NO_EXCLUDE"
   if [[ ${coverage} == false && ${PARALLEL_TESTS:-} == true ]]; then

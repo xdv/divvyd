@@ -1,6 +1,6 @@
 
 codecov:
   ci:
-    - ci.ops.ripple.com  # add custom jenkins server
+    - ci.ops.xdv.io  # add custom jenkins server
     - !appveyor
     - !travis

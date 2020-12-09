@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -19,14 +19,14 @@
 
 #include <test/jtx.h>
 #include <test/jtx/Env.h>
-#include <ripple/beast/utility/Journal.h>
-#include <ripple/app/tx/apply.h>
-#include <ripple/app/tx/impl/Transactor.h>
-#include <ripple/app/tx/impl/ApplyContext.h>
-#include <ripple/protocol/STLedgerEntry.h>
+#include <divvy/beast/utility/Journal.h>
+#include <divvy/app/tx/apply.h>
+#include <divvy/app/tx/impl/Transactor.h>
+#include <divvy/app/tx/impl/ApplyContext.h>
+#include <divvy/protocol/STLedgerEntry.h>
 #include <boost/algorithm/string/predicate.hpp>
 
-namespace ripple {
+namespace divvy {
 
 class Invariants_test : public beast::unit_test::suite
 {
@@ -65,7 +65,7 @@ class Invariants_test : public beast::unit_test::suite
     doInvariantCheck( bool enabled,
         std::vector<std::string> const& expect_logs,
         Precheck const& precheck,
-        XRPAmount fee = XRPAmount{},
+        XDVAmount fee = XDVAmount{},
         TXMod txmod = [](STTx&){})
     {
         using namespace test::jtx;
@@ -80,7 +80,7 @@ class Invariants_test : public beast::unit_test::suite
 
         Account A1 {"A1"};
         Account A2 {"A2"};
-        env.fund (XRP (1000), A1, A2);
+        env.fund (XDV (1000), A1, A2);
         env.close();
 
         // dummy/empty tx to setup the AccountContext
@@ -145,16 +145,16 @@ class Invariants_test : public beast::unit_test::suite
     }
 
     void
-    testXRPNotCreated (bool enabled)
+    testXDVNotCreated (bool enabled)
     {
         using namespace test::jtx;
         testcase << "checks " << (enabled ? "enabled" : "disabled") <<
-            " - XRP created";
+            " - XDV created";
         doInvariantCheck (enabled,
-            {{ "XRP net change was positive: 500" }},
+            {{ "XDV net change was positive: 500" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
-                // put a single account in the view and "manufacture" some XRP
+                // put a single account in the view and "manufacture" some XDV
                 auto const sle = ac.view().peek (keylet::account(A1.id()));
                 if(! sle)
                     return false;
@@ -192,7 +192,7 @@ class Invariants_test : public beast::unit_test::suite
             " - LE types don't match";
         doInvariantCheck (enabled,
             {{ "ledger entry type mismatch" },
-             { "XRP net change of -1000000000 doesn't match fee 0" }},
+             { "XDV net change of -1000000000 doesn't match fee 0" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
                 // replace an entry in the table with an SLE of a different type
@@ -224,33 +224,33 @@ class Invariants_test : public beast::unit_test::suite
     }
 
     void
-    testNoXRPTrustLine(bool enabled)
+    testNoXDVTrustLine(bool enabled)
     {
         using namespace test::jtx;
         testcase << "checks " << (enabled ? "enabled" : "disabled") <<
-            " - trust lines with XRP not allowed";
+            " - trust lines with XDV not allowed";
         doInvariantCheck (enabled,
-            {{ "an XRP trust line was created" }},
+            {{ "an XDV trust line was created" }},
             [](Account const& A1, Account const& A2, ApplyContext& ac)
             {
-                // create simple trust SLE with xrp currency
-                auto index = getRippleStateIndex (A1, A2, xrpIssue().currency);
+                // create simple trust SLE with xdv currency
+                auto index = getDivvyStateIndex (A1, A2, xdvIssue().currency);
                 auto const sleNew = std::make_shared<SLE>(
-                    ltRIPPLE_STATE, index);
+                    ltDIVVY_STATE, index);
                 ac.view().insert (sleNew);
                 return true;
             });
     }
 
     void
-    testXRPBalanceCheck(bool enabled)
+    testXDVBalanceCheck(bool enabled)
     {
         using namespace test::jtx;
         testcase << "checks " << (enabled ? "enabled" : "disabled") <<
-            " - XRP balance checks";
+            " - XDV balance checks";
 
         doInvariantCheck (enabled,
-            {{ "Cannot return non-native STAmount as XRPAmount" }},
+            {{ "Cannot return non-native STAmount as XDVAmount" }},
             [](Account const& A1, Account const& A2, ApplyContext& ac)
             {
                 //non-native balance
@@ -264,8 +264,8 @@ class Invariants_test : public beast::unit_test::suite
             });
 
         doInvariantCheck (enabled,
-            {{ "incorrect account XRP balance" },
-             {  "XRP net change was positive: 99999999000000001" }},
+            {{ "incorrect account XDV balance" },
+             {  "XDV net change was positive: 99999999000000001" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
                 // balance exceeds genesis amount
@@ -278,8 +278,8 @@ class Invariants_test : public beast::unit_test::suite
             });
 
         doInvariantCheck (enabled,
-            {{ "incorrect account XRP balance" },
-             { "XRP net change of -1000000001 doesn't match fee 0" }},
+            {{ "incorrect account XDV balance" },
+             { "XDV net change of -1000000001 doesn't match fee 0" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
                 // balance is negative
@@ -302,24 +302,24 @@ class Invariants_test : public beast::unit_test::suite
 
         doInvariantCheck (enabled,
             {{ "fee paid was negative: -1" },
-             { "XRP net change of 0 doesn't match fee -1" }},
+             { "XDV net change of 0 doesn't match fee -1" }},
             [](Account const&, Account const&, ApplyContext&) { return true; },
-            XRPAmount{-1});
+            XDVAmount{-1});
 
         doInvariantCheck (enabled,
             {{ "fee paid exceeds system limit: "s +
                 std::to_string(SYSTEM_CURRENCY_START) },
-             { "XRP net change of 0 doesn't match fee "s +
+             { "XDV net change of 0 doesn't match fee "s +
                 std::to_string(SYSTEM_CURRENCY_START) }},
             [](Account const&, Account const&, ApplyContext&) { return true; },
-            XRPAmount{SYSTEM_CURRENCY_START});
+            XDVAmount{SYSTEM_CURRENCY_START});
 
          doInvariantCheck (enabled,
             {{ "fee paid is 20 exceeds fee specified in transaction." },
-             { "XRP net change of 0 doesn't match fee 20" }},
+             { "XDV net change of 0 doesn't match fee 20" }},
             [](Account const&, Account const&, ApplyContext&) { return true; },
-            XRPAmount{20},
-            [](STTx& tx) { tx.setFieldAmount(sfFee, XRPAmount{10}); } );
+            XDVAmount{20},
+            [](STTx& tx) { tx.setFieldAmount(sfFee, XDVAmount{10}); } );
     }
 
 
@@ -343,7 +343,7 @@ class Invariants_test : public beast::unit_test::suite
                 auto sleNew = std::make_shared<SLE> (ltOFFER, offer_index);
                 sleNew->setAccountID (sfAccount, A1.id());
                 sleNew->setFieldU32 (sfSequence, (*sle)[sfSequence]);
-                sleNew->setFieldAmount (sfTakerPays, XRP(-1));
+                sleNew->setFieldAmount (sfTakerPays, XDV(-1));
                 ac.view().insert (sleNew);
                 return true;
             });
@@ -362,7 +362,7 @@ class Invariants_test : public beast::unit_test::suite
                 sleNew->setAccountID (sfAccount, A1.id());
                 sleNew->setFieldU32 (sfSequence, (*sle)[sfSequence]);
                 sleNew->setFieldAmount (sfTakerPays, A1["USD"](10));
-                sleNew->setFieldAmount (sfTakerGets, XRP(-1));
+                sleNew->setFieldAmount (sfTakerGets, XDV(-1));
                 ac.view().insert (sleNew);
                 return true;
             });
@@ -371,7 +371,7 @@ class Invariants_test : public beast::unit_test::suite
             {{ "offer with a bad amount" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
-                // offer XRP to XRP
+                // offer XDV to XDV
                 auto const sle = ac.view().peek (keylet::account(A1.id()));
                 if(! sle)
                     return false;
@@ -380,8 +380,8 @@ class Invariants_test : public beast::unit_test::suite
                 auto sleNew = std::make_shared<SLE> (ltOFFER, offer_index);
                 sleNew->setAccountID (sfAccount, A1.id());
                 sleNew->setFieldU32 (sfSequence, (*sle)[sfSequence]);
-                sleNew->setFieldAmount (sfTakerPays, XRP(10));
-                sleNew->setFieldAmount (sfTakerGets, XRP(11));
+                sleNew->setFieldAmount (sfTakerPays, XDV(10));
+                sleNew->setFieldAmount (sfTakerGets, XDV(11));
                 ac.view().insert (sleNew);
                 return true;
             });
@@ -395,7 +395,7 @@ class Invariants_test : public beast::unit_test::suite
             " - no zero escrow";
 
         doInvariantCheck (enabled,
-            {{ "Cannot return non-native STAmount as XRPAmount" }},
+            {{ "Cannot return non-native STAmount as XDVAmount" }},
             [](Account const& A1, Account const& A2, ApplyContext& ac)
             {
                 // escrow with nonnative amount
@@ -411,7 +411,7 @@ class Invariants_test : public beast::unit_test::suite
             });
 
         doInvariantCheck (enabled,
-            {{ "XRP net change of -1000000 doesn't match fee 0"},
+            {{ "XDV net change of -1000000 doesn't match fee 0"},
              {  "escrow specifies invalid amount" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
@@ -421,13 +421,13 @@ class Invariants_test : public beast::unit_test::suite
                     return false;
                 auto sleNew = std::make_shared<SLE> (
                     keylet::escrow(A1, (*sle)[sfSequence] + 2));
-                sleNew->setFieldAmount (sfAmount, XRP(-1));
+                sleNew->setFieldAmount (sfAmount, XDV(-1));
                 ac.view().insert (sleNew);
                 return true;
             });
 
         doInvariantCheck (enabled,
-            {{ "XRP net change was positive: 100000000000000001" },
+            {{ "XDV net change was positive: 100000000000000001" },
              {  "escrow specifies invalid amount" }},
             [](Account const& A1, Account const&, ApplyContext& ac)
             {
@@ -452,11 +452,11 @@ public:
         // the feature enabled and disabled
         for(auto const& b : {false, true})
         {
-            testXRPNotCreated (b);
+            testXDVNotCreated (b);
             testAccountsNotRemoved (b);
             testTypesMatch (b);
-            testNoXRPTrustLine (b);
-            testXRPBalanceCheck (b);
+            testNoXDVTrustLine (b);
+            testXDVBalanceCheck (b);
             testTransactionFeeCheck(b);
             testNoBadOffers (b);
             testNoZeroEscrow (b);
@@ -464,7 +464,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (Invariants, ledger, ripple);
+BEAST_DEFINE_TESTSUITE (Invariants, ledger, divvy);
 
-}  // ripple
+}  // divvy
 

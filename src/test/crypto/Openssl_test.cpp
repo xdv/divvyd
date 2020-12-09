@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2018 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2018 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,11 +17,11 @@
 */
 //==============================================================================
 
-#include <ripple/beast/unit_test.h>
-#include <ripple/crypto/impl/openssl.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/crypto/impl/openssl.h>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 struct Openssl_test : public beast::unit_test::suite
 {
     void
@@ -49,6 +49,6 @@ struct Openssl_test : public beast::unit_test::suite
     };
 };
 
-BEAST_DEFINE_TESTSUITE(Openssl, crypto, ripple);
+BEAST_DEFINE_TESTSUITE(Openssl, crypto, divvy);
 
-}  // namespace ripple
+}  // namespace divvy

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2015 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2015 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#include <ripple/basics/StringUtilities.h>
+#include <divvy/basics/StringUtilities.h>
 #include <test/jtx/TestSuite.h>
-#include <ripple/json/json_value.h>
-#include <ripple/json/json_writer.h>
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/rpc/handlers/WalletPropose.h>
-#include <ripple/rpc/impl/RPCHelpers.h>
+#include <divvy/json/json_value.h>
+#include <divvy/json/json_writer.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/rpc/handlers/WalletPropose.h>
+#include <divvy/rpc/impl/RPCHelpers.h>
 
-namespace ripple {
+namespace divvy {
 
 namespace RPC {
 
@@ -95,7 +95,7 @@ static key_strings const strong_brain_strings =
         "attacks.",
 };
 
-class WalletPropose_test : public ripple::TestSuite
+class WalletPropose_test : public divvy::TestSuite
 {
 public:
     void testRandomWallet(boost::optional<std::string> const& keyType)
@@ -725,7 +725,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(WalletPropose,ripple_basics,ripple);
+BEAST_DEFINE_TESTSUITE(WalletPropose,divvy_basics,divvy);
 
 } // RPC
-} // ripple
+} // divvy

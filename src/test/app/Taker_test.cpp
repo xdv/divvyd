@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/app/tx/impl/Taker.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/beast/core/LexicalCast.h>
+#include <divvy/app/tx/impl/Taker.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/beast/core/LexicalCast.h>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 
 class Taker_test : public beast::unit_test::suite
 {
@@ -131,10 +131,10 @@ private:
         return issue;
     }
 
-    Issue const& xrp () const
+    Issue const& xdv () const
     {
         static Issue const issue (
-            xrpCurrency (), xrpAccount ());
+            xdvCurrency (), xdvAccount ());
         return issue;
     }
 
@@ -202,10 +202,10 @@ private:
 
         CrossType cross_type;
 
-        if (isXRP (issue_out))
-            cross_type = CrossType::IouToXrp;
-        else if (isXRP (issue_in))
-            cross_type = CrossType::XrpToIou;
+        if (isXDV (issue_out))
+            cross_type = CrossType::IouToXdv;
+        else if (isXDV (issue_in))
+            cross_type = CrossType::XdvToIou;
         else
             cross_type = CrossType::IouToIou;
 
@@ -237,7 +237,7 @@ private:
 
     Quality get_quality(std::string in, std::string out)
     {
-        return Quality (parse_amounts (in, xrp(), out, xrp ()));
+        return Quality (parse_amounts (in, xdv(), out, xdv ()));
     }
 
 public:
@@ -255,85 +255,85 @@ public:
     // NIKB TODO: Augment TestTaker so currencies and rates can be specified
     //            once without need for repetition.
     void
-    test_xrp_to_iou ()
+    test_xdv_to_iou ()
     {
-        testcase ("XRP Quantization: input");
+        testcase ("XDV Quantization: input");
 
         Quality q1 = get_quality ("1", "1");
 
         //                             TAKER                    OWNER
         //                     QUAL    OFFER     FUNDS  QUAL    OFFER     FUNDS     EXPECTED
-        //                                        XRP                      USD
-        attempt (Sell, "N:N",   q1, { "2", "2" },  "2",  q1, { "2", "2" }, "2",   { "2", "2" },   xrp(), usd());
-        attempt (Sell, "N:B",   q1, { "2", "2" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "N:T",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "2",   { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "N:BT",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "N:TB",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "0.8", { "0", "0.8" }, xrp(), usd());
+        //                                        XDV                      USD
+        attempt (Sell, "N:N",   q1, { "2", "2" },  "2",  q1, { "2", "2" }, "2",   { "2", "2" },   xdv(), usd());
+        attempt (Sell, "N:B",   q1, { "2", "2" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "N:T",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "2",   { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "N:BT",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "N:TB",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "0.8", { "0", "0.8" }, xdv(), usd());
 
-        attempt (Sell, "T:N",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "2",   { "1", "1" },   xrp(), usd());
-        attempt (Sell, "T:B",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "T:T",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "2",   { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "T:BT",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "T:TB",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "0.8", { "0", "0.8" }, xrp(), usd());
+        attempt (Sell, "T:N",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "2",   { "1", "1" },   xdv(), usd());
+        attempt (Sell, "T:B",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "T:T",   q1, { "1", "1" },  "2",  q1, { "2", "2" }, "2",   { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "T:BT",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "1.8", { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "T:TB",  q1, { "1", "1" },  "2",  q1, { "2", "2" }, "0.8", { "0", "0.8" }, xdv(), usd());
 
-        attempt (Sell, "A:N",   q1, { "2", "2" },  "1",  q1, { "2", "2" }, "2",   { "1", "1" },   xrp(), usd());
-        attempt (Sell, "A:B",   q1, { "2", "2" },  "1",  q1, { "2", "2" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "A:T",   q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "A:BT",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "2.4", { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "A:TB",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "0.8", { "0", "0.8" }, xrp(), usd());
+        attempt (Sell, "A:N",   q1, { "2", "2" },  "1",  q1, { "2", "2" }, "2",   { "1", "1" },   xdv(), usd());
+        attempt (Sell, "A:B",   q1, { "2", "2" },  "1",  q1, { "2", "2" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "A:T",   q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "A:BT",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "2.4", { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "A:TB",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "0.8", { "0", "0.8" }, xdv(), usd());
 
-        attempt (Sell, "TA:N",  q1, { "2", "2" },  "1",  q1, { "2", "2" }, "2",   { "1", "1" },   xrp(), usd());
-        attempt (Sell, "TA:B",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "TA:T",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "TA:BT", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "TA:TB", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xrp(), usd());
+        attempt (Sell, "TA:N",  q1, { "2", "2" },  "1",  q1, { "2", "2" }, "2",   { "1", "1" },   xdv(), usd());
+        attempt (Sell, "TA:B",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "TA:T",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "TA:BT", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "TA:TB", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xdv(), usd());
 
-        attempt (Sell, "AT:N",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xrp(), usd());
-        attempt (Sell, "AT:B",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "AT:T",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xrp(), usd());
-        attempt (Buy,  "AT:BT", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xrp(), usd());
-        attempt (Buy,  "AT:TB", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "0.8", { "0", "0.8" }, xrp(), usd());
+        attempt (Sell, "AT:N",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xdv(), usd());
+        attempt (Sell, "AT:B",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "AT:T",  q1, { "2", "2" },  "1",  q1, { "3", "3" }, "3",   { "1", "1" },   xdv(), usd());
+        attempt (Buy,  "AT:BT", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "1.8", { "1", "1.8" }, xdv(), usd());
+        attempt (Buy,  "AT:TB", q1, { "2", "2" },  "1",  q1, { "3", "3" }, "0.8", { "0", "0.8" }, xdv(), usd());
     }
 
     void
-    test_iou_to_xrp ()
+    test_iou_to_xdv ()
     {
-        testcase ("XRP Quantization: output");
+        testcase ("XDV Quantization: output");
 
         Quality q1 = get_quality ("1", "1");
 
         //                             TAKER                     OWNER
         //                     QUAL    OFFER     FUNDS   QUAL    OFFER     FUNDS    EXPECTED
-        //                                        USD                       XRP
-        attempt (Sell, "N:N",   q1, { "3", "3" }, "3",   q1, { "3", "3" }, "3",  { "3",   "3" }, usd(), xrp());
-        attempt (Sell, "N:B",   q1, { "3", "3" }, "3",   q1, { "3", "3" }, "2",  { "2",   "2" }, usd(), xrp());
-        attempt (Buy,  "N:T",   q1, { "3", "3" }, "2.5", q1, { "5", "5" }, "5",  { "2.5", "2" }, usd(), xrp());
-        attempt (Buy,  "N:BT",  q1, { "3", "3" }, "1.5", q1, { "5", "5" }, "4",  { "1.5", "1" }, usd(), xrp());
-        attempt (Buy,  "N:TB",  q1, { "3", "3" }, "2.2", q1, { "5", "5" }, "1",  { "1",   "1" }, usd(), xrp());
+        //                                        USD                       XDV
+        attempt (Sell, "N:N",   q1, { "3", "3" }, "3",   q1, { "3", "3" }, "3",  { "3",   "3" }, usd(), xdv());
+        attempt (Sell, "N:B",   q1, { "3", "3" }, "3",   q1, { "3", "3" }, "2",  { "2",   "2" }, usd(), xdv());
+        attempt (Buy,  "N:T",   q1, { "3", "3" }, "2.5", q1, { "5", "5" }, "5",  { "2.5", "2" }, usd(), xdv());
+        attempt (Buy,  "N:BT",  q1, { "3", "3" }, "1.5", q1, { "5", "5" }, "4",  { "1.5", "1" }, usd(), xdv());
+        attempt (Buy,  "N:TB",  q1, { "3", "3" }, "2.2", q1, { "5", "5" }, "1",  { "1",   "1" }, usd(), xdv());
 
-        attempt (Sell, "T:N",   q1, { "1", "1" }, "2",   q1, { "2", "2" }, "2",  { "1",   "1" }, usd(), xrp());
-        attempt (Sell, "T:B",   q1, { "2", "2" }, "2",   q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xrp());
-        attempt (Buy,  "T:T",   q1, { "1", "1" }, "2",   q1, { "2", "2" }, "2",  { "1",   "1" }, usd(), xrp());
-        attempt (Buy,  "T:BT",  q1, { "1", "1" }, "2",   q1, { "3", "3" }, "2",  { "1",   "1" }, usd(), xrp());
-        attempt (Buy,  "T:TB",  q1, { "2", "2" }, "2",   q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xrp());
+        attempt (Sell, "T:N",   q1, { "1", "1" }, "2",   q1, { "2", "2" }, "2",  { "1",   "1" }, usd(), xdv());
+        attempt (Sell, "T:B",   q1, { "2", "2" }, "2",   q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xdv());
+        attempt (Buy,  "T:T",   q1, { "1", "1" }, "2",   q1, { "2", "2" }, "2",  { "1",   "1" }, usd(), xdv());
+        attempt (Buy,  "T:BT",  q1, { "1", "1" }, "2",   q1, { "3", "3" }, "2",  { "1",   "1" }, usd(), xdv());
+        attempt (Buy,  "T:TB",  q1, { "2", "2" }, "2",   q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xdv());
 
-        attempt (Sell, "A:N",   q1, { "2", "2" }, "1.5", q1, { "2", "2" }, "2",  { "1.5", "1" }, usd(), xrp());
-        attempt (Sell, "A:B",   q1, { "2", "2" }, "1.8", q1, { "3", "3" }, "2",  { "1.8", "1" }, usd(), xrp());
-        attempt (Buy,  "A:T",   q1, { "2", "2" }, "1.2", q1, { "3", "3" }, "3",  { "1.2", "1" }, usd(), xrp());
-        attempt (Buy,  "A:BT",  q1, { "2", "2" }, "1.5", q1, { "4", "4" }, "3",  { "1.5", "1" }, usd(), xrp());
-        attempt (Buy,  "A:TB",  q1, { "2", "2" }, "1.5", q1, { "4", "4" }, "1",  { "1",   "1" }, usd(), xrp());
+        attempt (Sell, "A:N",   q1, { "2", "2" }, "1.5", q1, { "2", "2" }, "2",  { "1.5", "1" }, usd(), xdv());
+        attempt (Sell, "A:B",   q1, { "2", "2" }, "1.8", q1, { "3", "3" }, "2",  { "1.8", "1" }, usd(), xdv());
+        attempt (Buy,  "A:T",   q1, { "2", "2" }, "1.2", q1, { "3", "3" }, "3",  { "1.2", "1" }, usd(), xdv());
+        attempt (Buy,  "A:BT",  q1, { "2", "2" }, "1.5", q1, { "4", "4" }, "3",  { "1.5", "1" }, usd(), xdv());
+        attempt (Buy,  "A:TB",  q1, { "2", "2" }, "1.5", q1, { "4", "4" }, "1",  { "1",   "1" }, usd(), xdv());
 
-        attempt (Sell, "TA:N",  q1, { "2", "2" }, "1.5", q1, { "2", "2" }, "2",  { "1.5", "1" }, usd(), xrp());
-        attempt (Sell, "TA:B",  q1, { "2", "2" }, "1.5", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xrp());
-        attempt (Buy,  "TA:T",  q1, { "2", "2" }, "1.5", q1, { "3", "3" }, "3",  { "1.5", "1" }, usd(), xrp());
-        attempt (Buy,  "TA:BT", q1, { "2", "2" }, "1.8", q1, { "4", "4" }, "3",  { "1.8", "1" }, usd(), xrp());
-        attempt (Buy,  "TA:TB", q1, { "2", "2" }, "1.2", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xrp());
+        attempt (Sell, "TA:N",  q1, { "2", "2" }, "1.5", q1, { "2", "2" }, "2",  { "1.5", "1" }, usd(), xdv());
+        attempt (Sell, "TA:B",  q1, { "2", "2" }, "1.5", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xdv());
+        attempt (Buy,  "TA:T",  q1, { "2", "2" }, "1.5", q1, { "3", "3" }, "3",  { "1.5", "1" }, usd(), xdv());
+        attempt (Buy,  "TA:BT", q1, { "2", "2" }, "1.8", q1, { "4", "4" }, "3",  { "1.8", "1" }, usd(), xdv());
+        attempt (Buy,  "TA:TB", q1, { "2", "2" }, "1.2", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xdv());
 
-        attempt (Sell, "AT:N",  q1, { "2", "2" }, "2.5", q1, { "4", "4" }, "4",  { "2",   "2" }, usd(), xrp());
-        attempt (Sell, "AT:B",  q1, { "2", "2" }, "2.5", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xrp());
-        attempt (Buy,  "AT:T",  q1, { "2", "2" }, "2.5", q1, { "3", "3" }, "3",  { "2",   "2" }, usd(), xrp());
-        attempt (Buy,  "AT:BT", q1, { "2", "2" }, "2.5", q1, { "4", "4" }, "3",  { "2",   "2" }, usd(), xrp());
-        attempt (Buy,  "AT:TB", q1, { "2", "2" }, "2.5", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xrp());
+        attempt (Sell, "AT:N",  q1, { "2", "2" }, "2.5", q1, { "4", "4" }, "4",  { "2",   "2" }, usd(), xdv());
+        attempt (Sell, "AT:B",  q1, { "2", "2" }, "2.5", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xdv());
+        attempt (Buy,  "AT:T",  q1, { "2", "2" }, "2.5", q1, { "3", "3" }, "3",  { "2",   "2" }, usd(), xdv());
+        attempt (Buy,  "AT:BT", q1, { "2", "2" }, "2.5", q1, { "4", "4" }, "3",  { "2",   "2" }, usd(), xdv());
+        attempt (Buy,  "AT:TB", q1, { "2", "2" }, "2.5", q1, { "3", "3" }, "1",  { "1",   "1" }, usd(), xdv());
     }
 
     void
@@ -360,12 +360,12 @@ public:
     void
     run() override
     {
-        test_xrp_to_iou ();
-        test_iou_to_xrp ();
+        test_xdv_to_iou ();
+        test_iou_to_xdv ();
         test_iou_to_iou ();
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Taker,tx,ripple);
+BEAST_DEFINE_TESTSUITE(Taker,tx,divvy);
 
 }

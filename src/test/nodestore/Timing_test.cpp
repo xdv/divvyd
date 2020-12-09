@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,13 +18,13 @@
 //==============================================================================
 
 #include <test/nodestore/TestBase.h>
-#include <ripple/nodestore/DummyScheduler.h>
-#include <ripple/nodestore/Manager.h>
-#include <ripple/basics/BasicConfig.h>
-#include <ripple/unity/rocksdb.h>
-#include <ripple/beast/utility/temp_dir.h>
-#include <ripple/beast/xor_shift_engine.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/nodestore/DummyScheduler.h>
+#include <divvy/nodestore/Manager.h>
+#include <divvy/basics/BasicConfig.h>
+#include <divvy/unity/rocksdb.h>
+#include <divvy/beast/utility/temp_dir.h>
+#include <divvy/beast/xor_shift_engine.h>
+#include <divvy/beast/unit_test.h>
 #include <beast/unit_test/thread.hpp>
 #include <boost/algorithm/string.hpp>
 #include <atomic>
@@ -43,7 +43,7 @@
 #define NODESTORE_TIMING_DO_VERIFY 0
 #endif
 
-namespace ripple {
+namespace divvy {
 namespace NodeStore {
 
 // Fill memory with random bits
@@ -529,7 +529,7 @@ public:
         backend->close();
     }
 
-    // Simulate a rippled workload:
+    // Simulate a divvyd workload:
     // Each thread randomly:
     //      inserts a new key
     //      fetches an old key
@@ -710,7 +710,7 @@ public:
         */
         std::string default_args =
             "type=nudb"
-        #if RIPPLE_ROCKSDB_AVAILABLE
+        #if DIVVY_ROCKSDB_AVAILABLE
             ";type=rocksdb,open_files=2000,filter_bits=12,cache_mb=256,"
                 "file_size_mb=8,file_size_mult=2"
         #endif
@@ -746,7 +746,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(Timing,NodeStore,ripple,1);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(Timing,NodeStore,divvy,1);
 
 }
 }

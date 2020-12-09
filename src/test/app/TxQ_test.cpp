@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,24 +17,24 @@
 */
 //==============================================================================
 
-#include <ripple/app/main/Application.h>
-#include <ripple/app/misc/LoadFeeTrack.h>
-#include <ripple/app/misc/TxQ.h>
-#include <ripple/app/tx/apply.h>
-#include <ripple/basics/Log.h>
-#include <ripple/basics/mulDiv.h>
+#include <divvy/app/main/Application.h>
+#include <divvy/app/misc/LoadFeeTrack.h>
+#include <divvy/app/misc/TxQ.h>
+#include <divvy/app/tx/apply.h>
+#include <divvy/basics/Log.h>
+#include <divvy/basics/mulDiv.h>
 #include <test/jtx/TestSuite.h>
 #include <test/jtx/envconfig.h>
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/st.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/st.h>
 #include <test/jtx.h>
 #include <test/jtx/ticket.h>
 #include <boost/optional.hpp>
 #include <test/jtx/WSClient.h>
 
-namespace ripple {
+namespace divvy {
 
 namespace test {
 
@@ -148,7 +148,7 @@ class TxQ_test : public beast::unit_test::suite
         using namespace std::chrono_literals;
         env.close(env.now() + 5s, 10000ms);
         checkMetrics(env, 0,
-            2 * (ripple::detail::supportedAmendments().size() + 1),
+            2 * (divvy::detail::supportedAmendments().size() + 1),
                 0, expectedInLedger, 256);
         auto const fees = env.current()->fees();
         BEAST_EXPECT(fees.base == base);
@@ -183,7 +183,7 @@ public:
         checkMetrics(env, 0, boost::none, 0, 3, 256);
 
         // Create several accounts while the fee is cheap so they all apply.
-        env.fund(XRP(50000), noripple(alice, bob, charlie, daria));
+        env.fund(XDV(50000), nodivvy(alice, bob, charlie, daria));
         checkMetrics(env, 0, boost::none, 4, 3, 256);
 
         // Alice - price starts exploding: held
@@ -205,7 +205,7 @@ public:
         //////////////////////////////////////////////////////////////
 
         // Make some more accounts. We'll need them later to abuse the queue.
-        env.fund(XRP(50000), noripple(elmo, fred, gwen, hank));
+        env.fund(XDV(50000), nodivvy(elmo, fred, gwen, hank));
         checkMetrics(env, 0, 10, 6, 5, 256);
 
         // Now get a bunch of transactions held.
@@ -359,20 +359,20 @@ public:
         checkMetrics(env, 0, boost::none, 0, 2, 256);
 
         // Create accounts
-        env.fund(XRP(50000), noripple(alice, gw));
+        env.fund(XDV(50000), nodivvy(alice, gw));
         checkMetrics(env, 0, boost::none, 2, 2, 256);
         env.close();
         checkMetrics(env, 0, 4, 0, 2, 256);
 
         // Alice creates an unfunded offer while the ledger is not full
-        env(offer(alice, XRP(1000), USD(1000)), ter(tecUNFUNDED_OFFER));
+        env(offer(alice, XDV(1000), USD(1000)), ter(tecUNFUNDED_OFFER));
         checkMetrics(env, 0, 4, 1, 2, 256);
 
         fillQueue(env, alice);
         checkMetrics(env, 0, 4, 3, 2, 256);
 
         // Alice creates an unfunded offer that goes in the queue
-        env(offer(alice, XRP(1000), USD(1000)), ter(terQUEUED));
+        env(offer(alice, XDV(1000), USD(1000)), ter(terQUEUED));
         checkMetrics(env, 1, 4, 3, 2, 256);
 
         // The offer comes out of the queue
@@ -399,7 +399,7 @@ public:
         checkMetrics(env, 0, boost::none, 0, 2, 256);
 
         // Create several accounts while the fee is cheap so they all apply.
-        env.fund(XRP(50000), noripple(alice, bob, charlie));
+        env.fund(XDV(50000), nodivvy(alice, bob, charlie));
         checkMetrics(env, 0, boost::none, 3, 2, 256);
 
         // Future transaction for Alice - fails
@@ -456,11 +456,11 @@ public:
         checkMetrics(env, 0, boost::none, 0, 2, 256);
 
         // Fund across several ledgers so the TxQ metrics stay restricted.
-        env.fund(XRP(1000), noripple(alice, bob));
+        env.fund(XDV(1000), nodivvy(alice, bob));
         env.close(env.now() + 5s, 10000ms);
-        env.fund(XRP(1000), noripple(charlie, daria));
+        env.fund(XDV(1000), nodivvy(charlie, daria));
         env.close(env.now() + 5s, 10000ms);
-        env.fund(XRP(1000), noripple(edgar, felicia));
+        env.fund(XDV(1000), nodivvy(edgar, felicia));
         env.close(env.now() + 5s, 10000ms);
 
         checkMetrics(env, 0, boost::none, 0, 2, 256);
@@ -561,9 +561,9 @@ public:
         checkMetrics(env, 0, boost::none, 0, 2, 256);
 
         // Fund across several ledgers so the TxQ metrics stay restricted.
-        env.fund(XRP(1000), noripple(alice, bob));
+        env.fund(XDV(1000), nodivvy(alice, bob));
         env.close(env.now() + 5s, 10000ms);
-        env.fund(XRP(1000), noripple(carol));
+        env.fund(XDV(1000), nodivvy(carol));
         env.close(env.now() + 5s, 10000ms);
 
         // Fill the ledger
@@ -610,7 +610,7 @@ public:
         // Unfortunately bob can't get any more txns into
         // the queue, because of the multiTxnPercent.
         // TANSTAAFL
-        env(noop(bob), fee(XRP(100)),
+        env(noop(bob), fee(XDV(100)),
             seq(seqBob), ter(telINSUF_FEE_P));
 
         // Carol fills the queue, but can't kick out any
@@ -661,18 +661,18 @@ public:
         auto alice = Account("alice");
         auto bob = Account("bob");
 
-        env.fund(XRP(1000), noripple(alice));
+        env.fund(XDV(1000), nodivvy(alice));
 
         // These types of checks are tested elsewhere, but
         // this verifies that TxQ handles the failures as
         // expected.
 
         // Fail in preflight
-        env(pay(alice, bob, XRP(-1000)),
+        env(pay(alice, bob, XDV(-1000)),
             ter(temBAD_AMOUNT));
 
         // Fail in preclaim
-        env(noop(alice), fee(XRP(100000)),
+        env(noop(alice), fee(XDV(100000)),
             ter(terINSUF_FEE_B));
     }
 
@@ -690,7 +690,7 @@ public:
 
         checkMetrics(env, 0, boost::none, 0, 2, 256);
 
-        env.fund(XRP(1000), noripple(alice, bob));
+        env.fund(XDV(1000), nodivvy(alice, bob));
 
         checkMetrics(env, 0, boost::none, 2, 2, 256);
 
@@ -714,7 +714,7 @@ public:
                 [&](OpenView& view, beast::Journal j)
                 {
                     std::tie(ter, didApply) =
-                        ripple::apply(env.app(),
+                        divvy::apply(env.app(),
                             view, *jt.stx, tapNONE,
                                 env.journal);
                     return didApply;
@@ -752,11 +752,11 @@ public:
 
         initFee(env, 3, 10, 10, 200, 50);
         auto const initQueueMax =
-            2 * (ripple::detail::supportedAmendments().size() + 1);
+            2 * (divvy::detail::supportedAmendments().size() + 1);
 
         // Create several accounts while the fee is cheap so they all apply.
-        env.fund(drops(2000), noripple(alice));
-        env.fund(XRP(500000), noripple(bob, charlie, daria));
+        env.fund(drops(2000), nodivvy(alice));
+        env.fund(XDV(500000), nodivvy(bob, charlie, daria));
         checkMetrics(env, 0, initQueueMax, 4, 3, 256);
 
         // Alice - price starts exploding: held
@@ -903,7 +903,7 @@ public:
         // bankrupt Alice. Fails, because an account can't have
         // more than the minimum reserve in flight before the
         // last queued transaction
-        aliceFee = env.le(alice)->getFieldAmount(sfBalance).xrp().drops()
+        aliceFee = env.le(alice)->getFieldAmount(sfBalance).xdv().drops()
             - (59);
         env(noop(alice), seq(aliceSeq),
             fee(aliceFee), ter(telCAN_NOT_QUEUE_BALANCE));
@@ -939,7 +939,7 @@ public:
         checkMetrics(env, 0, 12, 0, 6, 256);
 
         // Alice is broke
-        env.require(balance(alice, XRP(0)));
+        env.require(balance(alice, XDV(0)));
         env(noop(alice), ter(terINSUF_FEE_B));
 
         // Bob tries to queue up more than the single
@@ -983,13 +983,13 @@ public:
         checkMetrics(env, 0, boost::none, 0, 4, 256);
 
         // Create several accounts while the fee is cheap so they all apply.
-        env.fund(XRP(50000), noripple(alice, bob, charlie, daria));
+        env.fund(XDV(50000), nodivvy(alice, bob, charlie, daria));
         checkMetrics(env, 0, boost::none, 4, 4, 256);
 
         env.close();
         checkMetrics(env, 0, 8, 0, 4, 256);
 
-        env.fund(XRP(50000), noripple(elmo, fred, gwen, hank));
+        env.fund(XDV(50000), nodivvy(elmo, fred, gwen, hank));
         checkMetrics(env, 0, 8, 4, 4, 256);
 
         env.close();
@@ -1107,7 +1107,7 @@ public:
 
         BEAST_EXPECT(!env.app().getTxQ().getMetrics(*env.current()));
 
-        env.fund(XRP(50000), noripple(alice));
+        env.fund(XDV(50000), nodivvy(alice));
 
         // If the queue was enabled, most of these would
         // return terQUEUED. (The required fee for the last
@@ -1132,7 +1132,7 @@ public:
 
         checkMetrics(env, 0, boost::none, 0, 1, 256);
 
-        env.fund(XRP(50000), noripple(alice));
+        env.fund(XDV(50000), nodivvy(alice));
         checkMetrics(env, 0, boost::none, 1, 1, 256);
 
         env(fset(alice, asfAccountTxnID));
@@ -1170,7 +1170,7 @@ public:
 
         checkMetrics(env, 0, boost::none, 0, 2, 256);
 
-        env.fund(XRP(50000), noripple(alice));
+        env.fund(XDV(50000), nodivvy(alice));
         checkMetrics(env, 0, boost::none, 1, 2, 256);
 
         for (int i = 0; i < 10; ++i)
@@ -1201,14 +1201,14 @@ public:
 
         initFee(env, 3, 10, 10, 200, 50);
         auto const initQueueMax =
-            2 * (ripple::detail::supportedAmendments().size() + 1);
+            2 * (divvy::detail::supportedAmendments().size() + 1);
 
         BEAST_EXPECT(env.current()->fees().base == 10);
 
         checkMetrics(env, 0, initQueueMax, 0, 3, 256);
 
-        env.fund(drops(5000), noripple(alice));
-        env.fund(XRP(50000), noripple(bob));
+        env.fund(drops(5000), nodivvy(alice));
+        env.fund(XDV(50000), nodivvy(bob));
         checkMetrics(env, 0, initQueueMax, 2, 3, 256);
         auto USD = bob["USD"];
 
@@ -1261,7 +1261,7 @@ public:
             stuck in the queue. Eventually it will either
             expire, get forced off the end by more valuable
             transactions, get replaced by Alice, or Alice
-            will get more XRP, and it'll process.
+            will get more XDV, and it'll process.
         */
 
         for (int i = 0; i < 9; ++i)
@@ -1294,7 +1294,7 @@ public:
 
         checkMetrics(env, 0, boost::none, 0, 3, 256);
 
-        env.fund(XRP(50000), noripple(alice, bob));
+        env.fund(XDV(50000), nodivvy(alice, bob));
         env.memoize(charlie);
         env.memoize(daria);
         checkMetrics(env, 0, boost::none, 2, 3, 256);
@@ -1359,23 +1359,23 @@ public:
 
         checkMetrics(env, 0, boost::none, 0, 3, 256);
 
-        env.fund(XRP(50000), noripple(alice, charlie), gw);
+        env.fund(XDV(50000), nodivvy(alice, charlie), gw);
         checkMetrics(env, 0, boost::none, 4, 3, 256);
 
         auto USD = gw["USD"];
         auto BUX = gw["BUX"];
 
         //////////////////////////////////////////
-        // Offer with high XRP out blocks later txs
+        // Offer with high XDV out blocks later txs
         auto aliceSeq = env.seq(alice);
         auto aliceBal = env.balance(alice);
 
-        env.require(balance(alice, XRP(50000)),
+        env.require(balance(alice, XDV(50000)),
             owners(alice, 0));
 
         // If this offer crosses, all of alice's
-        // XRP will be taken (except the reserve).
-        env(offer(alice, BUX(5000), XRP(50000)),
+        // XDV will be taken (except the reserve).
+        env(offer(alice, BUX(5000), XDV(50000)),
             queued);
 
         // So even a noop will look like alice
@@ -1387,21 +1387,21 @@ public:
         checkMetrics(env, 0, 8, 2, 4, 256);
 
         // But once we close the ledger, we find alice
-        // has plenty of XRP, because the offer didn't
+        // has plenty of XDV, because the offer didn't
         // cross (of course).
         env.require(balance(alice, aliceBal - drops(20)),
             owners(alice, 1));
 
         //////////////////////////////////////////
-        // Offer with low XRP out allows later txs
+        // Offer with low XDV out allows later txs
         fillQueue(env, alice);
         checkMetrics(env, 0, 8, 5, 4, 256);
         aliceSeq = env.seq(alice);
         aliceBal = env.balance(alice);
 
         // If this offer crosses, just a bit
-        // of alice's XRP will be taken.
-        env(offer(alice, BUX(50), XRP(500)),
+        // of alice's XDV will be taken.
+        env(offer(alice, BUX(50), XDV(500)),
             queued);
 
         // And later transactions are just fine
@@ -1412,13 +1412,13 @@ public:
         checkMetrics(env, 0, 10, 2, 5, 256);
 
         // But once we close the ledger, we find alice
-        // has plenty of XRP, because the offer didn't
+        // has plenty of XDV, because the offer didn't
         // cross (of course).
         env.require(balance(alice, aliceBal - drops(20)),
             owners(alice, 2));
 
         //////////////////////////////////////////
-        // Large XRP payment blocks later txs
+        // Large XDV payment blocks later txs
         fillQueue(env, alice);
         checkMetrics(env, 0, 10, 6, 5, 256);
 
@@ -1428,7 +1428,7 @@ public:
         // If this payment succeeds, alice will
         // send her entire balance to charlie
         // (minus the reserve).
-        env(pay(alice, charlie, XRP(50000)),
+        env(pay(alice, charlie, XDV(50000)),
             queued);
 
         // So even a noop will look like alice
@@ -1446,7 +1446,7 @@ public:
             owners(alice, 2));
 
         //////////////////////////////////////////
-        // Small XRP payment allows later txs
+        // Small XDV payment allows later txs
         fillQueue(env, alice);
         checkMetrics(env, 0, 12, 7, 6, 256);
 
@@ -1455,7 +1455,7 @@ public:
 
         // If this payment succeeds, alice will
         // send just a bit of balance to charlie
-        env(pay(alice, charlie, XRP(500)),
+        env(pay(alice, charlie, XDV(500)),
             queued);
 
         // And later transactions are just fine
@@ -1466,7 +1466,7 @@ public:
         checkMetrics(env, 0, 14, 2, 7, 256);
 
         // The payment succeeds
-        env.require(balance(alice, aliceBal - XRP(500) - drops(20)),
+        env.require(balance(alice, aliceBal - XDV(500) - drops(20)),
             owners(alice, 2));
 
         //////////////////////////////////////////
@@ -1498,7 +1498,7 @@ public:
             queued);
 
         // But that's fine, because it doesn't affect
-        // alice's XRP balance (other than the fee, of course).
+        // alice's XDV balance (other than the fee, of course).
         env(noop(alice), seq(aliceSeq + 1), queued);
         checkMetrics(env, 2, 14, 8, 7, 256);
 
@@ -1506,7 +1506,7 @@ public:
         checkMetrics(env, 0, 16, 2, 8, 256);
 
         // So once we close the ledger, alice has her
-        // XRP balance, but her USD balance went to charlie.
+        // XDV balance, but her USD balance went to charlie.
         env.require(balance(alice, aliceBal - drops(20)),
             balance(alice, USD(0)),
             balance(charlie, aliceUSD),
@@ -1514,9 +1514,9 @@ public:
             owners(charlie, 1));
 
         //////////////////////////////////////////
-        // Large XRP to IOU payment blocks later txs.
+        // Large XDV to IOU payment blocks later txs.
 
-        env(offer(gw, XRP(500000), USD(50000)));
+        env(offer(gw, XDV(500000), USD(50000)));
         // Close so we don't have to deal
         // with tx ordering in consensus.
         env.close();
@@ -1530,11 +1530,11 @@ public:
 
         // If this payment succeeds, and uses the
         // entire sendMax, alice will send her
-        // entire XRP balance to charlie in the
+        // entire XDV balance to charlie in the
         // form of USD.
-        BEAST_EXPECT(XRP(60000) > aliceBal);
+        BEAST_EXPECT(XDV(60000) > aliceBal);
         env(pay(alice, charlie, USD(1000)),
-            sendmax(XRP(60000)), queued);
+            sendmax(XDV(60000)), queued);
 
         // So even a noop will look like alice
         // doesn't have the balance to pay the fee
@@ -1545,15 +1545,15 @@ public:
         checkMetrics(env, 0, 18, 2, 9, 256);
 
         // So once we close the ledger, alice sent a payment
-        // to charlie using only a portion of her XRP balance
-        env.require(balance(alice, aliceBal - XRP(10000) - drops(20)),
+        // to charlie using only a portion of her XDV balance
+        env.require(balance(alice, aliceBal - XDV(10000) - drops(20)),
             balance(alice, USD(0)),
             balance(charlie, charlieUSD + USD(1000)),
             owners(alice, 3),
             owners(charlie, 1));
 
         //////////////////////////////////////////
-        // Small XRP to IOU payment allows later txs.
+        // Small XDV to IOU payment allows later txs.
 
         fillQueue(env, charlie);
         checkMetrics(env, 0, 18, 10, 9, 256);
@@ -1564,11 +1564,11 @@ public:
 
         // If this payment succeeds, and uses the
         // entire sendMax, alice will only send
-        // a portion of her XRP balance to charlie
+        // a portion of her XDV balance to charlie
         // in the form of USD.
-        BEAST_EXPECT(aliceBal > XRP(6001));
+        BEAST_EXPECT(aliceBal > XDV(6001));
         env(pay(alice, charlie, USD(500)),
-            sendmax(XRP(6000)), queued);
+            sendmax(XDV(6000)), queued);
 
         // And later transactions are just fine
         env(noop(alice), seq(aliceSeq + 1), queued);
@@ -1578,8 +1578,8 @@ public:
         checkMetrics(env, 0, 20, 2, 10, 256);
 
         // So once we close the ledger, alice sent a payment
-        // to charlie using only a portion of her XRP balance
-        env.require(balance(alice, aliceBal - XRP(5000) - drops(20)),
+        // to charlie using only a portion of her XDV balance
+        env.require(balance(alice, aliceBal - XDV(5000) - drops(20)),
             balance(alice, USD(0)),
             balance(charlie, charlieUSD + USD(500)),
             owners(alice, 3),
@@ -1608,7 +1608,7 @@ public:
             auto const conseq = calculateConsequences(pf);
             BEAST_EXPECT(conseq.category == TxConsequences::normal);
             BEAST_EXPECT(conseq.fee == drops(10));
-            BEAST_EXPECT(conseq.potentialSpend == XRP(0));
+            BEAST_EXPECT(conseq.potentialSpend == XDV(0));
         }
 
         {
@@ -1622,7 +1622,7 @@ public:
             auto const conseq = calculateConsequences(pf);
             BEAST_EXPECT(conseq.category == TxConsequences::normal);
             BEAST_EXPECT(conseq.fee == drops(10));
-            BEAST_EXPECT(conseq.potentialSpend == XRP(0));
+            BEAST_EXPECT(conseq.potentialSpend == XDV(0));
         }
 
         {
@@ -1634,7 +1634,7 @@ public:
             auto const conseq = calculateConsequences(pf);
             BEAST_EXPECT(conseq.category == TxConsequences::normal);
             BEAST_EXPECT(conseq.fee == drops(10));
-            BEAST_EXPECT(conseq.potentialSpend == XRP(0));
+            BEAST_EXPECT(conseq.potentialSpend == XDV(0));
         }
 
         {
@@ -1650,7 +1650,7 @@ public:
             auto const conseq = calculateConsequences(pf);
             BEAST_EXPECT(conseq.category == TxConsequences::normal);
             BEAST_EXPECT(conseq.fee == drops(10));
-            BEAST_EXPECT(conseq.potentialSpend == XRP(0));
+            BEAST_EXPECT(conseq.potentialSpend == XDV(0));
         }
     }
 
@@ -1752,7 +1752,7 @@ public:
         auto const alice = Account("alice");
         auto const bob = Account("bob");
 
-        env.fund(XRP(500000), noripple(alice, bob));
+        env.fund(XDV(500000), nodivvy(alice, bob));
         checkMetrics(env, 0, boost::none, 2, 1, 256);
 
         auto const aliceSeq = env.seq(alice);
@@ -1827,7 +1827,7 @@ public:
 
         auto const alice = Account("alice");
         auto const bob = Account("bob");
-        env.fund(XRP(100000), alice, bob);
+        env.fund(XDV(100000), alice, bob);
 
         auto params = Json::Value(Json::objectValue);
         // Max fee = 50k drops
@@ -1955,7 +1955,7 @@ public:
         Env_ss envs(env);
 
         Account const alice{ "alice" };
-        env.fund(XRP(1000000), alice);
+        env.fund(XDV(1000000), alice);
         env.close();
 
         auto const withQueue =
@@ -2225,7 +2225,7 @@ public:
         Env_ss envs(env);
 
         Account const alice{ "alice" };
-        env.fund(XRP(1000000), alice);
+        env.fund(XDV(1000000), alice);
         env.close();
 
         auto submitParams = Json::Value(Json::objectValue);
@@ -2460,7 +2460,7 @@ public:
 
 
         // Fund the first few accounts at non escalated fee
-        env.fund(XRP(50000), noripple(a,b,c,d));
+        env.fund(XDV(50000), nodivvy(a,b,c,d));
         checkMetrics(env, 0, boost::none, 4, 3, 256);
 
         // First transaction establishes the messaging
@@ -2525,7 +2525,7 @@ public:
         checkMetrics(env, 0, 8, 0, 4, 256);
 
         // Fund then next few accounts at non escalated fee
-        env.fund(XRP(50000), noripple(e,f,g,h,i));
+        env.fund(XDV(50000), nodivvy(e,f,g,h,i));
 
         // Extra transactions with low fee are queued
         auto queued = ter(terQUEUED);
@@ -2618,7 +2618,7 @@ public:
         auto bob = Account("bob");
 
         checkMetrics(env, 0, boost::none, 0, 3, 256);
-        env.fund(XRP(50000000), alice, bob);
+        env.fund(XDV(50000000), alice, bob);
 
         fillQueue(env, alice);
 
@@ -2802,7 +2802,7 @@ public:
             fillQueue(env, bob);
             checkMetrics(env, 3, 34, 18, 17, 256);
 
-            env(noop(alice), fee(XRP(1)), seq(aliceSeq++), ter(terQUEUED));
+            env(noop(alice), fee(XDV(1)), seq(aliceSeq++), ter(terQUEUED));
             checkMetrics(env, 4, 34, 18, 17, 256);
 
             // With normal load, those txs get into the ledger
@@ -2838,7 +2838,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_PRIO(TxQ,app,ripple,1);
+BEAST_DEFINE_TESTSUITE_PRIO(TxQ,app,divvy,1);
 
 }
 }

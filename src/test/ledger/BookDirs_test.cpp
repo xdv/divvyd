@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -16,10 +16,10 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/ledger/BookDirs.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/ledger/BookDirs.h>
+#include <divvy/protocol/Feature.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct BookDirs_test : public beast::unit_test::suite
@@ -30,10 +30,10 @@ struct BookDirs_test : public beast::unit_test::suite
         Env env(*this, features);
         auto gw = Account("gw");
         auto USD = gw["USD"];
-        env.fund(XRP(1000000), "alice", "bob", "gw");
+        env.fund(XDV(1000000), "alice", "bob", "gw");
 
         {
-            Book book(xrpIssue(), USD.issue());
+            Book book(xdvIssue(), USD.issue());
             {
                 auto d = BookDirs(*env.current(), book);
                 BEAST_EXPECT(std::begin(d) == std::end(d));
@@ -46,16 +46,16 @@ struct BookDirs_test : public beast::unit_test::suite
         }
 
         {
-            env(offer("alice", Account("alice")["USD"](50), XRP(10)));
+            env(offer("alice", Account("alice")["USD"](50), XDV(10)));
             auto d = BookDirs(*env.current(),
-                Book(Account("alice")["USD"].issue(), xrpIssue()));
+                Book(Account("alice")["USD"].issue(), xdvIssue()));
             BEAST_EXPECT(std::distance(d.begin(), d.end()) == 1);
         }
 
         {
-            env(offer("alice", gw["CNY"](50), XRP(10)));
+            env(offer("alice", gw["CNY"](50), XDV(10)));
             auto d = BookDirs(*env.current(),
-                Book(gw["CNY"].issue(), xrpIssue()));
+                Book(gw["CNY"].issue(), xdvIssue()));
             BEAST_EXPECT(std::distance(d.begin(), d.end()) == 1);
         }
 
@@ -72,16 +72,16 @@ struct BookDirs_test : public beast::unit_test::suite
             auto AUD = gw["AUD"];
             for (auto i = 1, j = 3; i <= 3; ++i, --j)
                 for (auto k = 0; k < 80; ++k)
-                    env(offer("alice", AUD(i), XRP(j)));
+                    env(offer("alice", AUD(i), XDV(j)));
 
             auto d = BookDirs(*env.current(),
-                Book(AUD.issue(), xrpIssue()));
+                Book(AUD.issue(), xdvIssue()));
             BEAST_EXPECT(std::distance(d.begin(), d.end()) == 240);
             auto i = 1, j = 3, k = 0;
             for (auto const& e : d)
             {
                 BEAST_EXPECT(e->getFieldAmount(sfTakerPays) == AUD(i));
-                BEAST_EXPECT(e->getFieldAmount(sfTakerGets) == XRP(j));
+                BEAST_EXPECT(e->getFieldAmount(sfTakerGets) == XDV(j));
                 if (++k % 80 == 0)
                 {
                     ++i;
@@ -101,7 +101,7 @@ struct BookDirs_test : public beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(BookDirs,ledger,ripple);
+BEAST_DEFINE_TESTSUITE(BookDirs,ledger,divvy);
 
 } // test
-} // ripple
+} // divvy

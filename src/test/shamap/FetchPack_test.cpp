@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,19 +17,19 @@
 */
 //==============================================================================
 
-#include <ripple/shamap/SHAMap.h>
+#include <divvy/shamap/SHAMap.h>
 #include <test/shamap/common.h>
-#include <ripple/protocol/digest.h>
-#include <ripple/basics/contract.h>
-#include <ripple/basics/random.h>
-#include <ripple/basics/StringUtilities.h>
-#include <ripple/basics/UnorderedContainers.h>
-#include <ripple/beast/xor_shift_engine.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/protocol/digest.h>
+#include <divvy/basics/contract.h>
+#include <divvy/basics/random.h>
+#include <divvy/basics/StringUtilities.h>
+#include <divvy/basics/UnorderedContainers.h>
+#include <divvy/beast/xor_shift_engine.h>
+#include <divvy/beast/unit_test.h>
 #include <functional>
 #include <stdexcept>
 
-namespace ripple {
+namespace divvy {
 namespace tests {
 
 class FetchPack_test : public beast::unit_test::suite
@@ -87,7 +87,7 @@ public:
     {
         Serializer s;
         for (int d = 0; d < 3; ++d)
-            s.add32 (ripple::rand_int<std::uint32_t>(r));
+            s.add32 (divvy::rand_int<std::uint32_t>(r));
         return std::make_shared <Item> (
             s.getSHA512Half(), s.peekData ());
     }
@@ -162,8 +162,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(FetchPack,shamap,ripple);
+BEAST_DEFINE_TESTSUITE(FetchPack,shamap,divvy);
 
 } // tests
-} // ripple
+} // divvy
 

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,16 +18,16 @@
 //==============================================================================
 
 #include <test/jtx/utility.h>
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/HashPrefix.h>
-#include <ripple/protocol/Indexes.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/STParsedJSON.h>
-#include <ripple/protocol/UintTypes.h>
-#include <ripple/basics/contract.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/HashPrefix.h>
+#include <divvy/protocol/Indexes.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/STParsedJSON.h>
+#include <divvy/protocol/UintTypes.h>
+#include <divvy/basics/contract.h>
 #include <cstring>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -50,7 +50,7 @@ sign (Json::Value& jv,
     Serializer ss;
     ss.add32 (HashPrefix::txSign);
     parse(jv).addWithoutSigningFields(ss);
-    auto const sig = ripple::sign(
+    auto const sig = divvy::sign(
         account.pk(), account.sk(), ss.slice());
     jv[jss::TxnSignature] =
         strHex(Slice{ sig.data(), sig.size() });
@@ -89,4 +89,4 @@ fill_seq (Json::Value& jv,
 
 } // jtx
 } // test
-} // ripple
+} // divvy

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,11 +18,11 @@
 //==============================================================================
 
 #include <test/nodestore/TestBase.h>
-#include <ripple/nodestore/DummyScheduler.h>
-#include <ripple/nodestore/Manager.h>
-#include <ripple/beast/utility/temp_dir.h>
+#include <divvy/nodestore/DummyScheduler.h>
+#include <divvy/nodestore/Manager.h>
+#include <divvy/beast/utility/temp_dir.h>
 
-namespace ripple {
+namespace divvy {
 namespace NodeStore {
 
 class Database_test : public TestBase
@@ -162,7 +162,7 @@ public:
                 std::unique_ptr<Database> db =
                     Manager::instance().make_Database(
                         "test", scheduler, 2, parent, nodeParams, j);
-                BEAST_EXPECT(db->earliestSeq() == XRP_LEDGER_EARLIEST_SEQ);
+                BEAST_EXPECT(db->earliestSeq() == XDV_LEDGER_EARLIEST_SEQ);
             }
 
             // Set an invalid earliest ledger sequence
@@ -196,7 +196,7 @@ public:
             {
                 // Set to default earliest ledger sequence
                 nodeParams.set("earliest_seq",
-                    std::to_string(XRP_LEDGER_EARLIEST_SEQ));
+                    std::to_string(XDV_LEDGER_EARLIEST_SEQ));
                 std::unique_ptr<Database> db2 =
                     Manager::instance().make_Database(
                         "test", scheduler, 2, parent, nodeParams, j);
@@ -221,7 +221,7 @@ public:
         {
             testNodeStore ("nudb", true, seedValue);
 
-        #if RIPPLE_ROCKSDB_AVAILABLE
+        #if DIVVY_ROCKSDB_AVAILABLE
             testNodeStore ("rocksdb", true, seedValue);
         #endif
         }
@@ -230,18 +230,18 @@ public:
         {
             testImport ("nudb", "nudb", seedValue);
 
-        #if RIPPLE_ROCKSDB_AVAILABLE
+        #if DIVVY_ROCKSDB_AVAILABLE
             testImport ("rocksdb", "rocksdb", seedValue);
         #endif
 
-        #if RIPPLE_ENABLE_SQLITE_BACKEND_TESTS
+        #if DIVVY_ENABLE_SQLITE_BACKEND_TESTS
             testImport ("sqlite", "sqlite", seedValue);
         #endif
         }
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Database,NodeStore,ripple);
+BEAST_DEFINE_TESTSUITE(Database,NodeStore,divvy);
 
 }
 }

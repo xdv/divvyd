@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_ENVCONFIG_H_INCLUDED
-#define RIPPLE_TEST_JTX_ENVCONFIG_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_ENVCONFIG_H_INCLUDED
+#define DIVVY_TEST_JTX_ENVCONFIG_H_INCLUDED
 
-#include <ripple/core/Config.h>
+#include <divvy/core/Config.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 extern std::atomic<bool> envUseIPv4;
@@ -61,7 +61,7 @@ envconfig()
 ///
 /// @param modfunc callable function or lambda to modify the default config.
 /// The first argument to the function must be std::unique_ptr to
-/// ripple::Config. The function takes ownership of the unique_ptr and
+/// divvy::Config. The function takes ownership of the unique_ptr and
 /// relinquishes ownership by returning a unique_ptr.
 ///
 /// @param args additional arguments that will be passed to
@@ -114,7 +114,7 @@ port_increment(std::unique_ptr<Config>, int);
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif
 

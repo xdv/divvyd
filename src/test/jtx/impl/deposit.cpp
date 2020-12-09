@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2018 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2018 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,9 +18,9 @@
 //==============================================================================
 
 #include <test/jtx/deposit.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/JsonFields.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -52,4 +52,4 @@ unauth (jtx::Account const& account, jtx::Account const& unauth)
 
 } // jtx
 } // test
-} // ripple
+} // divvy

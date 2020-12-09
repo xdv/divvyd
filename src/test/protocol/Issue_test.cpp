@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,10 +17,10 @@
 */
 //==============================================================================
 
-#include <ripple/basics/UnorderedContainers.h>
-#include <ripple/protocol/Book.h>
-#include <ripple/protocol/Issue.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/UnorderedContainers.h>
+#include <divvy/protocol/Book.h>
+#include <divvy/protocol/Issue.h>
+#include <divvy/beast/unit_test.h>
 #include <map>
 #include <set>
 #include <typeinfo>
@@ -32,15 +32,15 @@
 # define STL_SET_HAS_EMPLACE 0
 #endif
 
-#ifndef RIPPLE_ASSETS_ENABLE_STD_HASH
+#ifndef DIVVY_ASSETS_ENABLE_STD_HASH
 # if BEAST_MAC || BEAST_IOS
-#  define RIPPLE_ASSETS_ENABLE_STD_HASH 0
+#  define DIVVY_ASSETS_ENABLE_STD_HASH 0
 # else
-#  define RIPPLE_ASSETS_ENABLE_STD_HASH 1
+#  define DIVVY_ASSETS_ENABLE_STD_HASH 1
 # endif
 #endif
 
-namespace ripple {
+namespace divvy {
 
 class Issue_test : public beast::unit_test::suite
 {
@@ -213,7 +213,7 @@ public:
         testcase ("std::set <Issue>");
         testIssueSet <std::set <Issue>> ();
 
-#if RIPPLE_ASSETS_ENABLE_STD_HASH
+#if DIVVY_ASSETS_ENABLE_STD_HASH
         testcase ("std::unordered_set <Issue>");
         testIssueSet <std::unordered_set <Issue>> ();
 
@@ -236,7 +236,7 @@ public:
         testcase ("std::map <Issue, int>");
         testIssueMap <std::map <Issue, int>> ();
 
-#if RIPPLE_ASSETS_ENABLE_STD_HASH
+#if DIVVY_ASSETS_ENABLE_STD_HASH
         testcase ("std::unordered_map <Issue, int>");
         testIssueMap <std::unordered_map <Issue, int>> ();
 
@@ -416,7 +416,7 @@ public:
         testcase ("std::set <Book>");
         testBookSet <std::set <Book>> ();
 
-#if RIPPLE_ASSETS_ENABLE_STD_HASH
+#if DIVVY_ASSETS_ENABLE_STD_HASH
         testcase ("std::unordered_set <Book>");
         testBookSet <std::unordered_set <Book>> ();
 
@@ -439,7 +439,7 @@ public:
         testcase ("std::map <Book, int>");
         testBookMap <std::map <Book, int>> ();
 
-#if RIPPLE_ASSETS_ENABLE_STD_HASH
+#if DIVVY_ASSETS_ENABLE_STD_HASH
         testcase ("std::unordered_map <Book, int>");
         testBookMap <std::unordered_map <Book, int>> ();
 
@@ -488,6 +488,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Issue,protocol,ripple);
+BEAST_DEFINE_TESTSUITE(Issue,protocol,divvy);
 
 }

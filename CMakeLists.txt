@@ -9,7 +9,7 @@ if (target)
     "The target option is deprecated and will be removed in a future release")
   parse_target()
 endif ()
-project (rippled)
+project (divvyd)
 
 #[===================================================================[
    convenience variables and sanity checks
@@ -65,24 +65,24 @@ if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio" AND
 endif ()
 
 if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-  message (FATAL_ERROR "Rippled requires a 64 bit target architecture.\n"
-    "The most likely cause of this warning is trying to build rippled with a 32-bit OS.")
+  message (FATAL_ERROR "Divvyd requires a 64 bit target architecture.\n"
+    "The most likely cause of this warning is trying to build divvyd with a 32-bit OS.")
 endif ()
 
 #[===================================================================[
    read version from source
 #]===================================================================]
 
-file (STRINGS src/ripple/protocol/impl/BuildInfo.cpp BUILD_INFO)
+file (STRINGS src/divvy/protocol/impl/BuildInfo.cpp BUILD_INFO)
 foreach (line_ ${BUILD_INFO})
   if (line_ MATCHES "versionString[ ]*=[ ]*\"(.+)\"")
-    set (rippled_version ${CMAKE_MATCH_1})
+    set (divvyd_version ${CMAKE_MATCH_1})
   endif ()
 endforeach ()
-if (rippled_version)
-  message (STATUS "rippled version: ${rippled_version}")
+if (divvyd_version)
+  message (STATUS "divvyd version: ${divvyd_version}")
 else ()
-  message (FATAL_ERROR "unable to determine rippled version")
+  message (FATAL_ERROR "unable to determine divvyd version")
 endif ()
 
 #[===================================================================[
@@ -99,7 +99,7 @@ else ()
   set (coverage OFF CACHE BOOL "gcc/clang only" FORCE)
 endif ()
 if (is_linux)
-  option (BUILD_SHARED_LIBS "build shared ripple libraries" OFF)
+  option (BUILD_SHARED_LIBS "build shared divvy libraries" OFF)
   option (static "link protobuf, openssl, libc++, and boost statically" ON)
   option (perf "Enables flags that assist with perf recording" OFF)
   option (use_gold "enables detection of gold (binutils) linker" ON)
@@ -107,7 +107,7 @@ else ()
   # we are not ready to allow shared-libs on windows because it would require
   # export declarations. On macos it's more feasible, but static openssl
   # produces odd linker errors, thus we disable shared lib builds for now.
-  set (BUILD_SHARED_LIBS OFF CACHE BOOL "build shared ripple libraries - OFF for win/macos" FORCE)
+  set (BUILD_SHARED_LIBS OFF CACHE BOOL "build shared divvy libraries - OFF for win/macos" FORCE)
   set (static ON CACHE BOOL "static link, linux only. ON for WIN/macos" FORCE)
   set (perf OFF CACHE BOOL "perf flags, linux only" FORCE)
   set (use_gold OFF CACHE BOOL "gold linker, linux only" FORCE)
@@ -190,9 +190,9 @@ endif ()
    toolchain file, especially the ABI-impacting ones
 #]=========================================================]
 add_library (common INTERFACE)
-add_library (Ripple::common ALIAS common)
+add_library (Divvy::common ALIAS common)
 # add a single global dependency on this interface lib
-link_libraries (Ripple::common)
+link_libraries (Divvy::common)
 set_target_properties (common
   PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 target_compile_features (common INTERFACE cxx_std_14)
@@ -343,11 +343,11 @@ if (assert)
 endif ()
 
 #[===================================================================[
-   rippled compile options/settings via an interface library
+   divvyd compile options/settings via an interface library
 #]===================================================================]
 
 add_library (opts INTERFACE)
-add_library (Ripple::opts ALIAS opts)
+add_library (Divvy::opts ALIAS opts)
 target_compile_definitions (opts
   INTERFACE
     BOOST_NO_AUTO_PTR
@@ -363,13 +363,13 @@ target_compile_definitions (opts
       BOOST_FILESYSTEM_DEPRECATED
     >
     BEAST_CHECK_MEMORY_LEAKS=$<BOOL:${beast_check_mem_leaks}>
-    RIPPLE_DUMP_LEAKS_ON_EXIT=$<BOOL:${dump_leaks_on_exit}>
+    DIVVY_DUMP_LEAKS_ON_EXIT=$<BOOL:${dump_leaks_on_exit}>
     $<$<BOOL:${beast_no_unit_test_inline}>:BEAST_NO_UNIT_TEST_INLINE=1>
     $<$<BOOL:${beast_force_debug}>:BEAST_FORCE_DEBUG=1>
     $<$<BOOL:${beast_disable_autolink}>:BEAST_DONT_AUTOLINK_TO_WIN32_LIBRARIES=1>
-    $<$<BOOL:${single_io_service_thread}>:RIPPLE_SINGLE_IO_SERVICE_THREAD=1>
+    $<$<BOOL:${single_io_service_thread}>:DIVVY_SINGLE_IO_SERVICE_THREAD=1>
     # doesn't currently compile ? :
-    $<$<BOOL:${verify_nodeobject_keys}>:RIPPLE_VERIFY_NODEOBJECT_KEYS=1>)
+    $<$<BOOL:${verify_nodeobject_keys}>:DIVVY_VERIFY_NODEOBJECT_KEYS=1>)
 target_compile_options (opts
   INTERFACE
     $<$<AND:$<BOOL:${is_gcc}>,$<COMPILE_LANGUAGE:CXX>>:-Wsuggest-override>
@@ -409,12 +409,12 @@ if (san)
 endif ()
 
 #[===================================================================[
-   rippled transitive library deps via an interface library
+   divvyd transitive library deps via an interface library
 #]===================================================================]
 
-add_library (ripple_syslibs INTERFACE)
-add_library (Ripple::syslibs ALIAS ripple_syslibs)
-target_link_libraries (ripple_syslibs
+add_library (divvy_syslibs INTERFACE)
+add_library (Divvy::syslibs ALIAS divvy_syslibs)
+target_link_libraries (divvy_syslibs
   INTERFACE
     $<$<BOOL:${MSVC}>:
       legacy_stdio_definitions.lib
@@ -439,12 +439,12 @@ target_link_libraries (ripple_syslibs
 if (NOT MSVC)
   set (THREADS_PREFER_PTHREAD_FLAG ON)
   find_package (Threads)
-  target_link_libraries (ripple_syslibs INTERFACE Threads::Threads)
+  target_link_libraries (divvy_syslibs INTERFACE Threads::Threads)
 endif ()
 
-add_library (ripple_libs INTERFACE)
-add_library (Ripple::libs ALIAS ripple_libs)
-target_link_libraries (ripple_libs INTERFACE Ripple::syslibs)
+add_library (divvy_libs INTERFACE)
+add_library (Divvy::libs ALIAS divvy_libs)
+target_link_libraries (divvy_libs INTERFACE Divvy::syslibs)
 
 #[===================================================================[
    NIH dep: boost
@@ -497,16 +497,16 @@ find_package (Boost 1.67 REQUIRED
     system
     thread)
 
-add_library (ripple_boost INTERFACE)
-add_library (Ripple::boost ALIAS ripple_boost)
+add_library (divvy_boost INTERFACE)
+add_library (Divvy::boost ALIAS divvy_boost)
 if (is_xcode)
-  target_include_directories (ripple_boost BEFORE INTERFACE ${Boost_INCLUDE_DIRS})
-  target_compile_options (ripple_boost INTERFACE --system-header-prefix="boost/")
+  target_include_directories (divvy_boost BEFORE INTERFACE ${Boost_INCLUDE_DIRS})
+  target_compile_options (divvy_boost INTERFACE --system-header-prefix="boost/")
 else ()
-  target_include_directories (ripple_boost SYSTEM INTERFACE ${Boost_INCLUDE_DIRS})
+  target_include_directories (divvy_boost SYSTEM INTERFACE ${Boost_INCLUDE_DIRS})
 endif()
 
-target_link_libraries (ripple_boost
+target_link_libraries (divvy_boost
   INTERFACE
     Boost::boost
     Boost::chrono
@@ -547,7 +547,7 @@ if ("$ENV{CI}" STREQUAL "true" AND "$ENV{TRAVIS}" STREQUAL "true")
   set (_ssl_min_ver 1.0.1)
 endif ()
 find_package (OpenSSL ${_ssl_min_ver} REQUIRED)
-target_link_libraries (ripple_libs
+target_link_libraries (divvy_libs
   INTERFACE
     OpenSSL::SSL
     OpenSSL::Crypto)
@@ -597,7 +597,7 @@ target_compile_options (secp256k1
     >
     $<$<BOOL:${is_gcc}>:-Wno-nonnull-compare>)
 add_library (NIH::secp256k1 ALIAS secp256k1)
-target_link_libraries (ripple_libs INTERFACE NIH::secp256k1)
+target_link_libraries (divvy_libs INTERFACE NIH::secp256k1)
 #[===========================[
    headers installation
 #]===========================]
@@ -626,7 +626,7 @@ target_include_directories (ed25519-donna
 #]=========================================================]
 target_link_libraries (ed25519-donna PUBLIC OpenSSL::SSL)
 add_library (NIH::ed25519-donna ALIAS ed25519-donna)
-target_link_libraries (ripple_libs INTERFACE NIH::ed25519-donna)
+target_link_libraries (divvy_libs INTERFACE NIH::ed25519-donna)
 #[===========================[
    headers installation
 #]===========================]
@@ -647,7 +647,7 @@ add_library (lz4 STATIC
 target_compile_definitions (lz4
   PRIVATE XXH_NAMESPACE=LZ4_)
 add_library (NIH::lz4 ALIAS lz4)
-target_link_libraries (ripple_libs INTERFACE NIH::lz4)
+target_link_libraries (divvy_libs INTERFACE NIH::lz4)
 ## pseudo-install our files so that dependent builds can find them
 file (MAKE_DIRECTORY
     ${CMAKE_BINARY_DIR}/lz4/include
@@ -756,7 +756,7 @@ set_target_properties (archive_lib PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS LIBARCHIVE_STATIC)
 add_dependencies (archive_lib libarchive)
 target_link_libraries (archive_lib INTERFACE NIH::lz4)
-target_link_libraries (ripple_libs INTERFACE archive_lib)
+target_link_libraries (divvy_libs INTERFACE archive_lib)
 
 #[===================================================================[
    NIH dep: sqlite
@@ -796,7 +796,7 @@ target_compile_options (sqlite3
     $<$<NOT:$<BOOL:${MSVC}>>:-Wno-array-bounds>)
 add_library (NIH::sqlite3 ALIAS sqlite3)
 target_link_libraries (sqlite3 PUBLIC $<$<NOT:$<BOOL:${MSVC}>>:dl>)
-target_link_libraries (ripple_libs INTERFACE NIH::sqlite3)
+target_link_libraries (divvy_libs INTERFACE NIH::sqlite3)
 file (MAKE_DIRECTORY
     ${CMAKE_BINARY_DIR}/sqlite3/include
     ${CMAKE_BINARY_DIR}/sqlite3/lib)
@@ -823,7 +823,7 @@ add_library (soci STATIC
      this unity file is our interpretation of
      what sources constitute soci-lib.
   #]=========================================================]
-  src/ripple/unity/soci.cpp
+  src/divvy/unity/soci.cpp
   # this header is here to create dependency on the sqlite post-build step
   ${CMAKE_BINARY_DIR}/sqlite3/include/sqlite3.h)
 target_compile_definitions (soci PUBLIC SOCI_HAVE_CXX_C11=1)
@@ -845,9 +845,9 @@ target_include_directories (soci
     src/soci/include/private)
 target_link_libraries (soci
   NIH::sqlite3
-  Ripple::boost)
+  Divvy::boost)
 add_library (NIH::soci ALIAS soci)
-target_link_libraries (ripple_libs INTERFACE NIH::soci)
+target_link_libraries (divvy_libs INTERFACE NIH::soci)
 exclude_if_included (soci)
 
 #[===================================================================[
@@ -870,7 +870,7 @@ target_include_directories (snappy
     src/snappy/snappy
     src/snappy/config)
 add_library (NIH::snappy ALIAS snappy)
-target_link_libraries (ripple_libs INTERFACE NIH::snappy)
+target_link_libraries (divvy_libs INTERFACE NIH::snappy)
 exclude_if_included (snappy)
 
 #[===================================================================[
@@ -883,7 +883,7 @@ if (NOT MSVC)
        this unity file is our interpretation of what sources
        constitute rocksdb
     #]=========================================================]
-    src/ripple/unity/rocksdb.cpp)
+    src/divvy/unity/rocksdb.cpp)
   target_compile_options (rocksdb
     PRIVATE
       $<$<BOOL:${is_gcc}>:-w>
@@ -902,7 +902,7 @@ if (NOT MSVC)
   target_compile_definitions (rocksdb
     PUBLIC
       SNAPPY
-      RIPPLE_ROCKSDB_AVAILABLE=1
+      DIVVY_ROCKSDB_AVAILABLE=1
       $<$<BOOL:${WIN32}>:ROCKSDB_PLATFORM_WINDOWS>
       $<$<NOT:$<BOOL:${WIN32}>>:
         ROCKSDB_PLATFORM_POSIX
@@ -914,10 +914,10 @@ if (NOT MSVC)
   target_link_libraries (rocksdb NIH::snappy)
 else ()
   add_library (rocksdb INTERFACE)
-  target_compile_definitions (rocksdb INTERFACE RIPPLE_ROCKSDB_AVAILABLE=0)
+  target_compile_definitions (rocksdb INTERFACE DIVVY_ROCKSDB_AVAILABLE=0)
 endif ()
 add_library (NIH::rocksdb ALIAS rocksdb)
-target_link_libraries (ripple_libs INTERFACE NIH::rocksdb)
+target_link_libraries (divvy_libs INTERFACE NIH::rocksdb)
 exclude_if_included (rocksdb)
 
 #[===================================================================[
@@ -935,7 +935,7 @@ target_link_libraries (nudb
     Boost::thread
     Boost::system)
 add_library (NIH::nudb ALIAS nudb)
-target_link_libraries (ripple_libs INTERFACE NIH::nudb)
+target_link_libraries (divvy_libs INTERFACE NIH::nudb)
 
 #[===================================================================[
    import protobuf (lib and compiler) and create a lib
@@ -954,7 +954,7 @@ if (MSVC AND NOT TARGET protobuf::protoc)
   if (NOT my_protoc)
     message (WARNING "No protoc found -- downloading now")
     file (DOWNLOAD
-      "https://ripple.github.io/Downloads/protoc/2.5.1/protoc.exe"
+      "https://divvy.github.io/Downloads/protoc/2.5.1/protoc.exe"
       ${CMAKE_BINARY_DIR}/tools/protoc.exe
       STATUS status
       TIMEOUT 30)
@@ -976,18 +976,18 @@ set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_BINARY_DIR}/proto_gen)
 protobuf_generate_cpp (
   PROTO_SRCS
   PROTO_HDRS
-  src/ripple/proto/ripple.proto)
+  src/divvy/proto/divvy.proto)
 set (CMAKE_CURRENT_BINARY_DIR ${save_CBD})
 
 add_library (pbufs STATIC ${PROTO_SRCS} ${PROTO_HDRS})
 if ((NOT TARGET protobuf::libprotobuf) AND (NOT Protobuf_LIBRARIES))
   message (STATUS "protobuf lib not found - adding unity source for lib")
-  target_sources (pbufs PRIVATE src/ripple/unity/protobuf.cpp)
+  target_sources (pbufs PRIVATE src/divvy/unity/protobuf.cpp)
   target_include_directories (pbufs
     PUBLIC
       src/protobuf/src
       src/protobuf/vsprojects
-      src/ripple/proto)
+      src/divvy/proto)
   target_compile_definitions (pbufs
     PRIVATE
       _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS)
@@ -1021,50 +1021,50 @@ target_compile_options (pbufs
       -wd4800
       -wd4996
     >)
-add_library (Ripple::pbufs ALIAS pbufs)
-target_link_libraries (ripple_libs INTERFACE Ripple::pbufs)
+add_library (Divvy::pbufs ALIAS pbufs)
+target_link_libraries (divvy_libs INTERFACE Divvy::pbufs)
 exclude_if_included (pbufs)
 
 #[===================================================================[
-   xrpl_core
+   xdvl_core
    core functionality, useable by some client software perhaps
 #]===================================================================]
 
 file (GLOB_RECURSE rb_headers
-  src/ripple/beast/*.h
-  src/ripple/beast/*.hpp)
+  src/divvy/beast/*.h
+  src/divvy/beast/*.hpp)
 
-add_library (xrpl_core
+add_library (xdvl_core
   ${rb_headers} ## headers added here for benefit of IDEs
   #[===============================[
       beast/legacy FILES:
       TODO: review these sources for removal or replacement
   #]===============================]
   $<$<BOOL:${unity}>:
-    src/ripple/beast/core/core.unity.cpp
-    src/ripple/beast/unity/beast_hash_unity.cpp
-    src/ripple/beast/unity/beast_insight_unity.cpp
-    src/ripple/beast/unity/beast_net_unity.cpp
-    src/ripple/beast/unity/beast_utility_unity.cpp
+    src/divvy/beast/core/core.unity.cpp
+    src/divvy/beast/unity/beast_hash_unity.cpp
+    src/divvy/beast/unity/beast_insight_unity.cpp
+    src/divvy/beast/unity/beast_net_unity.cpp
+    src/divvy/beast/unity/beast_utility_unity.cpp
   >
   $<$<NOT:$<BOOL:${unity}>>:
-    src/ripple/beast/core/CurrentThreadName.cpp
-    src/ripple/beast/core/SemanticVersion.cpp
-    src/ripple/beast/core/WaitableEvent.cpp
-    src/ripple/beast/hash/impl/xxhash.cpp
-    src/ripple/beast/insight/impl/Collector.cpp
-    src/ripple/beast/insight/impl/Groups.cpp
-    src/ripple/beast/insight/impl/Hook.cpp
-    src/ripple/beast/insight/impl/Metric.cpp
-    src/ripple/beast/insight/impl/NullCollector.cpp
-    src/ripple/beast/insight/impl/StatsDCollector.cpp
-    src/ripple/beast/net/impl/IPAddressConversion.cpp
-    src/ripple/beast/net/impl/IPAddressV4.cpp
-    src/ripple/beast/net/impl/IPAddressV6.cpp
-    src/ripple/beast/net/impl/IPEndpoint.cpp
-    src/ripple/beast/utility/src/beast_Debug.cpp
-    src/ripple/beast/utility/src/beast_Journal.cpp
-    src/ripple/beast/utility/src/beast_PropertyStream.cpp
+    src/divvy/beast/core/CurrentThreadName.cpp
+    src/divvy/beast/core/SemanticVersion.cpp
+    src/divvy/beast/core/WaitableEvent.cpp
+    src/divvy/beast/hash/impl/xxhash.cpp
+    src/divvy/beast/insight/impl/Collector.cpp
+    src/divvy/beast/insight/impl/Groups.cpp
+    src/divvy/beast/insight/impl/Hook.cpp
+    src/divvy/beast/insight/impl/Metric.cpp
+    src/divvy/beast/insight/impl/NullCollector.cpp
+    src/divvy/beast/insight/impl/StatsDCollector.cpp
+    src/divvy/beast/net/impl/IPAddressConversion.cpp
+    src/divvy/beast/net/impl/IPAddressV4.cpp
+    src/divvy/beast/net/impl/IPAddressV6.cpp
+    src/divvy/beast/net/impl/IPEndpoint.cpp
+    src/divvy/beast/utility/src/beast_Debug.cpp
+    src/divvy/beast/utility/src/beast_Journal.cpp
+    src/divvy/beast/utility/src/beast_PropertyStream.cpp
   >
   # END beast/legacy
 
@@ -1072,270 +1072,270 @@ add_library (xrpl_core
      core sources
   #]===============================]
   $<$<BOOL:${unity}>:
-    src/ripple/unity/basics1.cpp
-    src/ripple/unity/json.cpp
-    src/ripple/unity/protocol.cpp
-    src/ripple/unity/crypto.cpp
+    src/divvy/unity/basics1.cpp
+    src/divvy/unity/json.cpp
+    src/divvy/unity/protocol.cpp
+    src/divvy/unity/crypto.cpp
   >
   $<$<NOT:$<BOOL:${unity}>>:
     #[===============================[
        nounity, main sources:
          subdir: basics (partial)
     #]===============================]
-    src/ripple/basics/impl/base64.cpp
-    src/ripple/basics/impl/contract.cpp
-    src/ripple/basics/impl/CountedObject.cpp
-    src/ripple/basics/impl/Log.cpp
-    src/ripple/basics/impl/strHex.cpp
-    src/ripple/basics/impl/StringUtilities.cpp
+    src/divvy/basics/impl/base64.cpp
+    src/divvy/basics/impl/contract.cpp
+    src/divvy/basics/impl/CountedObject.cpp
+    src/divvy/basics/impl/Log.cpp
+    src/divvy/basics/impl/strHex.cpp
+    src/divvy/basics/impl/StringUtilities.cpp
     #[===============================[
        nounity, main sources:
          subdir: json
     #]===============================]
-    src/ripple/json/impl/JsonPropertyStream.cpp
-    src/ripple/json/impl/Object.cpp
-    src/ripple/json/impl/Output.cpp
-    src/ripple/json/impl/Writer.cpp
-    src/ripple/json/impl/json_reader.cpp
-    src/ripple/json/impl/json_value.cpp
-    src/ripple/json/impl/json_valueiterator.cpp
-    src/ripple/json/impl/json_writer.cpp
-    src/ripple/json/impl/to_string.cpp
+    src/divvy/json/impl/JsonPropertyStream.cpp
+    src/divvy/json/impl/Object.cpp
+    src/divvy/json/impl/Output.cpp
+    src/divvy/json/impl/Writer.cpp
+    src/divvy/json/impl/json_reader.cpp
+    src/divvy/json/impl/json_value.cpp
+    src/divvy/json/impl/json_valueiterator.cpp
+    src/divvy/json/impl/json_writer.cpp
+    src/divvy/json/impl/to_string.cpp
     #[===============================[
        nounity, main sources:
          subdir: protocol
     #]===============================]
-    src/ripple/protocol/impl/AccountID.cpp
-    src/ripple/protocol/impl/Book.cpp
-    src/ripple/protocol/impl/BuildInfo.cpp
-    src/ripple/protocol/impl/ErrorCodes.cpp
-    src/ripple/protocol/impl/Feature.cpp
-    src/ripple/protocol/impl/HashPrefix.cpp
-    src/ripple/protocol/impl/IOUAmount.cpp
-    src/ripple/protocol/impl/Indexes.cpp
-    src/ripple/protocol/impl/InnerObjectFormats.cpp
-    src/ripple/protocol/impl/Issue.cpp
-    src/ripple/protocol/impl/Keylet.cpp
-    src/ripple/protocol/impl/LedgerFormats.cpp
-    src/ripple/protocol/impl/PublicKey.cpp
-    src/ripple/protocol/impl/Quality.cpp
-    src/ripple/protocol/impl/Rate2.cpp
-    src/ripple/protocol/impl/SField.cpp
-    src/ripple/protocol/impl/SOTemplate.cpp
-    src/ripple/protocol/impl/STAccount.cpp
-    src/ripple/protocol/impl/STAmount.cpp
-    src/ripple/protocol/impl/STArray.cpp
-    src/ripple/protocol/impl/STBase.cpp
-    src/ripple/protocol/impl/STBlob.cpp
-    src/ripple/protocol/impl/STInteger.cpp
-    src/ripple/protocol/impl/STLedgerEntry.cpp
-    src/ripple/protocol/impl/STObject.cpp
-    src/ripple/protocol/impl/STParsedJSON.cpp
-    src/ripple/protocol/impl/STPathSet.cpp
-    src/ripple/protocol/impl/STTx.cpp
-    src/ripple/protocol/impl/STValidation.cpp
-    src/ripple/protocol/impl/STVar.cpp
-    src/ripple/protocol/impl/STVector256.cpp
-    src/ripple/protocol/impl/SecretKey.cpp
-    src/ripple/protocol/impl/Seed.cpp
-    src/ripple/protocol/impl/Serializer.cpp
-    src/ripple/protocol/impl/Sign.cpp
-    src/ripple/protocol/impl/TER.cpp
-    src/ripple/protocol/impl/TxFormats.cpp
-    src/ripple/protocol/impl/UintTypes.cpp
-    src/ripple/protocol/impl/digest.cpp
-    src/ripple/protocol/impl/tokens.cpp
+    src/divvy/protocol/impl/AccountID.cpp
+    src/divvy/protocol/impl/Book.cpp
+    src/divvy/protocol/impl/BuildInfo.cpp
+    src/divvy/protocol/impl/ErrorCodes.cpp
+    src/divvy/protocol/impl/Feature.cpp
+    src/divvy/protocol/impl/HashPrefix.cpp
+    src/divvy/protocol/impl/IOUAmount.cpp
+    src/divvy/protocol/impl/Indexes.cpp
+    src/divvy/protocol/impl/InnerObjectFormats.cpp
+    src/divvy/protocol/impl/Issue.cpp
+    src/divvy/protocol/impl/Keylet.cpp
+    src/divvy/protocol/impl/LedgerFormats.cpp
+    src/divvy/protocol/impl/PublicKey.cpp
+    src/divvy/protocol/impl/Quality.cpp
+    src/divvy/protocol/impl/Rate2.cpp
+    src/divvy/protocol/impl/SField.cpp
+    src/divvy/protocol/impl/SOTemplate.cpp
+    src/divvy/protocol/impl/STAccount.cpp
+    src/divvy/protocol/impl/STAmount.cpp
+    src/divvy/protocol/impl/STArray.cpp
+    src/divvy/protocol/impl/STBase.cpp
+    src/divvy/protocol/impl/STBlob.cpp
+    src/divvy/protocol/impl/STInteger.cpp
+    src/divvy/protocol/impl/STLedgerEntry.cpp
+    src/divvy/protocol/impl/STObject.cpp
+    src/divvy/protocol/impl/STParsedJSON.cpp
+    src/divvy/protocol/impl/STPathSet.cpp
+    src/divvy/protocol/impl/STTx.cpp
+    src/divvy/protocol/impl/STValidation.cpp
+    src/divvy/protocol/impl/STVar.cpp
+    src/divvy/protocol/impl/STVector256.cpp
+    src/divvy/protocol/impl/SecretKey.cpp
+    src/divvy/protocol/impl/Seed.cpp
+    src/divvy/protocol/impl/Serializer.cpp
+    src/divvy/protocol/impl/Sign.cpp
+    src/divvy/protocol/impl/TER.cpp
+    src/divvy/protocol/impl/TxFormats.cpp
+    src/divvy/protocol/impl/UintTypes.cpp
+    src/divvy/protocol/impl/digest.cpp
+    src/divvy/protocol/impl/tokens.cpp
     #[===============================[
        nounity, main sources:
          subdir: crypto
     #]===============================]
-    src/ripple/crypto/impl/GenerateDeterministicKey.cpp
-    src/ripple/crypto/impl/KeyType.cpp
-    src/ripple/crypto/impl/RFC1751.cpp
-    src/ripple/crypto/impl/csprng.cpp
-    src/ripple/crypto/impl/ec_key.cpp
-    src/ripple/crypto/impl/openssl.cpp
+    src/divvy/crypto/impl/GenerateDeterministicKey.cpp
+    src/divvy/crypto/impl/KeyType.cpp
+    src/divvy/crypto/impl/RFC1751.cpp
+    src/divvy/crypto/impl/csprng.cpp
+    src/divvy/crypto/impl/ec_key.cpp
+    src/divvy/crypto/impl/openssl.cpp
   >)
-add_library (Ripple::xrpl_core ALIAS xrpl_core)
-target_include_directories (xrpl_core
+add_library (Divvy::xdvl_core ALIAS xdvl_core)
+target_include_directories (xdvl_core
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/ripple>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/divvy>
     # this one is for beast/legacy files:
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/beast/extras>
     $<INSTALL_INTERFACE:include>)
-target_compile_options (xrpl_core
+target_compile_options (xdvl_core
   PUBLIC
     $<$<BOOL:${is_gcc}>:-Wno-maybe-uninitialized>)
-target_link_libraries (xrpl_core
+target_link_libraries (xdvl_core
   PUBLIC
     OpenSSL::Crypto
     NIH::secp256k1
     NIH::ed25519-donna
-    Ripple::syslibs
-    Ripple::boost
-    Ripple::opts)
+    Divvy::syslibs
+    Divvy::boost
+    Divvy::opts)
 #[=================================[
    main/core headers installation
 #]=================================]
 install (
   FILES
-    src/ripple/basics/base64.h
-    src/ripple/basics/Blob.h
-    src/ripple/basics/Buffer.h
-    src/ripple/basics/CountedObject.h
-    src/ripple/basics/LocalValue.h
-    src/ripple/basics/Log.h
-    src/ripple/basics/Slice.h
-    src/ripple/basics/StringUtilities.h
-    src/ripple/basics/ToString.h
-    src/ripple/basics/UnorderedContainers.h
-    src/ripple/basics/base_uint.h
-    src/ripple/basics/chrono.h
-    src/ripple/basics/contract.h
-    src/ripple/basics/date.h
-    src/ripple/basics/hardened_hash.h
-    src/ripple/basics/strHex.h
-  DESTINATION include/ripple/basics)
+    src/divvy/basics/base64.h
+    src/divvy/basics/Blob.h
+    src/divvy/basics/Buffer.h
+    src/divvy/basics/CountedObject.h
+    src/divvy/basics/LocalValue.h
+    src/divvy/basics/Log.h
+    src/divvy/basics/Slice.h
+    src/divvy/basics/StringUtilities.h
+    src/divvy/basics/ToString.h
+    src/divvy/basics/UnorderedContainers.h
+    src/divvy/basics/base_uint.h
+    src/divvy/basics/chrono.h
+    src/divvy/basics/contract.h
+    src/divvy/basics/date.h
+    src/divvy/basics/hardened_hash.h
+    src/divvy/basics/strHex.h
+  DESTINATION include/divvy/basics)
 install (
   FILES
-    src/ripple/crypto/GenerateDeterministicKey.h
-    src/ripple/crypto/KeyType.h
-    src/ripple/crypto/RFC1751.h
-    src/ripple/crypto/csprng.h
-  DESTINATION include/ripple/crypto)
+    src/divvy/crypto/GenerateDeterministicKey.h
+    src/divvy/crypto/KeyType.h
+    src/divvy/crypto/RFC1751.h
+    src/divvy/crypto/csprng.h
+  DESTINATION include/divvy/crypto)
 install (
   FILES
-    src/ripple/crypto/impl/ec_key.h
-    src/ripple/crypto/impl/openssl.h
-  DESTINATION include/ripple/crypto/impl)
+    src/divvy/crypto/impl/ec_key.h
+    src/divvy/crypto/impl/openssl.h
+  DESTINATION include/divvy/crypto/impl)
 install (
   FILES
-    src/ripple/json/JsonPropertyStream.h
-    src/ripple/json/Object.h
-    src/ripple/json/Output.h
-    src/ripple/json/Writer.h
-    src/ripple/json/json_forwards.h
-    src/ripple/json/json_reader.h
-    src/ripple/json/json_value.h
-    src/ripple/json/json_writer.h
-    src/ripple/json/to_string.h
-  DESTINATION include/ripple/json)
+    src/divvy/json/JsonPropertyStream.h
+    src/divvy/json/Object.h
+    src/divvy/json/Output.h
+    src/divvy/json/Writer.h
+    src/divvy/json/json_forwards.h
+    src/divvy/json/json_reader.h
+    src/divvy/json/json_value.h
+    src/divvy/json/json_writer.h
+    src/divvy/json/to_string.h
+  DESTINATION include/divvy/json)
 install (
   FILES
-    src/ripple/json/impl/json_assert.h
-  DESTINATION include/ripple/json/impl)
+    src/divvy/json/impl/json_assert.h
+  DESTINATION include/divvy/json/impl)
 install (
   FILES
-    src/ripple/protocol/AccountID.h
-    src/ripple/protocol/AmountConversions.h
-    src/ripple/protocol/Book.h
-    src/ripple/protocol/BuildInfo.h
-    src/ripple/protocol/ErrorCodes.h
-    src/ripple/protocol/Feature.h
-    src/ripple/protocol/HashPrefix.h
-    src/ripple/protocol/IOUAmount.h
-    src/ripple/protocol/Indexes.h
-    src/ripple/protocol/InnerObjectFormats.h
-    src/ripple/protocol/Issue.h
-    src/ripple/protocol/JsonFields.h
-    src/ripple/protocol/Keylet.h
-    src/ripple/protocol/KnownFormats.h
-    src/ripple/protocol/LedgerFormats.h
-    src/ripple/protocol/Protocol.h
-    src/ripple/protocol/PublicKey.h
-    src/ripple/protocol/Quality.h
-    src/ripple/protocol/Rate.h
-    src/ripple/protocol/SField.h
-    src/ripple/protocol/SOTemplate.h
-    src/ripple/protocol/STAccount.h
-    src/ripple/protocol/STAmount.h
-    src/ripple/protocol/STArray.h
-    src/ripple/protocol/STBase.h
-    src/ripple/protocol/STBitString.h
-    src/ripple/protocol/STBlob.h
-    src/ripple/protocol/STExchange.h
-    src/ripple/protocol/STInteger.h
-    src/ripple/protocol/STLedgerEntry.h
-    src/ripple/protocol/STObject.h
-    src/ripple/protocol/STParsedJSON.h
-    src/ripple/protocol/STPathSet.h
-    src/ripple/protocol/STTx.h
-    src/ripple/protocol/STValidation.h
-    src/ripple/protocol/STVector256.h
-    src/ripple/protocol/SecretKey.h
-    src/ripple/protocol/Seed.h
-    src/ripple/protocol/Serializer.h
-    src/ripple/protocol/Sign.h
-    src/ripple/protocol/SystemParameters.h
-    src/ripple/protocol/TER.h
-    src/ripple/protocol/TxFlags.h
-    src/ripple/protocol/TxFormats.h
-    src/ripple/protocol/UintTypes.h
-    src/ripple/protocol/XRPAmount.h
-    src/ripple/protocol/digest.h
-    src/ripple/protocol/tokens.h
-  DESTINATION include/ripple/protocol)
+    src/divvy/protocol/AccountID.h
+    src/divvy/protocol/AmountConversions.h
+    src/divvy/protocol/Book.h
+    src/divvy/protocol/BuildInfo.h
+    src/divvy/protocol/ErrorCodes.h
+    src/divvy/protocol/Feature.h
+    src/divvy/protocol/HashPrefix.h
+    src/divvy/protocol/IOUAmount.h
+    src/divvy/protocol/Indexes.h
+    src/divvy/protocol/InnerObjectFormats.h
+    src/divvy/protocol/Issue.h
+    src/divvy/protocol/JsonFields.h
+    src/divvy/protocol/Keylet.h
+    src/divvy/protocol/KnownFormats.h
+    src/divvy/protocol/LedgerFormats.h
+    src/divvy/protocol/Protocol.h
+    src/divvy/protocol/PublicKey.h
+    src/divvy/protocol/Quality.h
+    src/divvy/protocol/Rate.h
+    src/divvy/protocol/SField.h
+    src/divvy/protocol/SOTemplate.h
+    src/divvy/protocol/STAccount.h
+    src/divvy/protocol/STAmount.h
+    src/divvy/protocol/STArray.h
+    src/divvy/protocol/STBase.h
+    src/divvy/protocol/STBitString.h
+    src/divvy/protocol/STBlob.h
+    src/divvy/protocol/STExchange.h
+    src/divvy/protocol/STInteger.h
+    src/divvy/protocol/STLedgerEntry.h
+    src/divvy/protocol/STObject.h
+    src/divvy/protocol/STParsedJSON.h
+    src/divvy/protocol/STPathSet.h
+    src/divvy/protocol/STTx.h
+    src/divvy/protocol/STValidation.h
+    src/divvy/protocol/STVector256.h
+    src/divvy/protocol/SecretKey.h
+    src/divvy/protocol/Seed.h
+    src/divvy/protocol/Serializer.h
+    src/divvy/protocol/Sign.h
+    src/divvy/protocol/SystemParameters.h
+    src/divvy/protocol/TER.h
+    src/divvy/protocol/TxFlags.h
+    src/divvy/protocol/TxFormats.h
+    src/divvy/protocol/UintTypes.h
+    src/divvy/protocol/XDVAmount.h
+    src/divvy/protocol/digest.h
+    src/divvy/protocol/tokens.h
+  DESTINATION include/divvy/protocol)
 install (
   FILES
-    src/ripple/protocol/impl/STVar.h
-    src/ripple/protocol/impl/secp256k1.h
-  DESTINATION include/ripple/protocol/impl)
+    src/divvy/protocol/impl/STVar.h
+    src/divvy/protocol/impl/secp256k1.h
+  DESTINATION include/divvy/protocol/impl)
 
 #[===================================[
    beast/legacy headers installation
 #]===================================]
 install (
   FILES
-    src/ripple/beast/clock/abstract_clock.h
-    src/ripple/beast/clock/basic_seconds_clock.h
-    src/ripple/beast/clock/manual_clock.h
-  DESTINATION include/ripple/beast/clock)
+    src/divvy/beast/clock/abstract_clock.h
+    src/divvy/beast/clock/basic_seconds_clock.h
+    src/divvy/beast/clock/manual_clock.h
+  DESTINATION include/divvy/beast/clock)
 install (
   FILES
-    src/ripple/beast/core/CompilerConfig.h
-    src/ripple/beast/core/Config.h
-    src/ripple/beast/core/ConfigCheck.h
-    src/ripple/beast/core/LexicalCast.h
-    src/ripple/beast/core/List.h
-    src/ripple/beast/core/PlatformConfig.h
-    src/ripple/beast/core/SemanticVersion.h
-    src/ripple/beast/core/StandardConfig.h
-  DESTINATION include/ripple/beast/core)
+    src/divvy/beast/core/CompilerConfig.h
+    src/divvy/beast/core/Config.h
+    src/divvy/beast/core/ConfigCheck.h
+    src/divvy/beast/core/LexicalCast.h
+    src/divvy/beast/core/List.h
+    src/divvy/beast/core/PlatformConfig.h
+    src/divvy/beast/core/SemanticVersion.h
+    src/divvy/beast/core/StandardConfig.h
+  DESTINATION include/divvy/beast/core)
 install (
   FILES
-    src/ripple/beast/crypto/detail/mac_facade.h
-    src/ripple/beast/crypto/detail/ripemd_context.h
-    src/ripple/beast/crypto/detail/sha2_context.h
-    src/ripple/beast/crypto/ripemd.h
-    src/ripple/beast/crypto/secure_erase.h
-    src/ripple/beast/crypto/sha2.h
-  DESTINATION include/ripple/beast/crypto)
+    src/divvy/beast/crypto/detail/mac_facade.h
+    src/divvy/beast/crypto/detail/ripemd_context.h
+    src/divvy/beast/crypto/detail/sha2_context.h
+    src/divvy/beast/crypto/ripemd.h
+    src/divvy/beast/crypto/secure_erase.h
+    src/divvy/beast/crypto/sha2.h
+  DESTINATION include/divvy/beast/crypto)
 install (
   FILES
-    src/ripple/beast/hash/endian.h
-    src/ripple/beast/hash/hash_append.h
-    src/ripple/beast/hash/meta.h
-    src/ripple/beast/hash/uhash.h
-    src/ripple/beast/hash/xxhasher.h
-  DESTINATION include/ripple/beast/hash)
+    src/divvy/beast/hash/endian.h
+    src/divvy/beast/hash/hash_append.h
+    src/divvy/beast/hash/meta.h
+    src/divvy/beast/hash/uhash.h
+    src/divvy/beast/hash/xxhasher.h
+  DESTINATION include/divvy/beast/hash)
 install (
-  FILES src/ripple/beast/hash/impl/xxhash.h
-  DESTINATION include/ripple/beast/hash/impl)
-install (
-  FILES
-    src/ripple/beast/rfc2616.h
-    src/ripple/beast/type_name.h
-    src/ripple/beast/unit_test.h
-    src/ripple/beast/xor_shift_engine.h
-  DESTINATION include/ripple/beast)
+  FILES src/divvy/beast/hash/impl/xxhash.h
+  DESTINATION include/divvy/beast/hash/impl)
 install (
   FILES
-    src/ripple/beast/utility/Journal.h
-    src/ripple/beast/utility/PropertyStream.h
-    src/ripple/beast/utility/Zero.h
-    src/ripple/beast/utility/rngfill.h
-  DESTINATION include/ripple/beast/utility)
+    src/divvy/beast/rfc2616.h
+    src/divvy/beast/type_name.h
+    src/divvy/beast/unit_test.h
+    src/divvy/beast/xor_shift_engine.h
+  DESTINATION include/divvy/beast)
+install (
+  FILES
+    src/divvy/beast/utility/Journal.h
+    src/divvy/beast/utility/PropertyStream.h
+    src/divvy/beast/utility/Zero.h
+    src/divvy/beast/utility/rngfill.h
+  DESTINATION include/divvy/beast/utility)
 # WARNING!! -- horrible levelization ahead
 # (these files should be isolated or moved...but
 #  unfortunately unit_test.h above creates this dependency)
@@ -1360,7 +1360,7 @@ install (
   DESTINATION include/beast/unit_test/detail)
 
 #[===================================================================[
-   rippled executable
+   divvyd executable
 #]===================================================================]
 
 #[=========================================================[
@@ -1368,37 +1368,37 @@ install (
    versions of cmake happy. cmake 3.10+ allows
    add_executable with no sources
 #]=========================================================]
-add_executable (rippled src/ripple/app/main/Application.h)
-target_sources (rippled PRIVATE
+add_executable (divvyd src/divvy/app/main/Application.h)
+target_sources (divvyd PRIVATE
   $<$<BOOL:${unity}>:
     #[===============================[
        unity, main sources
     #]===============================]
-    src/ripple/unity/app_consensus.cpp
-    src/ripple/unity/app_ledger.cpp
-    src/ripple/unity/app_ledger_impl.cpp
-    src/ripple/unity/app_main1.cpp
-    src/ripple/unity/app_main2.cpp
-    src/ripple/unity/app_misc.cpp
-    src/ripple/unity/app_misc_impl.cpp
-    src/ripple/unity/app_paths.cpp
-    src/ripple/unity/app_tx.cpp
-    src/ripple/unity/conditions.cpp
-    src/ripple/unity/consensus.cpp
-    src/ripple/unity/core.cpp
-    src/ripple/unity/basics2.cpp
-    src/ripple/unity/ledger.cpp
-    src/ripple/unity/net.cpp
-    src/ripple/unity/nodestore.cpp
-    src/ripple/unity/overlay1.cpp
-    src/ripple/unity/overlay2.cpp
-    src/ripple/unity/peerfinder.cpp
-    src/ripple/unity/resource.cpp
-    src/ripple/unity/rpcx1.cpp
-    src/ripple/unity/rpcx2.cpp
-    src/ripple/unity/shamap.cpp
-    src/ripple/unity/server.cpp
-    src/ripple/unity/soci_ripple.cpp
+    src/divvy/unity/app_consensus.cpp
+    src/divvy/unity/app_ledger.cpp
+    src/divvy/unity/app_ledger_impl.cpp
+    src/divvy/unity/app_main1.cpp
+    src/divvy/unity/app_main2.cpp
+    src/divvy/unity/app_misc.cpp
+    src/divvy/unity/app_misc_impl.cpp
+    src/divvy/unity/app_paths.cpp
+    src/divvy/unity/app_tx.cpp
+    src/divvy/unity/conditions.cpp
+    src/divvy/unity/consensus.cpp
+    src/divvy/unity/core.cpp
+    src/divvy/unity/basics2.cpp
+    src/divvy/unity/ledger.cpp
+    src/divvy/unity/net.cpp
+    src/divvy/unity/nodestore.cpp
+    src/divvy/unity/overlay1.cpp
+    src/divvy/unity/overlay2.cpp
+    src/divvy/unity/peerfinder.cpp
+    src/divvy/unity/resource.cpp
+    src/divvy/unity/rpcx1.cpp
+    src/divvy/unity/rpcx2.cpp
+    src/divvy/unity/shamap.cpp
+    src/divvy/unity/server.cpp
+    src/divvy/unity/soci_divvy.cpp
     #[===============================[
        unity, test sources
     #]===============================]
@@ -1431,313 +1431,313 @@ target_sources (rippled PRIVATE
        nounity, main sources:
          subdir: app
     #]===============================]
-    src/ripple/app/consensus/RCLConsensus.cpp
-    src/ripple/app/consensus/RCLCxPeerPos.cpp
-    src/ripple/app/consensus/RCLValidations.cpp
-    src/ripple/app/ledger/AcceptedLedger.cpp
-    src/ripple/app/ledger/AcceptedLedgerTx.cpp
-    src/ripple/app/ledger/AccountStateSF.cpp
-    src/ripple/app/ledger/BookListeners.cpp
-    src/ripple/app/ledger/ConsensusTransSetSF.cpp
-    src/ripple/app/ledger/Ledger.cpp
-    src/ripple/app/ledger/LedgerHistory.cpp
-    src/ripple/app/ledger/OrderBookDB.cpp
-    src/ripple/app/ledger/TransactionStateSF.cpp
-    src/ripple/app/ledger/impl/BuildLedger.cpp
-    src/ripple/app/ledger/impl/InboundLedger.cpp
-    src/ripple/app/ledger/impl/InboundLedgers.cpp
-    src/ripple/app/ledger/impl/InboundTransactions.cpp
-    src/ripple/app/ledger/impl/LedgerCleaner.cpp
-    src/ripple/app/ledger/impl/LedgerMaster.cpp
-    src/ripple/app/ledger/impl/LedgerReplay.cpp
-    src/ripple/app/ledger/impl/LedgerToJson.cpp
-    src/ripple/app/ledger/impl/LocalTxs.cpp
-    src/ripple/app/ledger/impl/OpenLedger.cpp
-    src/ripple/app/ledger/impl/TransactionAcquire.cpp
-    src/ripple/app/ledger/impl/TransactionMaster.cpp
-    src/ripple/app/main/Application.cpp
-    src/ripple/app/main/BasicApp.cpp
-    src/ripple/app/main/CollectorManager.cpp
-    src/ripple/app/main/DBInit.cpp
-    src/ripple/app/main/LoadManager.cpp
-    src/ripple/app/main/Main.cpp
-    src/ripple/app/main/NodeIdentity.cpp
-    src/ripple/app/main/NodeStoreScheduler.cpp
-    src/ripple/app/misc/CanonicalTXSet.cpp
-    src/ripple/app/misc/FeeVoteImpl.cpp
-    src/ripple/app/misc/HashRouter.cpp
-    src/ripple/app/misc/NetworkOPs.cpp
-    src/ripple/app/misc/SHAMapStoreImp.cpp
-    src/ripple/app/misc/impl/AccountTxPaging.cpp
-    src/ripple/app/misc/impl/AmendmentTable.cpp
-    src/ripple/app/misc/impl/LoadFeeTrack.cpp
-    src/ripple/app/misc/impl/Manifest.cpp
-    src/ripple/app/misc/impl/Transaction.cpp
-    src/ripple/app/misc/impl/TxQ.cpp
-    src/ripple/app/misc/impl/ValidatorKeys.cpp
-    src/ripple/app/misc/impl/ValidatorList.cpp
-    src/ripple/app/misc/impl/ValidatorSite.cpp
-    src/ripple/app/paths/AccountCurrencies.cpp
-    src/ripple/app/paths/Credit.cpp
-    src/ripple/app/paths/Flow.cpp
-    src/ripple/app/paths/Node.cpp
-    src/ripple/app/paths/PathRequest.cpp
-    src/ripple/app/paths/PathRequests.cpp
-    src/ripple/app/paths/PathState.cpp
-    src/ripple/app/paths/Pathfinder.cpp
-    src/ripple/app/paths/RippleCalc.cpp
-    src/ripple/app/paths/RippleLineCache.cpp
-    src/ripple/app/paths/RippleState.cpp
-    src/ripple/app/paths/cursor/AdvanceNode.cpp
-    src/ripple/app/paths/cursor/DeliverNodeForward.cpp
-    src/ripple/app/paths/cursor/DeliverNodeReverse.cpp
-    src/ripple/app/paths/cursor/EffectiveRate.cpp
-    src/ripple/app/paths/cursor/ForwardLiquidity.cpp
-    src/ripple/app/paths/cursor/ForwardLiquidityForAccount.cpp
-    src/ripple/app/paths/cursor/Liquidity.cpp
-    src/ripple/app/paths/cursor/NextIncrement.cpp
-    src/ripple/app/paths/cursor/ReverseLiquidity.cpp
-    src/ripple/app/paths/cursor/ReverseLiquidityForAccount.cpp
-    src/ripple/app/paths/cursor/RippleLiquidity.cpp
-    src/ripple/app/paths/impl/BookStep.cpp
-    src/ripple/app/paths/impl/DirectStep.cpp
-    src/ripple/app/paths/impl/PaySteps.cpp
-    src/ripple/app/paths/impl/XRPEndpointStep.cpp
-    src/ripple/app/tx/impl/ApplyContext.cpp
-    src/ripple/app/tx/impl/BookTip.cpp
-    src/ripple/app/tx/impl/CancelCheck.cpp
-    src/ripple/app/tx/impl/CancelOffer.cpp
-    src/ripple/app/tx/impl/CancelTicket.cpp
-    src/ripple/app/tx/impl/CashCheck.cpp
-    src/ripple/app/tx/impl/Change.cpp
-    src/ripple/app/tx/impl/CreateCheck.cpp
-    src/ripple/app/tx/impl/CreateOffer.cpp
-    src/ripple/app/tx/impl/CreateTicket.cpp
-    src/ripple/app/tx/impl/DepositPreauth.cpp
-    src/ripple/app/tx/impl/Escrow.cpp
-    src/ripple/app/tx/impl/InvariantCheck.cpp
-    src/ripple/app/tx/impl/OfferStream.cpp
-    src/ripple/app/tx/impl/PayChan.cpp
-    src/ripple/app/tx/impl/Payment.cpp
-    src/ripple/app/tx/impl/SetAccount.cpp
-    src/ripple/app/tx/impl/SetRegularKey.cpp
-    src/ripple/app/tx/impl/SetSignerList.cpp
-    src/ripple/app/tx/impl/SetTrust.cpp
-    src/ripple/app/tx/impl/SignerEntries.cpp
-    src/ripple/app/tx/impl/Taker.cpp
-    src/ripple/app/tx/impl/Transactor.cpp
-    src/ripple/app/tx/impl/apply.cpp
-    src/ripple/app/tx/impl/applySteps.cpp
+    src/divvy/app/consensus/RCLConsensus.cpp
+    src/divvy/app/consensus/RCLCxPeerPos.cpp
+    src/divvy/app/consensus/RCLValidations.cpp
+    src/divvy/app/ledger/AcceptedLedger.cpp
+    src/divvy/app/ledger/AcceptedLedgerTx.cpp
+    src/divvy/app/ledger/AccountStateSF.cpp
+    src/divvy/app/ledger/BookListeners.cpp
+    src/divvy/app/ledger/ConsensusTransSetSF.cpp
+    src/divvy/app/ledger/Ledger.cpp
+    src/divvy/app/ledger/LedgerHistory.cpp
+    src/divvy/app/ledger/OrderBookDB.cpp
+    src/divvy/app/ledger/TransactionStateSF.cpp
+    src/divvy/app/ledger/impl/BuildLedger.cpp
+    src/divvy/app/ledger/impl/InboundLedger.cpp
+    src/divvy/app/ledger/impl/InboundLedgers.cpp
+    src/divvy/app/ledger/impl/InboundTransactions.cpp
+    src/divvy/app/ledger/impl/LedgerCleaner.cpp
+    src/divvy/app/ledger/impl/LedgerMaster.cpp
+    src/divvy/app/ledger/impl/LedgerReplay.cpp
+    src/divvy/app/ledger/impl/LedgerToJson.cpp
+    src/divvy/app/ledger/impl/LocalTxs.cpp
+    src/divvy/app/ledger/impl/OpenLedger.cpp
+    src/divvy/app/ledger/impl/TransactionAcquire.cpp
+    src/divvy/app/ledger/impl/TransactionMaster.cpp
+    src/divvy/app/main/Application.cpp
+    src/divvy/app/main/BasicApp.cpp
+    src/divvy/app/main/CollectorManager.cpp
+    src/divvy/app/main/DBInit.cpp
+    src/divvy/app/main/LoadManager.cpp
+    src/divvy/app/main/Main.cpp
+    src/divvy/app/main/NodeIdentity.cpp
+    src/divvy/app/main/NodeStoreScheduler.cpp
+    src/divvy/app/misc/CanonicalTXSet.cpp
+    src/divvy/app/misc/FeeVoteImpl.cpp
+    src/divvy/app/misc/HashRouter.cpp
+    src/divvy/app/misc/NetworkOPs.cpp
+    src/divvy/app/misc/SHAMapStoreImp.cpp
+    src/divvy/app/misc/impl/AccountTxPaging.cpp
+    src/divvy/app/misc/impl/AmendmentTable.cpp
+    src/divvy/app/misc/impl/LoadFeeTrack.cpp
+    src/divvy/app/misc/impl/Manifest.cpp
+    src/divvy/app/misc/impl/Transaction.cpp
+    src/divvy/app/misc/impl/TxQ.cpp
+    src/divvy/app/misc/impl/ValidatorKeys.cpp
+    src/divvy/app/misc/impl/ValidatorList.cpp
+    src/divvy/app/misc/impl/ValidatorSite.cpp
+    src/divvy/app/paths/AccountCurrencies.cpp
+    src/divvy/app/paths/Credit.cpp
+    src/divvy/app/paths/Flow.cpp
+    src/divvy/app/paths/Node.cpp
+    src/divvy/app/paths/PathRequest.cpp
+    src/divvy/app/paths/PathRequests.cpp
+    src/divvy/app/paths/PathState.cpp
+    src/divvy/app/paths/Pathfinder.cpp
+    src/divvy/app/paths/DivvyCalc.cpp
+    src/divvy/app/paths/DivvyLineCache.cpp
+    src/divvy/app/paths/DivvyState.cpp
+    src/divvy/app/paths/cursor/AdvanceNode.cpp
+    src/divvy/app/paths/cursor/DeliverNodeForward.cpp
+    src/divvy/app/paths/cursor/DeliverNodeReverse.cpp
+    src/divvy/app/paths/cursor/EffectiveRate.cpp
+    src/divvy/app/paths/cursor/ForwardLiquidity.cpp
+    src/divvy/app/paths/cursor/ForwardLiquidityForAccount.cpp
+    src/divvy/app/paths/cursor/Liquidity.cpp
+    src/divvy/app/paths/cursor/NextIncrement.cpp
+    src/divvy/app/paths/cursor/ReverseLiquidity.cpp
+    src/divvy/app/paths/cursor/ReverseLiquidityForAccount.cpp
+    src/divvy/app/paths/cursor/DivvyLiquidity.cpp
+    src/divvy/app/paths/impl/BookStep.cpp
+    src/divvy/app/paths/impl/DirectStep.cpp
+    src/divvy/app/paths/impl/PaySteps.cpp
+    src/divvy/app/paths/impl/XDVEndpointStep.cpp
+    src/divvy/app/tx/impl/ApplyContext.cpp
+    src/divvy/app/tx/impl/BookTip.cpp
+    src/divvy/app/tx/impl/CancelCheck.cpp
+    src/divvy/app/tx/impl/CancelOffer.cpp
+    src/divvy/app/tx/impl/CancelTicket.cpp
+    src/divvy/app/tx/impl/CashCheck.cpp
+    src/divvy/app/tx/impl/Change.cpp
+    src/divvy/app/tx/impl/CreateCheck.cpp
+    src/divvy/app/tx/impl/CreateOffer.cpp
+    src/divvy/app/tx/impl/CreateTicket.cpp
+    src/divvy/app/tx/impl/DepositPreauth.cpp
+    src/divvy/app/tx/impl/Escrow.cpp
+    src/divvy/app/tx/impl/InvariantCheck.cpp
+    src/divvy/app/tx/impl/OfferStream.cpp
+    src/divvy/app/tx/impl/PayChan.cpp
+    src/divvy/app/tx/impl/Payment.cpp
+    src/divvy/app/tx/impl/SetAccount.cpp
+    src/divvy/app/tx/impl/SetRegularKey.cpp
+    src/divvy/app/tx/impl/SetSignerList.cpp
+    src/divvy/app/tx/impl/SetTrust.cpp
+    src/divvy/app/tx/impl/SignerEntries.cpp
+    src/divvy/app/tx/impl/Taker.cpp
+    src/divvy/app/tx/impl/Transactor.cpp
+    src/divvy/app/tx/impl/apply.cpp
+    src/divvy/app/tx/impl/applySteps.cpp
     #[===============================[
        nounity, main sources:
          subdir: basics (partial)
     #]===============================]
-    src/ripple/basics/impl/Archive.cpp
-    src/ripple/basics/impl/BasicConfig.cpp
-    src/ripple/basics/impl/PerfLogImp.cpp
-    src/ripple/basics/impl/ResolverAsio.cpp
-    src/ripple/basics/impl/Sustain.cpp
-    src/ripple/basics/impl/UptimeClock.cpp
-    src/ripple/basics/impl/make_SSLContext.cpp
-    src/ripple/basics/impl/mulDiv.cpp
+    src/divvy/basics/impl/Archive.cpp
+    src/divvy/basics/impl/BasicConfig.cpp
+    src/divvy/basics/impl/PerfLogImp.cpp
+    src/divvy/basics/impl/ResolverAsio.cpp
+    src/divvy/basics/impl/Sustain.cpp
+    src/divvy/basics/impl/UptimeClock.cpp
+    src/divvy/basics/impl/make_SSLContext.cpp
+    src/divvy/basics/impl/mulDiv.cpp
     #[===============================[
        nounity, main sources:
          subdir: conditions
     #]===============================]
-    src/ripple/conditions/impl/Condition.cpp
-    src/ripple/conditions/impl/Fulfillment.cpp
-    src/ripple/conditions/impl/error.cpp
+    src/divvy/conditions/impl/Condition.cpp
+    src/divvy/conditions/impl/Fulfillment.cpp
+    src/divvy/conditions/impl/error.cpp
     #[===============================[
        nounity, main sources:
          subdir: core
     #]===============================]
-    src/ripple/core/impl/Config.cpp
-    src/ripple/core/impl/DatabaseCon.cpp
-    src/ripple/core/impl/DummySociDynamicBackend.cpp
-    src/ripple/core/impl/Job.cpp
-    src/ripple/core/impl/JobQueue.cpp
-    src/ripple/core/impl/LoadEvent.cpp
-    src/ripple/core/impl/LoadMonitor.cpp
-    src/ripple/core/impl/SNTPClock.cpp
-    src/ripple/core/impl/SociDB.cpp
-    src/ripple/core/impl/Stoppable.cpp
-    src/ripple/core/impl/TerminateHandler.cpp
-    src/ripple/core/impl/TimeKeeper.cpp
-    src/ripple/core/impl/Workers.cpp
+    src/divvy/core/impl/Config.cpp
+    src/divvy/core/impl/DatabaseCon.cpp
+    src/divvy/core/impl/DummySociDynamicBackend.cpp
+    src/divvy/core/impl/Job.cpp
+    src/divvy/core/impl/JobQueue.cpp
+    src/divvy/core/impl/LoadEvent.cpp
+    src/divvy/core/impl/LoadMonitor.cpp
+    src/divvy/core/impl/SNTPClock.cpp
+    src/divvy/core/impl/SociDB.cpp
+    src/divvy/core/impl/Stoppable.cpp
+    src/divvy/core/impl/TerminateHandler.cpp
+    src/divvy/core/impl/TimeKeeper.cpp
+    src/divvy/core/impl/Workers.cpp
     #[===============================[
        nounity, main sources:
          subdir: consensus
     #]===============================]
-    src/ripple/consensus/Consensus.cpp
+    src/divvy/consensus/Consensus.cpp
     #[===============================[
        nounity, main sources:
          subdir: ledger
     #]===============================]
-    src/ripple/ledger/impl/ApplyStateTable.cpp
-    src/ripple/ledger/impl/ApplyView.cpp
-    src/ripple/ledger/impl/ApplyViewBase.cpp
-    src/ripple/ledger/impl/ApplyViewImpl.cpp
-    src/ripple/ledger/impl/BookDirs.cpp
-    src/ripple/ledger/impl/CachedSLEs.cpp
-    src/ripple/ledger/impl/CachedView.cpp
-    src/ripple/ledger/impl/CashDiff.cpp
-    src/ripple/ledger/impl/Directory.cpp
-    src/ripple/ledger/impl/OpenView.cpp
-    src/ripple/ledger/impl/PaymentSandbox.cpp
-    src/ripple/ledger/impl/RawStateTable.cpp
-    src/ripple/ledger/impl/ReadView.cpp
-    src/ripple/ledger/impl/TxMeta.cpp
-    src/ripple/ledger/impl/View.cpp
+    src/divvy/ledger/impl/ApplyStateTable.cpp
+    src/divvy/ledger/impl/ApplyView.cpp
+    src/divvy/ledger/impl/ApplyViewBase.cpp
+    src/divvy/ledger/impl/ApplyViewImpl.cpp
+    src/divvy/ledger/impl/BookDirs.cpp
+    src/divvy/ledger/impl/CachedSLEs.cpp
+    src/divvy/ledger/impl/CachedView.cpp
+    src/divvy/ledger/impl/CashDiff.cpp
+    src/divvy/ledger/impl/Directory.cpp
+    src/divvy/ledger/impl/OpenView.cpp
+    src/divvy/ledger/impl/PaymentSandbox.cpp
+    src/divvy/ledger/impl/RawStateTable.cpp
+    src/divvy/ledger/impl/ReadView.cpp
+    src/divvy/ledger/impl/TxMeta.cpp
+    src/divvy/ledger/impl/View.cpp
     #[===============================[
        nounity, main sources:
          subdir: net
     #]===============================]
-    src/ripple/net/impl/HTTPClient.cpp
-    src/ripple/net/impl/InfoSub.cpp
-    src/ripple/net/impl/RPCCall.cpp
-    src/ripple/net/impl/RPCErr.cpp
-    src/ripple/net/impl/RPCSub.cpp
-    src/ripple/net/impl/RegisterSSLCerts.cpp
-    src/ripple/net/impl/SSLHTTPDownloader.cpp
+    src/divvy/net/impl/HTTPClient.cpp
+    src/divvy/net/impl/InfoSub.cpp
+    src/divvy/net/impl/RPCCall.cpp
+    src/divvy/net/impl/RPCErr.cpp
+    src/divvy/net/impl/RPCSub.cpp
+    src/divvy/net/impl/RegisterSSLCerts.cpp
+    src/divvy/net/impl/SSLHTTPDownloader.cpp
     #[===============================[
        nounity, main sources:
          subdir: nodestore
     #]===============================]
-    src/ripple/nodestore/backend/MemoryFactory.cpp
-    src/ripple/nodestore/backend/NuDBFactory.cpp
-    src/ripple/nodestore/backend/NullFactory.cpp
-    src/ripple/nodestore/backend/RocksDBFactory.cpp
-    src/ripple/nodestore/backend/RocksDBQuickFactory.cpp
-    src/ripple/nodestore/impl/BatchWriter.cpp
-    src/ripple/nodestore/impl/Database.cpp
-    src/ripple/nodestore/impl/DatabaseNodeImp.cpp
-    src/ripple/nodestore/impl/DatabaseRotatingImp.cpp
-    src/ripple/nodestore/impl/DatabaseShardImp.cpp
-    src/ripple/nodestore/impl/DecodedBlob.cpp
-    src/ripple/nodestore/impl/DummyScheduler.cpp
-    src/ripple/nodestore/impl/EncodedBlob.cpp
-    src/ripple/nodestore/impl/ManagerImp.cpp
-    src/ripple/nodestore/impl/NodeObject.cpp
-    src/ripple/nodestore/impl/Shard.cpp
+    src/divvy/nodestore/backend/MemoryFactory.cpp
+    src/divvy/nodestore/backend/NuDBFactory.cpp
+    src/divvy/nodestore/backend/NullFactory.cpp
+    src/divvy/nodestore/backend/RocksDBFactory.cpp
+    src/divvy/nodestore/backend/RocksDBQuickFactory.cpp
+    src/divvy/nodestore/impl/BatchWriter.cpp
+    src/divvy/nodestore/impl/Database.cpp
+    src/divvy/nodestore/impl/DatabaseNodeImp.cpp
+    src/divvy/nodestore/impl/DatabaseRotatingImp.cpp
+    src/divvy/nodestore/impl/DatabaseShardImp.cpp
+    src/divvy/nodestore/impl/DecodedBlob.cpp
+    src/divvy/nodestore/impl/DummyScheduler.cpp
+    src/divvy/nodestore/impl/EncodedBlob.cpp
+    src/divvy/nodestore/impl/ManagerImp.cpp
+    src/divvy/nodestore/impl/NodeObject.cpp
+    src/divvy/nodestore/impl/Shard.cpp
     #[===============================[
        nounity, main sources:
          subdir: overlay
     #]===============================]
-    src/ripple/overlay/impl/Cluster.cpp
-    src/ripple/overlay/impl/ConnectAttempt.cpp
-    src/ripple/overlay/impl/Message.cpp
-    src/ripple/overlay/impl/OverlayImpl.cpp
-    src/ripple/overlay/impl/PeerImp.cpp
-    src/ripple/overlay/impl/PeerSet.cpp
-    src/ripple/overlay/impl/TMHello.cpp
-    src/ripple/overlay/impl/TrafficCount.cpp
+    src/divvy/overlay/impl/Cluster.cpp
+    src/divvy/overlay/impl/ConnectAttempt.cpp
+    src/divvy/overlay/impl/Message.cpp
+    src/divvy/overlay/impl/OverlayImpl.cpp
+    src/divvy/overlay/impl/PeerImp.cpp
+    src/divvy/overlay/impl/PeerSet.cpp
+    src/divvy/overlay/impl/TMHello.cpp
+    src/divvy/overlay/impl/TrafficCount.cpp
     #[===============================[
        nounity, main sources:
          subdir: peerfinder
     #]===============================]
-    src/ripple/peerfinder/impl/Bootcache.cpp
-    src/ripple/peerfinder/impl/Endpoint.cpp
-    src/ripple/peerfinder/impl/PeerfinderConfig.cpp
-    src/ripple/peerfinder/impl/PeerfinderManager.cpp
-    src/ripple/peerfinder/impl/SlotImp.cpp
-    src/ripple/peerfinder/impl/SourceStrings.cpp
+    src/divvy/peerfinder/impl/Bootcache.cpp
+    src/divvy/peerfinder/impl/Endpoint.cpp
+    src/divvy/peerfinder/impl/PeerfinderConfig.cpp
+    src/divvy/peerfinder/impl/PeerfinderManager.cpp
+    src/divvy/peerfinder/impl/SlotImp.cpp
+    src/divvy/peerfinder/impl/SourceStrings.cpp
     #[===============================[
        nounity, main sources:
          subdir: resource
     #]===============================]
-    src/ripple/resource/impl/Charge.cpp
-    src/ripple/resource/impl/Consumer.cpp
-    src/ripple/resource/impl/Fees.cpp
-    src/ripple/resource/impl/ResourceManager.cpp
+    src/divvy/resource/impl/Charge.cpp
+    src/divvy/resource/impl/Consumer.cpp
+    src/divvy/resource/impl/Fees.cpp
+    src/divvy/resource/impl/ResourceManager.cpp
     #[===============================[
        nounity, main sources:
          subdir: rpc
     #]===============================]
-    src/ripple/rpc/handlers/AccountChannels.cpp
-    src/ripple/rpc/handlers/AccountCurrenciesHandler.cpp
-    src/ripple/rpc/handlers/AccountInfo.cpp
-    src/ripple/rpc/handlers/AccountLines.cpp
-    src/ripple/rpc/handlers/AccountObjects.cpp
-    src/ripple/rpc/handlers/AccountOffers.cpp
-    src/ripple/rpc/handlers/AccountTx.cpp
-    src/ripple/rpc/handlers/AccountTxOld.cpp
-    src/ripple/rpc/handlers/AccountTxSwitch.cpp
-    src/ripple/rpc/handlers/BlackList.cpp
-    src/ripple/rpc/handlers/BookOffers.cpp
-    src/ripple/rpc/handlers/CanDelete.cpp
-    src/ripple/rpc/handlers/Connect.cpp
-    src/ripple/rpc/handlers/ConsensusInfo.cpp
-    src/ripple/rpc/handlers/DepositAuthorized.cpp
-    src/ripple/rpc/handlers/DownloadShard.cpp
-    src/ripple/rpc/handlers/Feature1.cpp
-    src/ripple/rpc/handlers/Fee1.cpp
-    src/ripple/rpc/handlers/FetchInfo.cpp
-    src/ripple/rpc/handlers/GatewayBalances.cpp
-    src/ripple/rpc/handlers/GetCounts.cpp
-    src/ripple/rpc/handlers/LedgerAccept.cpp
-    src/ripple/rpc/handlers/LedgerCleanerHandler.cpp
-    src/ripple/rpc/handlers/LedgerClosed.cpp
-    src/ripple/rpc/handlers/LedgerCurrent.cpp
-    src/ripple/rpc/handlers/LedgerData.cpp
-    src/ripple/rpc/handlers/LedgerEntry.cpp
-    src/ripple/rpc/handlers/LedgerHandler.cpp
-    src/ripple/rpc/handlers/LedgerHeader.cpp
-    src/ripple/rpc/handlers/LedgerRequest.cpp
-    src/ripple/rpc/handlers/LogLevel.cpp
-    src/ripple/rpc/handlers/LogRotate.cpp
-    src/ripple/rpc/handlers/NoRippleCheck.cpp
-    src/ripple/rpc/handlers/OwnerInfo.cpp
-    src/ripple/rpc/handlers/PathFind.cpp
-    src/ripple/rpc/handlers/PayChanClaim.cpp
-    src/ripple/rpc/handlers/Peers.cpp
-    src/ripple/rpc/handlers/Ping.cpp
-    src/ripple/rpc/handlers/Print.cpp
-    src/ripple/rpc/handlers/Random.cpp
-    src/ripple/rpc/handlers/RipplePathFind.cpp
-    src/ripple/rpc/handlers/ServerInfo.cpp
-    src/ripple/rpc/handlers/ServerState.cpp
-    src/ripple/rpc/handlers/SignFor.cpp
-    src/ripple/rpc/handlers/SignHandler.cpp
-    src/ripple/rpc/handlers/Stop.cpp
-    src/ripple/rpc/handlers/Submit.cpp
-    src/ripple/rpc/handlers/SubmitMultiSigned.cpp
-    src/ripple/rpc/handlers/Subscribe.cpp
-    src/ripple/rpc/handlers/TransactionEntry.cpp
-    src/ripple/rpc/handlers/Tx.cpp
-    src/ripple/rpc/handlers/TxHistory.cpp
-    src/ripple/rpc/handlers/UnlList.cpp
-    src/ripple/rpc/handlers/Unsubscribe.cpp
-    src/ripple/rpc/handlers/ValidationCreate.cpp
-    src/ripple/rpc/handlers/ValidationSeed.cpp
-    src/ripple/rpc/handlers/ValidatorListSites.cpp
-    src/ripple/rpc/handlers/Validators.cpp
-    src/ripple/rpc/handlers/WalletPropose.cpp
-    src/ripple/rpc/impl/Handler.cpp
-    src/ripple/rpc/impl/LegacyPathFind.cpp
-    src/ripple/rpc/impl/RPCHandler.cpp
-    src/ripple/rpc/impl/RPCHelpers.cpp
-    src/ripple/rpc/impl/Role.cpp
-    src/ripple/rpc/impl/ServerHandlerImp.cpp
-    src/ripple/rpc/impl/ShardArchiveHandler.cpp
-    src/ripple/rpc/impl/Status.cpp
-    src/ripple/rpc/impl/TransactionSign.cpp
+    src/divvy/rpc/handlers/AccountChannels.cpp
+    src/divvy/rpc/handlers/AccountCurrenciesHandler.cpp
+    src/divvy/rpc/handlers/AccountInfo.cpp
+    src/divvy/rpc/handlers/AccountLines.cpp
+    src/divvy/rpc/handlers/AccountObjects.cpp
+    src/divvy/rpc/handlers/AccountOffers.cpp
+    src/divvy/rpc/handlers/AccountTx.cpp
+    src/divvy/rpc/handlers/AccountTxOld.cpp
+    src/divvy/rpc/handlers/AccountTxSwitch.cpp
+    src/divvy/rpc/handlers/BlackList.cpp
+    src/divvy/rpc/handlers/BookOffers.cpp
+    src/divvy/rpc/handlers/CanDelete.cpp
+    src/divvy/rpc/handlers/Connect.cpp
+    src/divvy/rpc/handlers/ConsensusInfo.cpp
+    src/divvy/rpc/handlers/DepositAuthorized.cpp
+    src/divvy/rpc/handlers/DownloadShard.cpp
+    src/divvy/rpc/handlers/Feature1.cpp
+    src/divvy/rpc/handlers/Fee1.cpp
+    src/divvy/rpc/handlers/FetchInfo.cpp
+    src/divvy/rpc/handlers/GatewayBalances.cpp
+    src/divvy/rpc/handlers/GetCounts.cpp
+    src/divvy/rpc/handlers/LedgerAccept.cpp
+    src/divvy/rpc/handlers/LedgerCleanerHandler.cpp
+    src/divvy/rpc/handlers/LedgerClosed.cpp
+    src/divvy/rpc/handlers/LedgerCurrent.cpp
+    src/divvy/rpc/handlers/LedgerData.cpp
+    src/divvy/rpc/handlers/LedgerEntry.cpp
+    src/divvy/rpc/handlers/LedgerHandler.cpp
+    src/divvy/rpc/handlers/LedgerHeader.cpp
+    src/divvy/rpc/handlers/LedgerRequest.cpp
+    src/divvy/rpc/handlers/LogLevel.cpp
+    src/divvy/rpc/handlers/LogRotate.cpp
+    src/divvy/rpc/handlers/NoDivvyCheck.cpp
+    src/divvy/rpc/handlers/OwnerInfo.cpp
+    src/divvy/rpc/handlers/PathFind.cpp
+    src/divvy/rpc/handlers/PayChanClaim.cpp
+    src/divvy/rpc/handlers/Peers.cpp
+    src/divvy/rpc/handlers/Ping.cpp
+    src/divvy/rpc/handlers/Print.cpp
+    src/divvy/rpc/handlers/Random.cpp
+    src/divvy/rpc/handlers/DivvyPathFind.cpp
+    src/divvy/rpc/handlers/ServerInfo.cpp
+    src/divvy/rpc/handlers/ServerState.cpp
+    src/divvy/rpc/handlers/SignFor.cpp
+    src/divvy/rpc/handlers/SignHandler.cpp
+    src/divvy/rpc/handlers/Stop.cpp
+    src/divvy/rpc/handlers/Submit.cpp
+    src/divvy/rpc/handlers/SubmitMultiSigned.cpp
+    src/divvy/rpc/handlers/Subscribe.cpp
+    src/divvy/rpc/handlers/TransactionEntry.cpp
+    src/divvy/rpc/handlers/Tx.cpp
+    src/divvy/rpc/handlers/TxHistory.cpp
+    src/divvy/rpc/handlers/UnlList.cpp
+    src/divvy/rpc/handlers/Unsubscribe.cpp
+    src/divvy/rpc/handlers/ValidationCreate.cpp
+    src/divvy/rpc/handlers/ValidationSeed.cpp
+    src/divvy/rpc/handlers/ValidatorListSites.cpp
+    src/divvy/rpc/handlers/Validators.cpp
+    src/divvy/rpc/handlers/WalletPropose.cpp
+    src/divvy/rpc/impl/Handler.cpp
+    src/divvy/rpc/impl/LegacyPathFind.cpp
+    src/divvy/rpc/impl/RPCHandler.cpp
+    src/divvy/rpc/impl/RPCHelpers.cpp
+    src/divvy/rpc/impl/Role.cpp
+    src/divvy/rpc/impl/ServerHandlerImp.cpp
+    src/divvy/rpc/impl/ShardArchiveHandler.cpp
+    src/divvy/rpc/impl/Status.cpp
+    src/divvy/rpc/impl/TransactionSign.cpp
     #[===============================[
        nounity, main sources:
          subdir: server
     #]===============================]
-    src/ripple/server/impl/JSONRPCUtil.cpp
-    src/ripple/server/impl/Port.cpp
+    src/divvy/server/impl/JSONRPCUtil.cpp
+    src/divvy/server/impl/Port.cpp
     #[===============================[
        nounity, main sources:
          subdir: shamap
     #]===============================]
-    src/ripple/shamap/impl/SHAMap.cpp
-    src/ripple/shamap/impl/SHAMapDelta.cpp
-    src/ripple/shamap/impl/SHAMapItem.cpp
-    src/ripple/shamap/impl/SHAMapMissingNode.cpp
-    src/ripple/shamap/impl/SHAMapNodeID.cpp
-    src/ripple/shamap/impl/SHAMapSync.cpp
-    src/ripple/shamap/impl/SHAMapTreeNode.cpp
+    src/divvy/shamap/impl/SHAMap.cpp
+    src/divvy/shamap/impl/SHAMapDelta.cpp
+    src/divvy/shamap/impl/SHAMapItem.cpp
+    src/divvy/shamap/impl/SHAMapMissingNode.cpp
+    src/divvy/shamap/impl/SHAMapNodeID.cpp
+    src/divvy/shamap/impl/SHAMapSync.cpp
+    src/divvy/shamap/impl/SHAMapTreeNode.cpp
     #[===============================[
        nounity, test sources:
          subdir: app
@@ -1960,7 +1960,7 @@ target_sources (rippled PRIVATE
     src/test/protocol/SecretKey_test.cpp
     src/test/protocol/Seed_test.cpp
     src/test/protocol/TER_test.cpp
-    src/test/protocol/XRPAmount_test.cpp
+    src/test/protocol/XDVAmount_test.cpp
     src/test/protocol/digest_test.cpp
     src/test/protocol/types_test.cpp
     #[===============================[
@@ -1991,8 +1991,8 @@ target_sources (rippled PRIVATE
     src/test/rpc/LedgerData_test.cpp
     src/test/rpc/LedgerRPC_test.cpp
     src/test/rpc/LedgerRequestRPC_test.cpp
-    src/test/rpc/NoRippleCheck_test.cpp
-    src/test/rpc/NoRipple_test.cpp
+    src/test/rpc/NoDivvyCheck_test.cpp
+    src/test/rpc/NoDivvy_test.cpp
     src/test/rpc/OwnerInfo_test.cpp
     src/test/rpc/Peers_test.cpp
     src/test/rpc/RPCOverload_test.cpp
@@ -2022,12 +2022,12 @@ target_sources (rippled PRIVATE
     #]===============================]
     src/test/unit_test/multi_runner.cpp
     >)
-target_link_libraries (rippled
-  Ripple::opts
-  Ripple::libs
-  Ripple::boost
-  Ripple::xrpl_core)
-exclude_if_included (rippled)
+target_link_libraries (divvyd
+  Divvy::opts
+  Divvy::libs
+  Divvy::boost
+  Divvy::xdvl_core)
+exclude_if_included (divvyd)
 
 #[===================================================================[
    install stuff
@@ -2039,32 +2039,32 @@ install (
     ed25519-donna
     common
     opts
-    ripple_syslibs
-    ripple_boost
-    xrpl_core
-  EXPORT RippleExports
+    divvy_syslibs
+    divvy_boost
+    xdvl_core
+  EXPORT DivvyExports
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include)
-install (EXPORT RippleExports
-  FILE RippleTargets.cmake
-  NAMESPACE Ripple::
-  DESTINATION lib/cmake/ripple)
+install (EXPORT DivvyExports
+  FILE DivvyTargets.cmake
+  NAMESPACE Divvy::
+  DESTINATION lib/cmake/divvy)
 include (CMakePackageConfigHelpers)
 write_basic_package_version_file (
-  RippleConfigVersion.cmake
-  VERSION ${rippled_version}
+  DivvyConfigVersion.cmake
+  VERSION ${divvyd_version}
   COMPATIBILITY SameMajorVersion)
 
 if (is_root_project)
-  install (TARGETS rippled RUNTIME DESTINATION bin)
-  set_target_properties(rippled PROPERTIES INSTALL_RPATH_USE_LINK_PATH ON)
+  install (TARGETS divvyd RUNTIME DESTINATION bin)
+  set_target_properties(divvyd PROPERTIES INSTALL_RPATH_USE_LINK_PATH ON)
   install (
     FILES
-      ${CMAKE_CURRENT_SOURCE_DIR}/Builds/CMake/RippleConfig.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/RippleConfigVersion.cmake
-    DESTINATION lib/cmake/ripple)
+      ${CMAKE_CURRENT_SOURCE_DIR}/Builds/CMake/DivvyConfig.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/DivvyConfigVersion.cmake
+    DESTINATION lib/cmake/divvy)
   # sample configs should not overwrite existing files
   # install if-not-exists workaround as suggested by
   # https://cmake.org/Bug/view.php?id=12646
@@ -2076,7 +2076,7 @@ if (is_root_project)
         message (\"-- Skipping : \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/\${DEST}/\${NEWNAME}\")
       endif ()
     endmacro()
-    copy_if_not_exists(\"${CMAKE_CURRENT_SOURCE_DIR}/cfg/rippled-example.cfg\" etc rippled.cfg)
+    copy_if_not_exists(\"${CMAKE_CURRENT_SOURCE_DIR}/cfg/divvyd-example.cfg\" etc divvyd.cfg)
     copy_if_not_exists(\"${CMAKE_CURRENT_SOURCE_DIR}/cfg/validators-example.txt\" etc validators.txt)
   ")
 endif ()
@@ -2086,17 +2086,17 @@ endif ()
 #]===================================================================]
 
 if (is_multiconfig)
-  # Rippled headers. Only useful for IDEs.
-  file (GLOB_RECURSE rippled_headers src/*.h src/*.hpp *.md)
-  target_sources (rippled PRIVATE ${rippled_headers})
+  # Divvyd headers. Only useful for IDEs.
+  file (GLOB_RECURSE divvyd_headers src/*.h src/*.hpp *.md)
+  target_sources (divvyd PRIVATE ${divvyd_headers})
   set_property (
-    SOURCE ${rippled_headers}
+    SOURCE ${divvyd_headers}
     APPEND
     PROPERTY HEADER_FILE_ONLY true)
   if (MSVC)
     set_property(
       DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      PROPERTY VS_STARTUP_PROJECT rippled)
+      PROPERTY VS_STARTUP_PROJECT divvyd)
   endif ()
 endif ()
 

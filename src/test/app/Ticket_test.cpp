@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2012-2016 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2012-2016 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -18,10 +18,10 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Feature.h>
 
-namespace ripple {
+namespace divvy {
 
 class Ticket_test : public beast::unit_test::suite
 {
@@ -136,8 +136,8 @@ class Ticket_test : public beast::unit_test::suite
         using namespace test::jtx;
         Env env {*this, supported_amendments().set(featureTickets)};
 
-        env (ticket::create (env.master), fee (XRP (-1)), ter (temBAD_FEE));
-        env (ticket::cancel (env.master, idOne), fee (XRP (-1)), ter (temBAD_FEE));
+        env (ticket::create (env.master), fee (XDV (-1)), ter (temBAD_FEE));
+        env (ticket::cancel (env.master, idOne), fee (XDV (-1)), ter (temBAD_FEE));
     }
 
     void testTicketCreateNonexistent ()
@@ -231,7 +231,7 @@ class Ticket_test : public beast::unit_test::suite
         Env env {*this, supported_amendments().set(featureTickets)};
         Account alice {"alice"};
 
-        env.fund (XRP (10000), alice);
+        env.fund (XDV (10000), alice);
         env.close ();
 
         // create and verify
@@ -360,7 +360,7 @@ class Ticket_test : public beast::unit_test::suite
             "7F58A0AE17775BA3404D55D406DD1C2E91EADD7AF3F03A26877BCE764CCB75E3");
 
         Account alice {"alice"};
-        env.fund (XRP (10000), alice);
+        env.fund (XDV (10000), alice);
         env.close ();
 
         // now try to cancel with alice account, which should not work
@@ -397,7 +397,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (Ticket, tx, ripple);
+BEAST_DEFINE_TESTSUITE (Ticket, tx, divvy);
 
-}  // ripple
+}  // divvy
 

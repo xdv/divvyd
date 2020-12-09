@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -15,13 +15,13 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
 #include <test/jtx/WSClient.h>
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class GatewayBalances_test : public beast::unit_test::suite
@@ -37,14 +37,14 @@ public:
 
         // Gateway account and assets
         Account const alice {"alice"};
-        env.fund(XRP(10000), "alice");
+        env.fund(XDV(10000), "alice");
         auto USD = alice["USD"];
         auto CNY = alice["CNY"];
         auto JPY = alice["JPY"];
 
         // Create a hotwallet
         Account const hw {"hw"};
-        env.fund(XRP(10000), "hw");
+        env.fund(XDV(10000), "hw");
         env(trust(hw, USD(10000)));
         env(trust(hw, JPY(10000)));
         env(pay(alice, hw, USD(5000)));
@@ -52,20 +52,20 @@ public:
 
         // Create some clients
         Account const bob {"bob"};
-        env.fund(XRP(10000), "bob");
+        env.fund(XDV(10000), "bob");
         env(trust(bob, USD(100)));
         env(trust(bob, CNY(100)));
         env(pay(alice, bob, USD(50)));
 
         Account const charley {"charley"};
-        env.fund(XRP(10000), "charley");
+        env.fund(XDV(10000), "charley");
         env(trust(charley, CNY(500)));
         env(trust(charley, JPY(500)));
         env(pay(alice, charley, CNY(250)));
         env(pay(alice, charley, JPY(250)));
 
         Account const dave {"dave"};
-        env.fund(XRP(10000), "dave");
+        env.fund(XDV(10000), "dave");
         env(trust(dave, CNY(100)));
         env(pay(alice, dave, CNY(30)));
 
@@ -89,7 +89,7 @@ public:
         if (wsc->version() == 2)
         {
             expect(jv.isMember(jss::jsonrpc) && jv[jss::jsonrpc] == "2.0");
-            expect(jv.isMember(jss::ripplerpc) && jv[jss::ripplerpc] == "2.0");
+            expect(jv.isMember(jss::divvyrpc) && jv[jss::divvyrpc] == "2.0");
             expect(jv.isMember(jss::id) && jv[jss::id] == 5);
         }
 
@@ -160,7 +160,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(GatewayBalances,app,ripple);
+BEAST_DEFINE_TESTSUITE(GatewayBalances,app,divvy);
 
 } // test
-} // ripple
+} // divvy

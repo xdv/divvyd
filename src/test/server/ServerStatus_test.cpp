@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#include <ripple/rpc/ServerHandler.h>
-#include <ripple/json/json_reader.h>
-#include <ripple/app/misc/LoadFeeTrack.h>
+#include <divvy/rpc/ServerHandler.h>
+#include <divvy/json/json_reader.h>
+#include <divvy/app/misc/LoadFeeTrack.h>
 #include <test/jtx.h>
 #include <test/jtx/envconfig.h>
 #include <test/jtx/WSClient.h>
 #include <test/jtx/JSONRPCClient.h>
-#include <ripple/app/misc/NetworkOPs.h>
-#include <ripple/app/ledger/LedgerMaster.h>
-#include <ripple/basics/base64.h>
+#include <divvy/app/misc/NetworkOPs.h>
+#include <divvy/app/ledger/LedgerMaster.h>
+#include <divvy/basics/base64.h>
 #include <boost/beast/http.hpp>
 #include <beast/test/yield_to.hpp>
 #include <boost/beast/websocket/detail/mask.hpp>
@@ -36,7 +36,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <regex>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class ServerStatus_test :
@@ -1053,8 +1053,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(ServerStatus, server, ripple);
+BEAST_DEFINE_TESTSUITE(ServerStatus, server, divvy);
 
 } // test
-} // ripple
+} // divvy
 

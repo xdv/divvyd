@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_FEE_H_INCLUDED
-#define RIPPLE_TEST_JTX_FEE_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_FEE_H_INCLUDED
+#define DIVVY_TEST_JTX_FEE_H_INCLUDED
 
 #include <test/jtx/Env.h>
 #include <test/jtx/tags.h>
-#include <ripple/protocol/STAmount.h>
-#include <ripple/basics/contract.h>
+#include <divvy/protocol/STAmount.h>
+#include <divvy/basics/contract.h>
 #include <boost/optional.hpp>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -53,9 +53,9 @@ public:
     fee (STAmount const& amount)
         : amount_(amount)
     {
-        if (! isXRP(*amount_))
+        if (! isXDV(*amount_))
             Throw<std::runtime_error> (
-                "fee: not XRP");
+                "fee: not XDV");
     }
 
     void
@@ -64,6 +64,6 @@ public:
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif

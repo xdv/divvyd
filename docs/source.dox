@@ -2,7 +2,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "rippled"
+PROJECT_NAME           = "divvyd"
 PROJECT_NUMBER         =
 PROJECT_BRIEF          = C++ Library
 PROJECT_LOGO           =
@@ -105,29 +105,29 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = \
 \
-    ../src/ripple/protocol/STObject.h \
-    ../src/ripple/protocol/JsonFields.h \
+    ../src/divvy/protocol/STObject.h \
+    ../src/divvy/protocol/JsonFields.h \
     ../src/test/jtx/AbstractClient.h \
     ../src/test/jtx/JSONRPCClient.h \
     ../src/test/jtx/WSClient.h \
-    ../src/ripple/consensus/Consensus.h \
-    ../src/ripple/consensus/ConsensusProposal.h \
-    ../src/ripple/consensus/ConsensusTypes.h \
-    ../src/ripple/consensus/DisputedTx.h \
-    ../src/ripple/consensus/LedgerTiming.h \
-    ../src/ripple/consensus/LedgerTrie.h \
-    ../src/ripple/consensus/Validations.h \
-    ../src/ripple/consensus/ConsensusParms.h \
-    ../src/ripple/app/consensus/RCLCxTx.h \
-    ../src/ripple/app/consensus/RCLCxLedger.h \
-    ../src/ripple/app/consensus/RCLConsensus.h \
-    ../src/ripple/app/consensus/RCLCxPeerPos.h \
-    ../src/ripple/app/tx/apply.h \
-    ../src/ripple/app/tx/applySteps.h \
-    ../src/ripple/app/tx/impl/InvariantCheck.h \
-    ../src/ripple/app/consensus/RCLValidations.h \
+    ../src/divvy/consensus/Consensus.h \
+    ../src/divvy/consensus/ConsensusProposal.h \
+    ../src/divvy/consensus/ConsensusTypes.h \
+    ../src/divvy/consensus/DisputedTx.h \
+    ../src/divvy/consensus/LedgerTiming.h \
+    ../src/divvy/consensus/LedgerTrie.h \
+    ../src/divvy/consensus/Validations.h \
+    ../src/divvy/consensus/ConsensusParms.h \
+    ../src/divvy/app/consensus/RCLCxTx.h \
+    ../src/divvy/app/consensus/RCLCxLedger.h \
+    ../src/divvy/app/consensus/RCLConsensus.h \
+    ../src/divvy/app/consensus/RCLCxPeerPos.h \
+    ../src/divvy/app/tx/apply.h \
+    ../src/divvy/app/tx/applySteps.h \
+    ../src/divvy/app/tx/impl/InvariantCheck.h \
+    ../src/divvy/app/consensus/RCLValidations.h \
     ../src/README.md \
-    ../src/ripple/README.md \
+    ../src/divvy/README.md \
     ../README.md \
     ../RELEASENOTES.md \
     ../docs/CodingStyle.md \
@@ -140,27 +140,27 @@ INPUT                  = \
     ../Builds/macos/README.md \
     ../Builds/linux/README.md \
     ../Builds/VisualStudio2017/README.md \
-    ../src/ripple/consensus/README.md \
-    ../src/ripple/app/consensus/README.md \
+    ../src/divvy/consensus/README.md \
+    ../src/divvy/app/consensus/README.md \
     ../src/test/csf/README.md \
-    ../src/ripple/basics/README.md \
-    ../src/ripple/crypto/README.md \
-    ../src/ripple/peerfinder/README.md \
-    ../src/ripple/app/misc/README.md \
-    ../src/ripple/app/misc/FeeEscalation.md \
-    ../src/ripple/app/ledger/README.md \
-    ../src/ripple/app/paths/README.md \
-    ../src/ripple/app/tx/README.md \
-    ../src/ripple/proto/README.md \
-    ../src/ripple/shamap/README.md \
-    ../src/ripple/protocol/README.md \
-    ../src/ripple/json/README.md \
-    ../src/ripple/json/TODO.md \
-    ../src/ripple/resource/README.md \
-    ../src/ripple/rpc/README.md \
-    ../src/ripple/overlay/README.md \
-    ../src/ripple/nodestore/README.md \
-    ../src/ripple/nodestore/Benchmarks.md \
+    ../src/divvy/basics/README.md \
+    ../src/divvy/crypto/README.md \
+    ../src/divvy/peerfinder/README.md \
+    ../src/divvy/app/misc/README.md \
+    ../src/divvy/app/misc/FeeEscalation.md \
+    ../src/divvy/app/ledger/README.md \
+    ../src/divvy/app/paths/README.md \
+    ../src/divvy/app/tx/README.md \
+    ../src/divvy/proto/README.md \
+    ../src/divvy/shamap/README.md \
+    ../src/divvy/protocol/README.md \
+    ../src/divvy/json/README.md \
+    ../src/divvy/json/TODO.md \
+    ../src/divvy/resource/README.md \
+    ../src/divvy/rpc/README.md \
+    ../src/divvy/overlay/README.md \
+    ../src/divvy/nodestore/README.md \
+    ../src/divvy/nodestore/Benchmarks.md \
 
 
 INPUT_ENCODING         = UTF-8

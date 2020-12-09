@@ -3,11 +3,11 @@
 
 ## Running Tests
 
-Unit tests are bundled in the `rippled` executable and can be executed using the
+Unit tests are bundled in the `divvyd` executable and can be executed using the
 `--unittest` parameter. Without any arguments to this option, all non-manual
 unit tests will be executed. If you want to run one or more manual tests, you
-must specify it by suite or full-name (e.g. `ripple.app.NoRippleCheckLimits` or
-just `NoRippleCheckLimits`).
+must specify it by suite or full-name (e.g. `divvy.app.NoDivvyCheckLimits` or
+just `NoDivvyCheckLimits`).
 
 More than one suite or group of suites can be specified as a comma separated
 list via the argument. For example, `--unittest=beast,OversizeMeta` will run

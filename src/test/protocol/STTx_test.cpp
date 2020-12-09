@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/Sign.h>
-#include <ripple/protocol/STTx.h>
-#include <ripple/protocol/STParsedJSON.h>
-#include <ripple/protocol/UintTypes.h>
-#include <ripple/json/to_string.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/basics/Slice.h>
-#include <ripple/protocol/messages.h>
+#include <divvy/protocol/Sign.h>
+#include <divvy/protocol/STTx.h>
+#include <divvy/protocol/STParsedJSON.h>
+#include <divvy/protocol/UintTypes.h>
+#include <divvy/json/to_string.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/basics/Slice.h>
+#include <divvy/protocol/messages.h>
 
-namespace ripple {
+namespace divvy {
 
 class STTx_test : public beast::unit_test::suite
 {
@@ -1217,9 +1217,9 @@ public:
             protocol::TMTransaction tx2;
             tx2.ParseFromArray(payload1, sizeof(payload1));
 
-            ripple::SerialIter sit (ripple::makeSlice(tx2.rawtransaction()));
+            divvy::SerialIter sit (divvy::makeSlice(tx2.rawtransaction()));
 
-            auto stx = std::make_shared<ripple::STTx const>(sit);
+            auto stx = std::make_shared<divvy::STTx const>(sit);
             fail("An exception should have been thrown");
         }
         catch (std::exception const& e)
@@ -1229,8 +1229,8 @@ public:
 
         try
         {
-            ripple::SerialIter sit (Slice{payload2, sizeof(payload2)});
-            auto stx = std::make_shared<ripple::STTx const>(sit);
+            divvy::SerialIter sit (Slice{payload2, sizeof(payload2)});
+            auto stx = std::make_shared<divvy::STTx const>(sit);
             fail("An exception should have been thrown");
         }
         catch (std::exception const& e)
@@ -1390,7 +1390,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(STTx,ripple_app,ripple);
-BEAST_DEFINE_TESTSUITE(InnerObjectFormatsSerializer,ripple_app,ripple);
+BEAST_DEFINE_TESTSUITE(STTx,divvy_app,divvy);
+BEAST_DEFINE_TESTSUITE(InnerObjectFormatsSerializer,divvy_app,divvy);
 
-} // ripple
+} // divvy

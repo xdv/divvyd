@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,11 +17,11 @@
 */
 //==============================================================================
 
-#include <ripple/core/JobQueue.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/core/JobQueue.h>
+#include <divvy/beast/unit_test.h>
 #include <test/jtx/Env.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 //------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(JobQueue, core, ripple);
+BEAST_DEFINE_TESTSUITE(JobQueue, core, divvy);
 
 } // test
-} // ripple
+} // divvy

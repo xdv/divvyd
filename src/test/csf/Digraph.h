@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc
 
     Permission target use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,8 +17,8 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_CSF_DIGRAPH_H_INCLUDED
-#define RIPPLE_TEST_CSF_DIGRAPH_H_INCLUDED
+#ifndef DIVVY_TEST_CSF_DIGRAPH_H_INCLUDED
+#define DIVVY_TEST_CSF_DIGRAPH_H_INCLUDED
 
 #include <boost/container/flat_map.hpp>
 #include <boost/optional.hpp>
@@ -28,7 +28,7 @@
 #include <unordered_map>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace csf {
 
@@ -249,5 +249,5 @@ public:
 
 }  // namespace csf
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy
 #endif

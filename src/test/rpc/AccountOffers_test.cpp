@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,10 +17,10 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/JsonFields.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class AccountOffers_test : public beast::unit_test::suite
@@ -50,7 +50,7 @@ public:
         Account const bob ("bob");
         auto const USD_bob = bob["USD"];
 
-        env.fund(XRP(10000), gw, bob);
+        env.fund(XDV(10000), gw, bob);
         env.trust(USD_gw(1000), bob);
 
         // this is to provide some USD from gw in the
@@ -60,7 +60,7 @@ public:
         unsigned const offer_count = 12u;
         for (auto i = 0u; i < offer_count; i++)
         {
-            Json::Value jvo = offer(bob, XRP(100 + i), USD_gw(1));
+            Json::Value jvo = offer(bob, XDV(100 + i), USD_gw(1));
             jvo[sfExpiration.fieldName] = 10000000u;
             env(jvo);
         }
@@ -90,7 +90,7 @@ public:
         Account const bob ("bob");
         auto const USD_bob = bob["USD"];
 
-        env.fund(XRP(10000), gw, bob);
+        env.fund(XDV(10000), gw, bob);
         env.trust(USD_gw(1000), bob);
 
         // this is to provide some USD from gw in the
@@ -98,9 +98,9 @@ public:
         // make offers that give those USDs
         env (pay (gw, bob, USD_gw (10)));
 
-        env(offer(bob, XRP(100), USD_bob(1)));
-        env(offer(bob, XRP(100), USD_gw(1)));
-        env(offer(bob, XRP(10),  USD_gw(2)));
+        env(offer(bob, XDV(100), USD_bob(1)));
+        env(offer(bob, XDV(100), USD_gw(1)));
+        env(offer(bob, XDV(10),  USD_gw(2)));
 
         // make the RPC call
         auto const jro = env.rpc("account_offers", bob.human())[jss::result][jss::offers];
@@ -192,7 +192,7 @@ public:
         Account const bob ("bob");
         auto const USD_bob = bob["USD"];
 
-        env.fund(XRP(10000), gw, bob);
+        env.fund(XDV(10000), gw, bob);
         env.trust(USD_gw(1000), bob);
 
         {
@@ -277,7 +277,7 @@ public:
 
 };
 
-BEAST_DEFINE_TESTSUITE(AccountOffers,app,ripple);
+BEAST_DEFINE_TESTSUITE(AccountOffers,app,divvy);
 
 }
 }

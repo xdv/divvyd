@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2012-2016 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2012-2016 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -20,13 +20,13 @@
 #include <test/jtx.h>
 #include <test/jtx/Env.h>
 #include <test/jtx/PathSet.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/beast/core/LexicalCast.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/SField.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/beast/core/LexicalCast.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/SField.h>
 
-namespace ripple {
+namespace divvy {
 
 class Discrepancy_test : public beast::unit_test::suite
 {
@@ -36,9 +36,9 @@ class Discrepancy_test : public beast::unit_test::suite
     // A payment with path and sendmax is made and the transaction is queried
     // to verify that the net of balance changes match the fee charged.
     void
-    testXRPDiscrepancy (FeatureBitset features)
+    testXDVDiscrepancy (FeatureBitset features)
     {
-        testcase ("Discrepancy test : XRP Discrepancy");
+        testcase ("Discrepancy test : XDV Discrepancy");
         using namespace test::jtx;
         Env env {*this, features};
 
@@ -50,11 +50,11 @@ class Discrepancy_test : public beast::unit_test::suite
         Account A6 {"A6"};
         Account A7 {"A7"};
 
-        env.fund(XRP(2000), A1);
-        env.fund(XRP(1000), A2, A6, A7);
-        env.fund(XRP(5000), A3);
-        env.fund(XRP(1000000), A4);
-        env.fund(XRP(600000), A5);
+        env.fund(XDV(2000), A1);
+        env.fund(XDV(1000), A2, A6, A7);
+        env.fund(XDV(5000), A3);
+        env.fund(XDV(1000000), A4);
+        env.fund(XDV(600000), A5);
         env.close();
 
         env(trust(A1, A3["CNY"](200000)));
@@ -81,15 +81,15 @@ class Discrepancy_test : public beast::unit_test::suite
         env(pay(A6, A7, A6["CNY"](261)));
         env.close();
 
-        env(offer(A4, XRP(49147), A2["JPY"](34501)));
-        env(offer(A5, A3["CNY"](3150), XRP(80086)));
-        env(offer(A7, XRP(1233), A6["CNY"](25)));
+        env(offer(A4, XDV(49147), A2["JPY"](34501)));
+        env(offer(A5, A3["CNY"](3150), XDV(80086)));
+        env(offer(A7, XDV(1233), A6["CNY"](25)));
         env.close();
 
         test::PathSet payPaths {
             test::Path {A2["JPY"], A2},
-            test::Path {XRP, A2["JPY"], A2},
-            test::Path {A6, XRP, A2["JPY"], A2} };
+            test::Path {XDV, A2["JPY"], A2},
+            test::Path {A6, XDV, A2["JPY"], A2} };
 
         env(pay(A1, A1, A2["JPY"](1000)),
             json(payPaths.json()),
@@ -145,13 +145,13 @@ public:
     {
         using namespace test::jtx;
         auto const sa = supported_amendments();
-        testXRPDiscrepancy (sa - featureFlow - fix1373 - featureFlowCross);
-        testXRPDiscrepancy (sa               - fix1373 - featureFlowCross);
-        testXRPDiscrepancy (sa                         - featureFlowCross);
-        testXRPDiscrepancy (sa);
+        testXDVDiscrepancy (sa - featureFlow - fix1373 - featureFlowCross);
+        testXDVDiscrepancy (sa               - fix1373 - featureFlowCross);
+        testXDVDiscrepancy (sa                         - featureFlowCross);
+        testXDVDiscrepancy (sa);
     }
 };
 
-BEAST_DEFINE_TESTSUITE (Discrepancy, app, ripple);
+BEAST_DEFINE_TESTSUITE (Discrepancy, app, divvy);
 
-} // ripple
+} // divvy

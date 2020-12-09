@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,12 +18,12 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/core/ConfigSections.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/app/misc/NetworkOPs.h>
+#include <divvy/core/ConfigSections.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/app/misc/NetworkOPs.h>
 #include <test/jtx/WSClient.h>
 
-namespace ripple {
+namespace divvy {
 
 class AmendmentBlocked_test : public beast::unit_test::suite
 {
@@ -39,7 +39,7 @@ class AmendmentBlocked_test : public beast::unit_test::suite
         auto const USD = gw["USD"];
         auto const alice = Account {"alice"};
         auto const bob = Account {"bob"};
-        env.fund (XRP(10000), alice, bob, gw);
+        env.fund (XDV(10000), alice, bob, gw);
         env.trust (USD(600), alice);
         env.trust (USD(700), bob);
         env(pay (gw, alice, USD(70)));
@@ -168,7 +168,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(AmendmentBlocked,app,ripple);
+BEAST_DEFINE_TESTSUITE(AmendmentBlocked,app,divvy);
 
 }
 

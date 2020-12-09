@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -19,9 +19,9 @@
 
 #include <test/jtx.h>
 #include <test/jtx/Env.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/JsonFields.h>
 
-namespace ripple {
+namespace divvy {
 
 class TransactionEntry_test : public beast::unit_test::suite
 {
@@ -202,11 +202,11 @@ class TransactionEntry_test : public beast::unit_test::suite
         Account A1 {"A1"};
         Account A2 {"A2"};
 
-        env.fund(XRP(10000), A1);
+        env.fund(XDV(10000), A1);
         auto fund_1_tx =
             boost::lexical_cast<std::string>(env.tx()->getTransactionID());
 
-        env.fund(XRP(10000), A2);
+        env.fund(XDV(10000), A2);
         auto fund_2_tx =
             boost::lexical_cast<std::string>(env.tx()->getTransactionID());
 
@@ -232,7 +232,7 @@ class TransactionEntry_test : public beast::unit_test::suite
         check_tx(env.closed()->seq(), trust_tx);
         check_tx(env.closed()->seq(), pay_tx, "Payment");
 
-        env(offer(A2, XRP(100), A2["USD"](1)));
+        env(offer(A2, XDV(100), A2["USD"](1)));
         auto offer_tx =
             boost::lexical_cast<std::string>(env.tx()->getTransactionID());
 
@@ -249,6 +249,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (TransactionEntry, rpc, ripple);
+BEAST_DEFINE_TESTSUITE (TransactionEntry, rpc, divvy);
 
-}  // ripple
+}  // divvy

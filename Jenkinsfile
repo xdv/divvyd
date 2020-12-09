@@ -5,8 +5,8 @@ import java.text.*
 
 all_status = [:]
 commit_id = ''
-git_fork = 'ripple'
-git_repo = 'rippled'
+git_fork = 'divvy'
+git_repo = 'divvyd'
 //
 // this is not the actual token, but an ID/key into the jenkins
 // credential store which httpRequest can access.
@@ -15,7 +15,7 @@ github_cred = '6bd3f3b9-9a35-493e-8aef-975403c82d3e'
 //
 // root API url for our repo (default, overriden below)
 //
-github_api = 'https://api.github.com/repos/ripple/rippled'
+github_api = 'https://api.github.com/repos/divvy/divvyd'
 
 try {
     stage ('Startup Checks') {
@@ -159,7 +159,7 @@ try {
                 (compiler == 'clang') ? '/opt/llvm-5.0.1/bin/clang++' : 'g++'
             def ucc = isNoUnity(cmake_extra) ? 'true' : 'false'
             def node_type =
-                (compiler == 'msvc') ? 'rippled-win' : 'rippled-dev'
+                (compiler == 'msvc') ? 'divvyd-win' : 'divvyd-dev'
             // the default disposition for parallel test..disabled
             // for coverage, enabled otherwise. Can still be overridden
             // by explicitly setting with extra env settings above.
@@ -190,7 +190,7 @@ try {
                     if (compiler == 'msvc') {
                         env_vars.addAll([
                             'BOOST_ROOT=c:\\lib\\boost_1_67',
-                            'PROJECT_NAME=rippled',
+                            'PROJECT_NAME=divvyd',
                             'MSBUILDDISABLENODEREUSE=1',  // this ENV setting is probably redundant since we also pass /nr:false to msbuild
                             'OPENSSL_ROOT=c:\\OpenSSL-Win64'])
                     }
@@ -216,7 +216,7 @@ try {
 
                     withCredentials(
                         [string(
-                            credentialsId: 'RIPPLED_CODECOV_TOKEN',
+                            credentialsId: 'DIVVYD_CODECOV_TOKEN',
                             variable: 'CODECOV_TOKEN')])
                     {
                         withEnv(env_vars) {
@@ -270,7 +270,7 @@ try {
                                     cmake_txt = " <br/>" + cmake_txt
                                 }
                                 def st = reportStatus(bldlabel, bldtype + cmake_txt + envs, env.BUILD_URL)
-                                lock('rippled_dev_status') {
+                                lock('divvyd_dev_status') {
                                     all_status[bldlabel] = st
                                 }
                             } //try-catch-finally
@@ -286,15 +286,15 @@ try {
             node('docker') {
                 def bldlabel = 'rpm'
                 def remote =
-                    (git_fork == 'ripple') ? 'origin' : git_fork
+                    (git_fork == 'divvy') ? 'origin' : git_fork
 
                 withCredentials(
                     [string(
-                        credentialsId: 'RIPPLED_RPM_ROLE_ID',
+                        credentialsId: 'DIVVYD_RPM_ROLE_ID',
                         variable: 'ROLE_ID')])
                 {
                     withEnv([
-                        'docker_image=artifactory.ops.ripple.com:6555/rippled-rpm-builder:latest',
+                        'docker_image=artifactory.ops.xdv.io:6555/divvyd-rpm-builder:latest',
                         "git_commit=${commit_id}",
                         "git_remote=${remote}",
                         "rpm_release=${env.BUILD_ID}"])
@@ -306,7 +306,7 @@ try {
                         }
                         finally {
                             def st = reportStatus(bldlabel, bldlabel, env.BUILD_URL)
-                            lock('rippled_dev_status') {
+                            lock('divvyd_dev_status') {
                                 all_status[bldlabel] = st
                             }
                             archiveArtifacts(
@@ -630,9 +630,9 @@ log_file=''' + "${bldlabel}.txt" + '''
 exec 3>&1 1>>${log_file} 2>&1
 
 # Vault Steps
-SECRET_ID=$(cat /.vault/rippled-build-role/secret-id)
-export VAULT_TOKEN=$(/usr/local/ripple/ops-toolbox/vault/vault_approle_auth -r ${ROLE_ID} -s ${SECRET_ID} -t)
-/usr/local/ripple/ops-toolbox/vault/vault_get_sts_token.py -r rippled-build-role
+SECRET_ID=$(cat /.vault/divvyd-build-role/secret-id)
+export VAULT_TOKEN=$(/usr/local/divvy/ops-toolbox/vault/vault_approle_auth -r ${ROLE_ID} -s ${SECRET_ID} -t)
+/usr/local/divvy/ops-toolbox/vault/vault_get_sts_token.py -r divvyd-build-role
 
 mkdir -p rpm-out
 
@@ -641,7 +641,7 @@ docker pull "${docker_image}"
 echo "Running build container"
 
 docker run --rm \
--v $PWD/rpm-out:/opt/rippled-rpm/out \
+-v $PWD/rpm-out:/opt/divvyd-rpm/out \
 -e "GIT_COMMIT=$git_commit" \
 -e "GIT_REMOTE=$git_remote" \
 -e "RPM_RELEASE=$rpm_release" \
@@ -650,14 +650,14 @@ docker run --rm \
 . rpm-out/build_vars
 
 cd rpm-out
-tar xvf rippled-*.tar.gz
+tar xvf divvyd-*.tar.gz
 ls -la *.rpm
 #################################
 ## for now we don't want the src
 ## and debugsource rpms for testing
 ## or archiving...
 #################################
-rm rippled-debugsource*.rpm
+rm divvyd-debugsource*.rpm
 rm *.src.rpm
 mkdir rpm-main
 cp *.rpm rpm-main
@@ -673,17 +673,17 @@ function error {
 }
 
 yum install -y yum-utils openssl-static zlib-static
-rpm -i /opt/rippled-rpm/*.rpm
+rpm -i /opt/divvyd-rpm/*.rpm
 rc=$?; if [[ $rc != 0 ]]; then
   error "error installing rpms"
 fi
 
-/opt/ripple/bin/rippled --unittest
+/opt/divvy/bin/divvyd --unittest
 rc=$?; if [[ $rc != 0 ]]; then
-  error "rippled --unittest failed"
+  error "divvyd --unittest failed"
 fi
 
-/opt/ripple/bin/validator-keys --unittest
+/opt/divvy/bin/validator-keys --unittest
 rc=$?; if [[ $rc != 0 ]]; then
   error "validator-keys --unittest failed"
 fi
@@ -695,8 +695,8 @@ chmod +x test_rpm.sh
 echo "Running test container"
 
 docker run --rm \
--v $PWD/rpm-out/rpm-main:/opt/rippled-rpm \
--v $PWD:/opt/rippled --entrypoint /opt/rippled/test_rpm.sh \
+-v $PWD/rpm-out/rpm-main:/opt/divvyd-rpm \
+-v $PWD:/opt/divvyd --entrypoint /opt/divvyd/test_rpm.sh \
 centos:latest
 '''
 }

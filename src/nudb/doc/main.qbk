@@ -63,11 +63,11 @@ some other features:
 
 [heading History]
 
-The first versions of rippled, the application behind the Ripple consensus
+The first versions of divvyd, the application behind the Divvy consensus
 network, used SQLite as their back end for unstructured data. The
 performance quickly became a limiting factor.
 
-Then rippled then went through a series of back ends including LMDB, LevelDB, and
+Then divvyd then went through a series of back ends including LMDB, LevelDB, and
 RocksDB. Each of these databases performed well at first, but as the data
 size increased, memory usage increased and performance dropped off drastically.
 

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,10 +18,10 @@
 //==============================================================================
 
 #include <test/jtx/pay.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/TxFlags.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/TxFlags.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -42,4 +42,4 @@ pay (Account const& account,
 
 } // jtx
 } // test
-} // ripple
+} // divvy

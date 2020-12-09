@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,17 +17,17 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/digest.h>
-#include <ripple/beast/utility/rngfill.h>
-#include <ripple/beast/xor_shift_engine.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/protocol/digest.h>
+#include <divvy/beast/utility/rngfill.h>
+#include <divvy/beast/xor_shift_engine.h>
+#include <divvy/beast/unit_test.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <numeric>
 #include <vector>
 
-namespace ripple {
+namespace divvy {
 
 class digest_test : public beast::unit_test::suite
 {
@@ -156,6 +156,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(digest,ripple_data,ripple,20);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(digest,divvy_data,divvy,20);
 
-} // ripple
+} // divvy

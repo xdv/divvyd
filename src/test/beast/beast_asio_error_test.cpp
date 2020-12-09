@@ -17,8 +17,8 @@
 */
 //==============================================================================
 
-#include <ripple/beast/asio/ssl_error.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/asio/ssl_error.h>
+#include <divvy/beast/unit_test.h>
 #include <string>
 
 namespace beast {

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,19 +17,19 @@
 */
 //==============================================================================
 
-#include <ripple/basics/Log.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/SecretKey.h>
-#include <ripple/protocol/st.h>
-#include <ripple/json/json_reader.h>
-#include <ripple/json/to_string.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/Log.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/SecretKey.h>
+#include <divvy/protocol/st.h>
+#include <divvy/json/json_reader.h>
+#include <divvy/json/to_string.h>
+#include <divvy/beast/unit_test.h>
 #include <test/jtx.h>
 
 #include <memory>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 
 class STObject_test : public beast::unit_test::suite
 {
@@ -645,6 +645,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(STObject,protocol,ripple);
+BEAST_DEFINE_TESTSUITE(STObject,protocol,divvy);
 
-} // ripple
+} // divvy

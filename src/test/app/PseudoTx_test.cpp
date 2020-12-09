@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2017 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -15,13 +15,13 @@
 */
 //==============================================================================
 
-#include <ripple/app/tx/apply.h>
-#include <ripple/protocol/STAccount.h>
+#include <divvy/app/tx/apply.h>
+#include <divvy/protocol/STAccount.h>
 #include <string>
 #include <test/jtx.h>
 #include <vector>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct PseudoTx_test : public beast::unit_test::suite
@@ -81,7 +81,7 @@ struct PseudoTx_test : public beast::unit_test::suite
             env.app().openLedger().modify(
                 [&](OpenView& view, beast::Journal j) {
                     auto const result =
-                        ripple::apply(env.app(), view, stx, tapNONE, j);
+                        divvy::apply(env.app(), view, stx, tapNONE, j);
                     BEAST_EXPECT(!result.second && result.first == temINVALID);
                     return result.second;
                 });
@@ -107,7 +107,7 @@ struct PseudoTx_test : public beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(PseudoTx, app, ripple);
+BEAST_DEFINE_TESTSUITE(PseudoTx, app, divvy);
 
 }  // test
-}  // ripple
+}  // divvy

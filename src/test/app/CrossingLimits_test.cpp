@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -16,10 +16,10 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/protocol/Feature.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class CrossingLimits_test : public beast::unit_test::suite
@@ -60,17 +60,17 @@ public:
         auto const gw = Account("gateway");
         auto const USD = gw["USD"];
 
-        env.fund(XRP(100000000), gw, "alice", "bob", "carol", "dan");
+        env.fund(XDV(100000000), gw, "alice", "bob", "carol", "dan");
         env.trust(USD(1), "bob");
         env(pay(gw, "bob", USD(1)));
         env.trust(USD(1), "dan");
         env(pay(gw, "dan", USD(1)));
-        n_offers (env, 2000, "bob", XRP(1), USD(1));
-        n_offers (env, 1, "dan", XRP(1), USD(1));
+        n_offers (env, 2000, "bob", XDV(1), USD(1));
+        n_offers (env, 1, "dan", XDV(1), USD(1));
 
-        // Alice offers to buy 1000 XRP for 1000 USD. She takes Bob's first
+        // Alice offers to buy 1000 XDV for 1000 USD. She takes Bob's first
         // offer, removes 999 more as unfunded, then hits the step limit.
-        env(offer("alice", USD(1000), XRP(1000)));
+        env(offer("alice", USD(1000), XDV(1000)));
         env.require (balance("alice", USD(1)));
         env.require (owners("alice", 2));
         env.require (balance("bob", USD(0)));
@@ -78,9 +78,9 @@ public:
         env.require (balance("dan", USD(1)));
         env.require (owners("dan", 2));
 
-        // Carol offers to buy 1000 XRP for 1000 USD. She removes Bob's next
+        // Carol offers to buy 1000 XDV for 1000 USD. She removes Bob's next
         // 1000 offers as unfunded and hits the step limit.
-        env(offer("carol", USD(1000), XRP(1000)));
+        env(offer("carol", USD(1000), XDV(1000)));
         env.require (balance("carol", USD(none)));
         env.require (owners("carol", 1));
         env.require (balance("bob", USD(0)));
@@ -109,24 +109,24 @@ public:
         // Accommodate that difference in the test.
         int const maxConsumed = features[featureFlowCross] ? 1000 : 850;
 
-        env.fund(XRP(100000000), gw, "alice", "bob", "carol");
+        env.fund(XDV(100000000), gw, "alice", "bob", "carol");
         int const bobsOfferCount = maxConsumed + 150;
         env.trust(USD(bobsOfferCount), "bob");
         env(pay(gw, "bob", USD(bobsOfferCount)));
         env.close();
-        n_offers (env, bobsOfferCount, "bob", XRP(1), USD(1));
+        n_offers (env, bobsOfferCount, "bob", XDV(1), USD(1));
 
         // Alice offers to buy Bob's offers. However she hits the offer
         // crossing limit, so she can't buy them all at once.
-        env(offer("alice", USD(bobsOfferCount), XRP(bobsOfferCount)));
+        env(offer("alice", USD(bobsOfferCount), XDV(bobsOfferCount)));
         env.close();
         env.require (balance("alice", USD(maxConsumed)));
         env.require (balance("bob", USD(150)));
         env.require (owners ("bob", 150 + 1));
 
-        // Carol offers to buy 1000 XRP for 1000 USD. She takes Bob's
+        // Carol offers to buy 1000 XDV for 1000 USD. She takes Bob's
         // remaining 150 offers without hitting a limit.
-        env(offer("carol", USD(1000), XRP(1000)));
+        env(offer("carol", USD(1000), XDV(1000)));
         env.close();
         env.require (balance("carol", USD(150)));
         env.require (balance("bob", USD(0)));
@@ -148,7 +148,7 @@ public:
         auto const gw = Account("gateway");
         auto const USD = gw["USD"];
 
-        env.fund(XRP(100000000), gw, "alice", "bob", "carol", "dan", "evita");
+        env.fund(XDV(100000000), gw, "alice", "bob", "carol", "dan", "evita");
 
         // The number of offers allowed to cross is different between
         // Taker and FlowCross.  Taker allows 850 and FlowCross allows 1000.
@@ -172,14 +172,14 @@ public:
         // Give carol an extra 150 (unfunded) offers when we're using Taker
         // to accommodate that difference.
         int const carolsOfferCount {isFlowCross ? 700 : 850};
-        n_offers (env, 400, "alice", XRP(1), USD(1));
-        n_offers (env, carolsOfferCount, "carol", XRP(1), USD(1));
-        n_offers (env, evitasOfferCount, "evita", XRP(1), USD(1));
+        n_offers (env, 400, "alice", XDV(1), USD(1));
+        n_offers (env, carolsOfferCount, "carol", XDV(1), USD(1));
+        n_offers (env, evitasOfferCount, "evita", XDV(1), USD(1));
 
-        // Bob offers to buy 1000 XRP for 1000 USD. He takes all 400 USD from
+        // Bob offers to buy 1000 XDV for 1000 USD. He takes all 400 USD from
         // Alice's offers, 1 USD from Carol's and then removes 599 of Carol's
         // offers as unfunded, before hitting the step limit.
-        env(offer("bob", USD(1000), XRP(1000)));
+        env(offer("bob", USD(1000), XDV(1000)));
         env.require (balance("bob", USD(401)));
         env.require (balance("alice", USD(600)));
         env.require (owners("alice", 1));
@@ -188,10 +188,10 @@ public:
         env.require (balance("evita", USD(evitasOfferCount + 1)));
         env.require (owners("evita", evitasOfferCount + 1));
 
-        // Dan offers to buy maxConsumed + 50 XRP USD. He removes all of
+        // Dan offers to buy maxConsumed + 50 XDV USD. He removes all of
         // Carol's remaining offers as unfunded, then takes
         // (maxConsumed - 100) USD from Evita's, hitting the crossing limit.
-        env(offer("dan", USD(maxConsumed + 50), XRP(maxConsumed + 50)));
+        env(offer("dan", USD(maxConsumed + 50), XDV(maxConsumed + 50)));
         env.require (balance("dan", USD(maxConsumed - 100)));
         env.require (owners("dan", 2));
         env.require (balance("alice", USD(600)));
@@ -217,7 +217,7 @@ public:
         auto const USD = gw["USD"];
         auto const EUR = gw["EUR"];
 
-        env.fund(XRP(100000000), gw, "alice", "bob", "carol", "dan", "evita");
+        env.fund(XDV(100000000), gw, "alice", "bob", "carol", "dan", "evita");
 
         env.trust(USD(2000), "alice");
         env(pay(gw, "alice", USD(2000)));
@@ -226,17 +226,17 @@ public:
         env.trust(USD(1000), "evita");
         env(pay(gw, "evita", USD(1000)));
 
-        n_offers (env,  302, "alice", EUR(2), XRP(1));
-        n_offers (env,  300, "alice", XRP(1), USD(4));
-        n_offers (env,  497, "carol", XRP(1), USD(3));
+        n_offers (env,  302, "alice", EUR(2), XDV(1));
+        n_offers (env,  300, "alice", XDV(1), USD(4));
+        n_offers (env,  497, "carol", XDV(1), USD(3));
         n_offers (env, 1001, "evita", EUR(1), USD(1));
 
         // Bob offers to buy 2000 USD for 2000 EUR, even though he only has
         // 1000 EUR.
         //  1. He spends 600 EUR taking Alice's auto-bridged offers and
         //     gets 1200 USD for that.
-        //  2. He spends another 2 EUR taking one of Alice's EUR->XRP and
-        //     one of Carol's XRP-USD offers.  He gets 3 USD for that.
+        //  2. He spends another 2 EUR taking one of Alice's EUR->XDV and
+        //     one of Carol's XDV-USD offers.  He gets 3 USD for that.
         //  3. The remainder of Carol's offers are now unfunded.  We've
         //     consumed 602 offers so far.  We now chew through 398 more
         //     of Carol's unfunded offers until we hit the 1000 offer limit.
@@ -333,7 +333,7 @@ public:
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close(closeTime);
 
-            env.fund(XRP(100000000), gw, alice, bob, carol);
+            env.fund(XDV(100000000), gw, alice, bob, carol);
 
             env.trust(USD(4000), alice);
             env(pay(gw, alice, USD(4000)));
@@ -342,11 +342,11 @@ public:
 
             // Notice the strand with the 800 unfunded offers has the initial
             // best quality
-            n_offers(env, 2000, alice, EUR(2), XRP(1));
-            n_offers(env, 300, alice, XRP(1), USD(4));
+            n_offers(env, 2000, alice, EUR(2), XDV(1));
+            n_offers(env, 300, alice, XDV(1), USD(4));
             n_offers(
-                env, 801, carol, XRP(1), USD(3));  // only one offer is funded
-            n_offers(env, 1000, alice, XRP(1), USD(3));
+                env, 801, carol, XDV(1), USD(3));  // only one offer is funded
+            n_offers(env, 1000, alice, XDV(1), USD(3));
 
             n_offers(env, 1, alice, EUR(500), USD(500));
 
@@ -360,11 +360,11 @@ public:
             //     a. One of Carol's offers is taken. This leaves her other
             //     offers unfunded.
             //     b. Carol's remaining 800 offers are consumed as unfunded.
-            //     c. 199 of alice's XRP(1) to USD(3) offers are consumed.
+            //     c. 199 of alice's XDV(1) to USD(3) offers are consumed.
             //        A book step is allowed to consume a maxium of 1000 offers
             //        at a given quality, and that limit is now reached.
             //     d. Now the strand is dry, even though there are still funded
-            //     XRP(1) to USD(3) offers available. Bob has spent 400 EUR and
+            //     XDV(1) to USD(3) offers available. Bob has spent 400 EUR and
             //     received 600 USD in this step. (200 funded offers consumed
             //     800 unfunded offers)
             //  3. The best is the non-autobridged offers that takes 500 EUR and
@@ -404,7 +404,7 @@ public:
                 fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
             env.close(closeTime);
 
-            env.fund(XRP(100000000), gw, alice, bob, carol);
+            env.fund(XDV(100000000), gw, alice, bob, carol);
 
             env.trust(USD(4000), alice);
             env(pay(gw, alice, USD(4000)));
@@ -414,11 +414,11 @@ public:
             // Notice the strand with the 800 unfunded offers does not have the
             // initial best quality
             n_offers(env, 1, alice, EUR(1), USD(10));
-            n_offers(env, 2000, alice, EUR(2), XRP(1));
-            n_offers(env, 300, alice, XRP(1), USD(4));
+            n_offers(env, 2000, alice, EUR(2), XDV(1));
+            n_offers(env, 300, alice, XDV(1), USD(4));
             n_offers(
-                env, 801, carol, XRP(1), USD(3));  // only one offer is funded
-            n_offers(env, 1000, alice, XRP(1), USD(3));
+                env, 801, carol, XDV(1), USD(3));  // only one offer is funded
+            n_offers(env, 1000, alice, XDV(1), USD(3));
 
             n_offers(env, 1, alice, EUR(499), USD(499));
 
@@ -435,11 +435,11 @@ public:
             //     a. One of Carol's offers is taken. This leaves her other
             //     offers unfunded.
             //     b. Carol's remaining 800 offers are consumed as unfunded.
-            //     c. 199 of alice's XRP(1) to USD(3) offers are consumed.
+            //     c. 199 of alice's XDV(1) to USD(3) offers are consumed.
             //        A book step is allowed to consume a maxium of 1000 offers
             //        at a given quality, and that limit is now reached.
             //     d. Now the strand is dry, even though there are still funded
-            //     XRP(1) to USD(3) offers available. Bob has spent 400 EUR and
+            //     XDV(1) to USD(3) offers available. Bob has spent 400 EUR and
             //     received 600 USD in this step. (200 funded offers consumed
             //     800 unfunded offers)
             //  4. The best is the non-autobridged offers that takes 499 EUR and
@@ -512,7 +512,7 @@ public:
             fix1449Time() + 100 * env.closed()->info().closeTimeResolution;
         env.close(closeTime);
 
-        env.fund(XRP(100000000), gw, alice, bob);
+        env.fund(XDV(100000000), gw, alice, bob);
 
         env.trust(USD(8000), alice);
         env.trust(USD(8000), bob);
@@ -527,15 +527,15 @@ public:
         // tracked per offerbook and per quality. This test shows how they can differ. Set up a book
         // with many offers. At each quality keep the number of offers below the limit. However, if
         // all the offers are consumed it would create a tecOVERSIZE error.
-        n_offers(env, 998, alice, XRP(1.00), USD(1));
-        n_offers(env, 998, alice, XRP(0.99), USD(1));
-        n_offers(env, 998, alice, XRP(0.98), USD(1));
-        n_offers(env, 998, alice, XRP(0.97), USD(1));
-        n_offers(env, 998, alice, XRP(0.96), USD(1));
-        n_offers(env, 998, alice, XRP(0.95), USD(1));
+        n_offers(env, 998, alice, XDV(1.00), USD(1));
+        n_offers(env, 998, alice, XDV(0.99), USD(1));
+        n_offers(env, 998, alice, XDV(0.98), USD(1));
+        n_offers(env, 998, alice, XDV(0.97), USD(1));
+        n_offers(env, 998, alice, XDV(0.96), USD(1));
+        n_offers(env, 998, alice, XDV(0.95), USD(1));
 
         bool const withFlowCross = features[featureFlowCross];
-        env(offer(bob, USD(8000), XRP(8000)), ter(withFlowCross ? TER{tecOVERSIZE} : tesSUCCESS));
+        env(offer(bob, USD(8000), XDV(8000)), ter(withFlowCross ? TER{tecOVERSIZE} : tesSUCCESS));
         env.close();
 
         env.require(balance(bob, USD(withFlowCross ? 0 : 850)));
@@ -560,7 +560,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(CrossingLimits,tx,ripple,10);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(CrossingLimits,tx,divvy,10);
 
 } // test
-} // ripple
+} // divvy

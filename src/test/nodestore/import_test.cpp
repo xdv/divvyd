@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/basics/contract.h>
-#include <ripple/nodestore/impl/codec.h>
-#include <ripple/beast/clock/basic_seconds_clock.h>
-#include <ripple/beast/rfc2616.h>
-#include <ripple/beast/core/LexicalCast.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/contract.h>
+#include <divvy/nodestore/impl/codec.h>
+#include <divvy/beast/clock/basic_seconds_clock.h>
+#include <divvy/beast/rfc2616.h>
+#include <divvy/beast/core/LexicalCast.h>
+#include <divvy/beast/unit_test.h>
 #include <nudb/create.hpp>
 #include <nudb/detail/format.hpp>
 #include <nudb/xxhasher.hpp>
@@ -34,7 +34,7 @@
 #include <map>
 #include <sstream>
 
-#include <ripple/unity/rocksdb.h>
+#include <divvy/unity/rocksdb.h>
 
 /*
 
@@ -57,7 +57,7 @@ multi(32gb):
 
 */
 
-namespace ripple {
+namespace divvy {
 namespace NodeStore {
 
 namespace detail {
@@ -293,7 +293,7 @@ parse_args(std::string const& s)
 
 //------------------------------------------------------------------------------
 
-#if RIPPLE_ROCKSDB_AVAILABLE
+#if DIVVY_ROCKSDB_AVAILABLE
 
 class import_test : public beast::unit_test::suite
 {
@@ -585,12 +585,12 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL(import,NodeStore,ripple);
+BEAST_DEFINE_TESTSUITE_MANUAL(import,NodeStore,divvy);
 
 #endif
 
 //------------------------------------------------------------------------------
 
 } // NodeStore
-} // ripple
+} // divvy
 

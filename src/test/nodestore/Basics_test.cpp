@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,12 +18,12 @@
 //==============================================================================
 
 #include <test/nodestore/TestBase.h>
-#include <ripple/nodestore/DummyScheduler.h>
-#include <ripple/nodestore/Manager.h>
-#include <ripple/nodestore/impl/DecodedBlob.h>
-#include <ripple/nodestore/impl/EncodedBlob.h>
+#include <divvy/nodestore/DummyScheduler.h>
+#include <divvy/nodestore/Manager.h>
+#include <divvy/nodestore/impl/DecodedBlob.h>
+#include <divvy/nodestore/impl/EncodedBlob.h>
 
-namespace ripple {
+namespace divvy {
 namespace NodeStore {
 
 // Tests predictable batches, and NodeObject blob encoding
@@ -86,7 +86,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(NodeStoreBasic,ripple_core,ripple);
+BEAST_DEFINE_TESTSUITE(NodeStoreBasic,divvy_core,divvy);
 
 }
 }

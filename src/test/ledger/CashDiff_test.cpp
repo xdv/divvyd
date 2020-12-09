@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-  This file is part of rippled: https://github.com/ripple/rippled
-  Copyright (c) 2016 Ripple Labs Inc.
+  This file is part of divvyd: https://github.com/xdv/divvyd
+  Copyright (c) 2016 Divvy Labs Inc.
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/ledger/CashDiff.h>
-#include <ripple/protocol/STAmount.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/ledger/CashDiff.h>
+#include <divvy/protocol/STAmount.h>
+#include <divvy/beast/unit_test.h>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class CashDiff_test : public beast::unit_test::suite
@@ -72,7 +72,7 @@ class CashDiff_test : public beast::unit_test::suite
             } while (newProbe > oldProbe);
         }
         {
-            // Test XRP.
+            // Test XDV.
             // A delta of 2 or less is always dust.
             expect (diffIsDust (STAmount{2}, STAmount{0}));
 
@@ -103,7 +103,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (CashDiff, ledger, ripple);
+BEAST_DEFINE_TESTSUITE (CashDiff, ledger, divvy);
 
 }  // test
-}  // ripple
+}  // divvy

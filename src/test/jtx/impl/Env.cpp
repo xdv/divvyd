@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -28,29 +28,29 @@
 #include <test/jtx/sig.h>
 #include <test/jtx/utility.h>
 #include <test/jtx/JSONRPCClient.h>
-#include <ripple/app/ledger/LedgerMaster.h>
-#include <ripple/consensus/LedgerTiming.h>
-#include <ripple/app/misc/NetworkOPs.h>
-#include <ripple/app/misc/TxQ.h>
-#include <ripple/basics/contract.h>
-#include <ripple/basics/Slice.h>
-#include <ripple/json/to_string.h>
-#include <ripple/net/HTTPClient.h>
-#include <ripple/net/RPCCall.h>
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/HashPrefix.h>
-#include <ripple/protocol/Indexes.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/LedgerFormats.h>
-#include <ripple/protocol/Serializer.h>
-#include <ripple/protocol/SystemParameters.h>
-#include <ripple/protocol/TER.h>
-#include <ripple/protocol/TxFlags.h>
-#include <ripple/protocol/UintTypes.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/app/ledger/LedgerMaster.h>
+#include <divvy/consensus/LedgerTiming.h>
+#include <divvy/app/misc/NetworkOPs.h>
+#include <divvy/app/misc/TxQ.h>
+#include <divvy/basics/contract.h>
+#include <divvy/basics/Slice.h>
+#include <divvy/json/to_string.h>
+#include <divvy/net/HTTPClient.h>
+#include <divvy/net/RPCCall.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/HashPrefix.h>
+#include <divvy/protocol/Indexes.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/LedgerFormats.h>
+#include <divvy/protocol/Serializer.h>
+#include <divvy/protocol/SystemParameters.h>
+#include <divvy/protocol/TER.h>
+#include <divvy/protocol/TxFlags.h>
+#include <divvy/protocol/UintTypes.h>
+#include <divvy/protocol/Feature.h>
 #include <memory>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
@@ -178,7 +178,7 @@ Env::balance (Account const& account) const
 {
     auto const sle = le(account);
     if (! sle)
-        return XRP(0);
+        return XDV(0);
     return {
         sle->getFieldAmount(sfBalance),
             "" };
@@ -188,7 +188,7 @@ PrettyAmount
 Env::balance (Account const& account,
     Issue const& issue) const
 {
-    if (isXRP(issue.currency))
+    if (isXDV(issue.currency))
         return balance(account);
     auto const sle = le(keylet::line(
         account.id(), issue));
@@ -226,12 +226,12 @@ Env::le (Keylet const& k) const
 }
 
 void
-Env::fund (bool setDefaultRipple,
+Env::fund (bool setDefaultDivvy,
     STAmount const& amount,
         Account const& account)
 {
     memoize(account);
-    if (setDefaultRipple)
+    if (setDefaultDivvy)
     {
         // VFALCO NOTE Is the fee formula correct?
         apply(pay(master, account, amount +
@@ -239,11 +239,11 @@ Env::fund (bool setDefaultRipple,
                 jtx::seq(jtx::autofill),
                     fee(jtx::autofill),
                         sig(jtx::autofill));
-        apply(fset(account, asfDefaultRipple),
+        apply(fset(account, asfDefaultDivvy),
             jtx::seq(jtx::autofill),
                 fee(jtx::autofill),
                     sig(jtx::autofill));
-        require(flags(account, asfDefaultRipple));
+        require(flags(account, asfDefaultDivvy));
     }
     else
     {
@@ -251,7 +251,7 @@ Env::fund (bool setDefaultRipple,
             jtx::seq(jtx::autofill),
                 fee(jtx::autofill),
                     sig(jtx::autofill));
-        require(nflags(account, asfDefaultRipple));
+        require(nflags(account, asfDefaultDivvy));
     }
     require(jtx::balance(account, amount));
 }
@@ -478,4 +478,4 @@ Env::enableFeature(uint256 const feature)
 } // jtx
 
 } // test
-} // ripple
+} // divvy

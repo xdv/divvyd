@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 */
 //==============================================================================
 
-#include <ripple/unity/rocksdb.h>
+#include <divvy/unity/rocksdb.h>
 #include <test/nodestore/TestBase.h>
-#include <ripple/nodestore/DummyScheduler.h>
-#include <ripple/nodestore/Manager.h>
-#include <ripple/beast/utility/temp_dir.h>
+#include <divvy/nodestore/DummyScheduler.h>
+#include <divvy/nodestore/Manager.h>
+#include <divvy/beast/utility/temp_dir.h>
 #include <algorithm>
 
-namespace ripple {
+namespace divvy {
 namespace NodeStore {
 
 // Tests the Backend interface
@@ -106,17 +106,17 @@ public:
 
         testBackend ("nudb", seedValue);
 
-    #if RIPPLE_ROCKSDB_AVAILABLE
+    #if DIVVY_ROCKSDB_AVAILABLE
         testBackend ("rocksdb", seedValue);
     #endif
 
-    #ifdef RIPPLE_ENABLE_SQLITE_BACKEND_TESTS
+    #ifdef DIVVY_ENABLE_SQLITE_BACKEND_TESTS
         testBackend ("sqlite", seedValue);
     #endif
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Backend,ripple_core,ripple);
+BEAST_DEFINE_TESTSUITE(Backend,divvy_core,divvy);
 
 }
 }

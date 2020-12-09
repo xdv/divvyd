@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,10 +18,10 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 #include <algorithm>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 // Make sure "plump" order books don't have problems
@@ -35,7 +35,7 @@ public:
         using namespace jtx;
         for (std::size_t i = 1; i <= n; ++i)
         {
-            env(offer("alice", XRP(i), iou(1)));
+            env(offer("alice", XDV(i), iou(1)));
             env.close();
         }
     }
@@ -49,7 +49,7 @@ public:
         env.disable_sigs();
         auto const gw = Account("gateway");
         auto const USD = gw["USD"];
-        env.fund(XRP(billion), gw, "alice");
+        env.fund(XDV(billion), gw, "alice");
         env.trust(USD(billion), "alice");
         env(pay(gw, "alice", USD(billion)));
         createOffers(env, USD, n);
@@ -62,7 +62,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(PlumpBook,tx,ripple,5);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(PlumpBook,tx,divvy,5);
 
 //------------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(ThinBook, tx, ripple);
+BEAST_DEFINE_TESTSUITE(ThinBook, tx, divvy);
 
 //------------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ public:
         using namespace jtx;
         for (std::size_t i = 1; i <= n; ++i)
         {
-            env(offer("alice", XRP(1), iou(1)));
+            env(offer("alice", XDV(1), iou(1)));
             env.close();
         }
     }
@@ -106,12 +106,12 @@ public:
         env.disable_sigs();
         auto const gw = Account("gateway");
         auto const USD = gw["USD"];
-        env.fund(XRP(billion), gw, "alice");
+        env.fund(XDV(billion), gw, "alice");
         env.trust(USD(billion), "alice");
         env(pay(gw, "alice", USD(billion)));
         createOffers(env, USD, n);
         env(pay("alice", gw, USD(billion)));
-        env(offer("alice", USD(1), XRP(1)));
+        env(offer("alice", USD(1), XDV(1)));
     }
 
     void
@@ -121,7 +121,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(OversizeMeta,tx,ripple,3);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(OversizeMeta,tx,divvy,3);
 
 //------------------------------------------------------------------------------
 
@@ -157,7 +157,7 @@ public:
         using namespace jtx;
         for (std::size_t i = 1; i <= n; ++i)
         {
-            env(offer("alice", XRP(i), iou(1)));
+            env(offer("alice", XDV(i), iou(1)));
             env.close();
         }
     }
@@ -171,12 +171,12 @@ public:
         env.disable_sigs();
         auto const gw = Account("gateway");
         auto const USD = gw["USD"];
-        env.fund(XRP(billion), gw, "alice");
+        env.fund(XDV(billion), gw, "alice");
         env.trust(USD(billion), "alice");
         env(pay(gw, "alice", USD(billion)));
         createOffers(env, USD, n);
         env(pay("alice", gw, USD(billion)));
-        env(offer("alice", USD(1), XRP(1)), ter(std::ignore));
+        env(offer("alice", USD(1), XDV(1)), ter(std::ignore));
         return env.ter() == tecOVERSIZE;
     }
 
@@ -189,8 +189,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(FindOversizeCross,tx,ripple,50);
+BEAST_DEFINE_TESTSUITE_MANUAL_PRIO(FindOversizeCross,tx,divvy,50);
 
 } // test
-} // ripple
+} // divvy
 

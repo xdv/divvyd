@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2018 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2018 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,10 +17,10 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/JsonFields.h>     // jss:: definitions
+#include <divvy/protocol/JsonFields.h>     // jss:: definitions
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class DepositAuthorized_test : public beast::unit_test::suite
@@ -57,7 +57,7 @@ public:
         Account const carol {"carol"};
 
         Env env(*this);
-        env.fund(XRP(1000), alice, becky, carol);
+        env.fund(XDV(1000), alice, becky, carol);
         env.close();
 
         // becky is authorized to deposit to herself.
@@ -205,7 +205,7 @@ public:
             verifyErr (result, "srcActNotFound",
                 "Source account not found.");
         }
-        env.fund(XRP(1000), alice);
+        env.fund(XDV(1000), alice);
         env.close();
         {
             // becky is not yet funded.
@@ -215,7 +215,7 @@ public:
             verifyErr (result, "dstActNotFound",
                 "Destination account not found.");
         }
-        env.fund(XRP(1000), becky);
+        env.fund(XDV(1000), becky);
         env.close();
         {
             // Once becky is funded try it again and see it succeed.
@@ -233,7 +233,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(DepositAuthorized,app,ripple);
+BEAST_DEFINE_TESTSUITE(DepositAuthorized,app,divvy);
 
 }
 }

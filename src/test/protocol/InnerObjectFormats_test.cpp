@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,15 +17,15 @@
 */
 //==============================================================================
 
-#include <ripple/basics/contract.h>
-#include <ripple/protocol/InnerObjectFormats.h>
-#include <ripple/protocol/ErrorCodes.h>          // RPC::containsError
-#include <ripple/json/json_reader.h>             // Json::Reader
-#include <ripple/protocol/STParsedJSON.h>        // STParsedJSONObject
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/contract.h>
+#include <divvy/protocol/InnerObjectFormats.h>
+#include <divvy/protocol/ErrorCodes.h>          // RPC::containsError
+#include <divvy/json/json_reader.h>             // Json::Reader
+#include <divvy/protocol/STParsedJSON.h>        // STParsedJSONObject
+#include <divvy/beast/unit_test.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 
 namespace InnerObjectFormatsUnitTestDetail
 {
@@ -203,6 +203,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(InnerObjectFormatsParsedJSON,ripple_app,ripple);
+BEAST_DEFINE_TESTSUITE(InnerObjectFormatsParsedJSON,divvy_app,divvy);
 
-} // ripple
+} // divvy

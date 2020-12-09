@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -19,12 +19,12 @@
 
 #include <test/jtx.h>
 #include <test/jtx/Env.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/overlay/Cluster.h>
-#include <ripple/overlay/Overlay.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/overlay/Cluster.h>
+#include <divvy/overlay/Overlay.h>
 #include <unordered_map>
 
-namespace ripple {
+namespace divvy {
 
 class Peers_test : public beast::unit_test::suite
 {
@@ -92,6 +92,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (Peers, rpc, ripple);
+BEAST_DEFINE_TESTSUITE (Peers, rpc, divvy);
 
-}  // ripple
+}  // divvy

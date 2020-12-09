@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,13 +17,13 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/ErrorCodes.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/ErrorCodes.h>
+#include <divvy/protocol/JsonFields.h>
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/app/ledger/LedgerMaster.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/app/ledger/LedgerMaster.h>
 
-namespace ripple {
+namespace divvy {
 
 namespace RPC {
 
@@ -153,19 +153,19 @@ public:
                                      //no amendments
         Account const gw { "gateway" };
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
         env.close();
 
         env.memoize("bob");
-        env.fund(XRP(1000), "bob");
+        env.fund(XDV(1000), "bob");
         env.close();
 
         env.memoize("alice");
-        env.fund(XRP(1000), "alice");
+        env.fund(XDV(1000), "alice");
         env.close();
 
         env.memoize("carol");
-        env.fund(XRP(1000), "carol");
+        env.fund(XDV(1000), "carol");
         env.close();
 
         auto result = env.rpc ( "ledger_request", "1" ) [jss::result];
@@ -225,7 +225,7 @@ public:
         Env env { *this };
         Account const gw { "gateway" };
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
         env.close();
 
         Json::Value jvParams;
@@ -254,14 +254,14 @@ public:
         Account const gw {"gateway"};
         env.app().getLedgerMaster().tune(0, 1h);
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
 
         int const max_limit = 256;
 
         for (auto i = 0; i < max_limit + 10; i++)
         {
             Account const bob {std::string("bob") + std::to_string(i)};
-            env.fund(XRP(1000), bob);
+            env.fund(XDV(1000), bob);
             env.close();
         }
 
@@ -281,7 +281,7 @@ public:
         Env env { *this, envconfig(no_admin) };
         Account const gw { "gateway" };
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
         env.close();
 
         auto const result = env.rpc ( "ledger_request", "1" )  [jss::result];
@@ -302,8 +302,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(LedgerRequestRPC,app,ripple);
+BEAST_DEFINE_TESTSUITE(LedgerRequestRPC,app,divvy);
 
 } // RPC
-} // ripple
+} // divvy
 

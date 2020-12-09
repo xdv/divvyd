@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,11 +17,11 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/Feature.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 
 class LedgerClosed_test : public beast::unit_test::suite
 {
@@ -32,7 +32,7 @@ public:
         using namespace test::jtx;
         Env env {*this, FeatureBitset{}};
         Account const alice {"alice"};
-        env.fund(XRP(10000), alice);
+        env.fund(XDV(10000), alice);
 
         auto lc_result = env.rpc("ledger_closed") [jss::result];
         BEAST_EXPECT(lc_result[jss::ledger_hash]  == "8AEDBB96643962F1D40F01E25632ABB3C56C9F04B0231EE4B18248B90173D189");
@@ -45,7 +45,7 @@ public:
 
         auto const ar_alice = env.le(alice);
         BEAST_EXPECT(ar_alice->getAccountID(sfAccount) == alice.id());
-        BEAST_EXPECT((*ar_alice)[sfBalance] == XRP( 10000 ));
+        BEAST_EXPECT((*ar_alice)[sfBalance] == XDV( 10000 ));
 
         lc_result = env.rpc("ledger_closed") [jss::result];
         BEAST_EXPECT(lc_result[jss::ledger_hash]  == "7C3EEDB3124D92E49E75D81A8826A2E65A75FD71FC3FD6F36FEB803C5F1D812D");
@@ -58,7 +58,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(LedgerClosed,app,ripple);
+BEAST_DEFINE_TESTSUITE(LedgerClosed,app,divvy);
 
 }
 

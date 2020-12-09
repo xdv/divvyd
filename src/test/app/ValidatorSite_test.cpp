@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,22 +17,22 @@
 */
 //==============================================================================
 
-#include <ripple/app/misc/ValidatorSite.h>
-#include <ripple/basics/base64.h>
-#include <ripple/basics/Slice.h>
-#include <ripple/basics/strHex.h>
-#include <ripple/protocol/digest.h>
-#include <ripple/protocol/HashPrefix.h>
-#include <ripple/protocol/JsonFields.h>
-#include <ripple/protocol/PublicKey.h>
-#include <ripple/protocol/SecretKey.h>
-#include <ripple/protocol/Sign.h>
+#include <divvy/app/misc/ValidatorSite.h>
+#include <divvy/basics/base64.h>
+#include <divvy/basics/Slice.h>
+#include <divvy/basics/strHex.h>
+#include <divvy/protocol/digest.h>
+#include <divvy/protocol/HashPrefix.h>
+#include <divvy/protocol/JsonFields.h>
+#include <divvy/protocol/PublicKey.h>
+#include <divvy/protocol/SecretKey.h>
+#include <divvy/protocol/Sign.h>
 #include <test/jtx.h>
 #include <test/jtx/TrustedPublisherServer.h>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/asio.hpp>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class ValidatorSite_test : public beast::unit_test::suite
@@ -102,24 +102,24 @@ private:
 
         // load should accept valid validator site uris
         std::vector<std::string> cfgSites({
-            "http://ripple.com/",
-            "http://ripple.com/validators",
-            "http://ripple.com:8080/validators",
+            "http://xdv.io/",
+            "http://xdv.io/validators",
+            "http://xdv.io:8080/validators",
             "http://207.261.33.37/validators",
             "http://207.261.33.37:8080/validators",
-            "https://ripple.com/validators",
-            "https://ripple.com:443/validators"});
+            "https://xdv.io/validators",
+            "https://xdv.io:443/validators"});
         BEAST_EXPECT(trustedSites->load (cfgSites));
 
         // load should reject validator site uris with invalid schemes
         std::vector<std::string> badSites(
-            {"ftp://ripple.com/validators"});
+            {"ftp://xdv.io/validators"});
         BEAST_EXPECT(!trustedSites->load (badSites));
 
-        badSites[0] = "wss://ripple.com/validators";
+        badSites[0] = "wss://xdv.io/validators";
         BEAST_EXPECT(!trustedSites->load (badSites));
 
-        badSites[0] = "ripple.com/validators";
+        badSites[0] = "xdv.io/validators";
         BEAST_EXPECT(!trustedSites->load (badSites));
     }
 
@@ -296,7 +296,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(ValidatorSite, app, ripple);
+BEAST_DEFINE_TESTSUITE(ValidatorSite, app, divvy);
 
 } // test
-} // ripple
+} // divvy

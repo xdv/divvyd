@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,13 +17,13 @@
 */
 //==============================================================================
 
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/JsonFields.h>
 #include <test/jtx.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 
 #include <boost/format.hpp>
 
-namespace ripple {
+namespace divvy {
 
 namespace test {
 
@@ -50,13 +50,13 @@ public:
     makeValidatorConfig()
     {
         auto p = std::make_unique<Config>();
-        boost::format toLoad(R"rippleConfig(
+        boost::format toLoad(R"divvyConfig(
 [validator_token]
 %1%
 
 [validators]
 %2%
-)rippleConfig");
+)divvyConfig");
 
         p->loadFromString (boost::str (
             toLoad % validator_data::token % validator_data::public_key));
@@ -94,8 +94,8 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(ServerInfo,app,ripple);
+BEAST_DEFINE_TESTSUITE(ServerInfo,app,divvy);
 
 } // test
-} // ripple
+} // divvy
 

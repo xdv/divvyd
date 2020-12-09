@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2015 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2015 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,15 +18,15 @@
 //==============================================================================
 
 
-#include <ripple/core/ConfigSections.h>
-#include <ripple/core/SociDB.h>
-#include <ripple/basics/contract.h>
+#include <divvy/core/ConfigSections.h>
+#include <divvy/core/SociDB.h>
+#include <divvy/basics/contract.h>
 #include <test/jtx/TestSuite.h>
-#include <ripple/basics/BasicConfig.h>
+#include <divvy/basics/BasicConfig.h>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
-namespace ripple {
+namespace divvy {
 class SociDB_test final : public TestSuite
 {
 private:
@@ -373,6 +373,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(SociDB,core,ripple);
+BEAST_DEFINE_TESTSUITE(SociDB,core,divvy);
 
-}  // ripple
+}  // divvy

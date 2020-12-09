@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2018 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2018 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,18 +17,18 @@
 */
 //==============================================================================
 
-#include <ripple/app/ledger/LedgerHistory.h>
-#include <ripple/app/ledger/LedgerMaster.h>
-#include <ripple/app/tx/apply.h>
-#include <ripple/beast/insight/NullCollector.h>
-#include <ripple/beast/unit_test.h>
-#include <ripple/ledger/OpenView.h>
+#include <divvy/app/ledger/LedgerHistory.h>
+#include <divvy/app/ledger/LedgerMaster.h>
+#include <divvy/app/tx/apply.h>
+#include <divvy/beast/insight/NullCollector.h>
+#include <divvy/beast/unit_test.h>
+#include <divvy/ledger/OpenView.h>
 #include <chrono>
 #include <memory>
 #include <sstream>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class LedgerHistory_test : public beast::unit_test::suite
@@ -213,7 +213,7 @@ public:
 
             Account alice{"A1"};
             Account bob{"A2"};
-            env.fund(XRP(1000), alice, bob);
+            env.fund(XDV(1000), alice, bob);
             env.close();
 
             auto const ledgerBase =
@@ -245,7 +245,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(LedgerHistory, app, ripple);
+BEAST_DEFINE_TESTSUITE(LedgerHistory, app, divvy);
 
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy

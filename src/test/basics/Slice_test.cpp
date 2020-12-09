@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github0.com/ripple/rippled
-    Copyright (c) 2012-2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github0.com/divvy/divvyd
+    Copyright (c) 2012-2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/basics/Slice.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/Slice.h>
+#include <divvy/beast/unit_test.h>
 #include <array>
 #include <cstdint>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct Slice_test : beast::unit_test::suite
@@ -111,7 +111,7 @@ struct Slice_test : beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Slice, ripple_basics, ripple);
+BEAST_DEFINE_TESTSUITE(Slice, divvy_basics, divvy);
 
 }  // namespace test
-}  // namespace ripple
+}  // namespace divvy

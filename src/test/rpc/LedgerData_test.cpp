@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,12 +17,12 @@
 */
 //==============================================================================
 
-#include <ripple/basics/StringUtilities.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/basics/StringUtilities.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
 #include <test/jtx.h>
 
-namespace ripple {
+namespace divvy {
 
 class LedgerData_test : public beast::unit_test::suite
 {
@@ -48,14 +48,14 @@ public:
         Env env {*this, asAdmin ? envconfig() : envconfig(no_admin)};
         Account const gw {"gateway"};
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
 
         int const max_limit = 256; //would be 2048 for binary requests, no need to test that here
 
         for (auto i = 0; i < max_limit + 10; i++)
         {
             Account const bob {std::string("bob") + std::to_string(i)};
-            env.fund(XRP(1000), bob);
+            env.fund(XDV(1000), bob);
         }
         env.close();
 
@@ -90,14 +90,14 @@ public:
         Env env { *this, envconfig(no_admin) };
         Account const gw { "gateway" };
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
 
         int const num_accounts = 10;
 
         for (auto i = 0; i < num_accounts; i++)
         {
             Account const bob { std::string("bob") + std::to_string(i) };
-            env.fund(XRP(1000), bob);
+            env.fund(XDV(1000), bob);
         }
         env.close();
 
@@ -123,7 +123,7 @@ public:
         auto const USD = gw["USD"];
         Account const bob { "bob" };
 
-        env.fund(XRP(10000), gw, bob);
+        env.fund(XDV(10000), gw, bob);
         env.trust(USD(1000), bob);
 
         {
@@ -177,14 +177,14 @@ public:
         Env env { *this, envconfig(no_admin) };
         Account const gw { "gateway" };
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
 
         int const num_accounts = 20;
 
         for (auto i = 0; i < num_accounts; i++)
         {
             Account const bob { std::string("bob") + std::to_string(i) };
-            env.fund(XRP(1000), bob);
+            env.fund(XDV(1000), bob);
         }
         env.close();
 
@@ -217,7 +217,7 @@ public:
     {
         using namespace test::jtx;
         Env env { *this };
-        env.fund(XRP(100000), "alice");
+        env.fund(XDV(100000), "alice");
         env.close();
 
         // Ledger header should be present in the first query
@@ -273,16 +273,16 @@ public:
 
         Account const gw { "gateway" };
         auto const USD = gw["USD"];
-        env.fund(XRP(100000), gw);
+        env.fund(XDV(100000), gw);
 
         int const num_accounts = 10;
 
         for (auto i = 0; i < num_accounts; i++)
         {
             Account const bob { std::string("bob") + std::to_string(i) };
-            env.fund(XRP(1000), bob);
+            env.fund(XDV(1000), bob);
         }
-        env(offer(Account{"bob0"}, USD(100), XRP(100)));
+        env(offer(Account{"bob0"}, USD(100), XDV(100)));
         env.trust(Account{"bob2"}["USD"](100), Account{"bob3"});
 
         auto majorities = getMajorityAmendments(*env.closed());
@@ -303,7 +303,7 @@ public:
             jv[jss::Flags] = tfUniversal;
             jv[jss::Account] = Account{"bob5"}.human();
             jv[jss::Destination] = Account{"bob6"}.human();
-            jv[jss::Amount] = XRP(50).value().getJson(0);
+            jv[jss::Amount] = XDV(50).value().getJson(0);
             jv[sfFinishAfter.fieldName] =
                 NetClock::time_point{env.now() + 10s}
                     .time_since_epoch().count();
@@ -316,7 +316,7 @@ public:
             jv[jss::Flags] = tfUniversal;
             jv[jss::Account] = Account{"bob6"}.human ();
             jv[jss::Destination] = Account{"bob7"}.human ();
-            jv[jss::Amount] = XRP(100).value().getJson (0);
+            jv[jss::Amount] = XDV(100).value().getJson (0);
             jv[jss::SettleDelay] = NetClock::duration{10s}.count();
             jv[sfPublicKey.fieldName] = strHex (Account{"bob6"}.pk().slice ());
             jv[sfCancelAfter.fieldName] =
@@ -393,7 +393,7 @@ public:
         auto const jrr = makeRequest(jss::state);
         BEAST_EXPECT( checkArraySize(jrr[jss::state], 1) );
         for (auto const& j : jrr[jss::state])
-            BEAST_EXPECT( j["LedgerEntryType"] == "RippleState" );
+            BEAST_EXPECT( j["LedgerEntryType"] == "DivvyState" );
         }
 
         {  // jvParams[jss::type] = "ticket";
@@ -448,6 +448,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE_PRIO(LedgerData,app,ripple,1);
+BEAST_DEFINE_TESTSUITE_PRIO(LedgerData,app,divvy,1);
 
 }

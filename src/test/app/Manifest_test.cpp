@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright 2014 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright 2014 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,22 +17,22 @@
 */
 //==============================================================================
 
-#include <ripple/app/misc/Manifest.h>
-#include <ripple/app/misc/ValidatorList.h>
-#include <ripple/basics/base64.h>
-#include <ripple/basics/contract.h>
-#include <ripple/basics/StringUtilities.h>
+#include <divvy/app/misc/Manifest.h>
+#include <divvy/app/misc/ValidatorList.h>
+#include <divvy/basics/base64.h>
+#include <divvy/basics/contract.h>
+#include <divvy/basics/StringUtilities.h>
 #include <test/jtx.h>
-#include <ripple/core/DatabaseCon.h>
-#include <ripple/app/main/DBInit.h>
-#include <ripple/protocol/SecretKey.h>
-#include <ripple/protocol/Sign.h>
-#include <ripple/protocol/STExchange.h>
+#include <divvy/core/DatabaseCon.h>
+#include <divvy/app/main/DBInit.h>
+#include <divvy/protocol/SecretKey.h>
+#include <divvy/protocol/Sign.h>
+#include <divvy/protocol/STExchange.h>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/utility/in_place_factory.hpp>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class Manifest_test : public beast::unit_test::suite
@@ -716,7 +716,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Manifest,app,ripple);
+BEAST_DEFINE_TESTSUITE(Manifest,app,divvy);
 
 } // test
-} // ripple
+} // divvy

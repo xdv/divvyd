@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2016 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2016 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,16 +17,16 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_WSCLIENT_H_INCLUDED
-#define RIPPLE_TEST_WSCLIENT_H_INCLUDED
+#ifndef DIVVY_TEST_WSCLIENT_H_INCLUDED
+#define DIVVY_TEST_WSCLIENT_H_INCLUDED
 
 #include <test/jtx/AbstractClient.h>
-#include <ripple/core/Config.h>
+#include <divvy/core/Config.h>
 #include <boost/optional.hpp>
 #include <chrono>
 #include <memory>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class WSClient : public AbstractClient
@@ -50,6 +50,6 @@ std::unique_ptr<WSClient>
 makeWSClient(Config const& cfg, bool v2 = true, unsigned rpc_version = 2);
 
 } // test
-} // ripple
+} // divvy
 
 #endif

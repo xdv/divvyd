@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -18,10 +18,10 @@
 //==============================================================================
 
 #include <test/jtx.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct SetAuth_test : public beast::unit_test::suite
@@ -55,14 +55,14 @@ struct SetAuth_test : public beast::unit_test::suite
         auto const USD = gw["USD"];
         {
             Env env(*this, features);
-            env.fund(XRP(100000), "alice", gw);
+            env.fund(XDV(100000), "alice", gw);
             env(fset(gw, asfRequireAuth));
             env(auth(gw, "alice", "USD"),       ter(tecNO_LINE_REDUNDANT));
         }
         {
             Env env(*this, features | featureTrustSetAuth);
 
-            env.fund(XRP(100000), "alice", "bob", gw);
+            env.fund(XDV(100000), "alice", "bob", gw);
             env(fset(gw, asfRequireAuth));
             env(auth(gw, "alice", "USD"));
             BEAST_EXPECT(env.le(
@@ -87,7 +87,7 @@ struct SetAuth_test : public beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(SetAuth,test,ripple);
+BEAST_DEFINE_TESTSUITE(SetAuth,test,divvy);
 
 } // test
-} // ripple
+} // divvy

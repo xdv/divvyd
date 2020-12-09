@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
+    This file is part of divvyd: https://github.com/xdv/divvyd
     Copyright 2014, Nikolaos D. Bougalis <nikb@bougalis.net>
 
 
@@ -18,11 +18,11 @@
 */
 //==============================================================================
 
-#include <ripple/basics/tagged_integer.h>
-#include <ripple/beast/unit_test.h>
+#include <divvy/basics/tagged_integer.h>
+#include <divvy/beast/unit_test.h>
 #include <type_traits>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 class tagged_integer_test
@@ -232,7 +232,7 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE(tagged_integer,ripple_basics,ripple);
+BEAST_DEFINE_TESTSUITE(tagged_integer,divvy_basics,divvy);
 
 } // test
-} // ripple
+} // divvy

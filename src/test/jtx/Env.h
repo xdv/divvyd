@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -17,8 +17,8 @@
 */
 //==============================================================================
 
-#ifndef RIPPLE_TEST_JTX_ENV_H_INCLUDED
-#define RIPPLE_TEST_JTX_ENV_H_INCLUDED
+#ifndef DIVVY_TEST_JTX_ENV_H_INCLUDED
+#define DIVVY_TEST_JTX_ENV_H_INCLUDED
 
 #include <test/jtx/Account.h>
 #include <test/jtx/amount.h>
@@ -28,24 +28,24 @@
 #include <test/jtx/tags.h>
 #include <test/jtx/AbstractClient.h>
 #include <test/jtx/ManualTimeKeeper.h>
-#include <ripple/app/main/Application.h>
-#include <ripple/app/ledger/Ledger.h>
-#include <ripple/app/ledger/OpenLedger.h>
-#include <ripple/app/paths/Pathfinder.h>
-#include <ripple/basics/chrono.h>
-#include <ripple/basics/Log.h>
-#include <ripple/core/Config.h>
-#include <ripple/json/json_value.h>
-#include <ripple/json/to_string.h>
-#include <ripple/ledger/CachedSLEs.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/Indexes.h>
-#include <ripple/protocol/Issue.h>
-#include <ripple/protocol/STAmount.h>
-#include <ripple/protocol/STObject.h>
-#include <ripple/protocol/STTx.h>
+#include <divvy/app/main/Application.h>
+#include <divvy/app/ledger/Ledger.h>
+#include <divvy/app/ledger/OpenLedger.h>
+#include <divvy/app/paths/Pathfinder.h>
+#include <divvy/basics/chrono.h>
+#include <divvy/basics/Log.h>
+#include <divvy/core/Config.h>
+#include <divvy/json/json_value.h>
+#include <divvy/json/to_string.h>
+#include <divvy/ledger/CachedSLEs.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/Indexes.h>
+#include <divvy/protocol/Issue.h>
+#include <divvy/protocol/STAmount.h>
+#include <divvy/protocol/STObject.h>
+#include <divvy/protocol/STTx.h>
 #include <boost/beast/core/detail/type_traits.hpp>
-#include <ripple/beast/unit_test.h>
+#include <divvy/beast/unit_test.h>
 #include <functional>
 #include <string>
 #include <tuple>
@@ -55,14 +55,14 @@
 #include <vector>
 
 
-namespace ripple {
+namespace divvy {
 namespace test {
 namespace jtx {
 
-/** Designate accounts as no-ripple in Env::fund */
+/** Designate accounts as no-divvy in Env::fund */
 template <class... Args>
 std::array<Account, 1 + sizeof...(Args)>
-noripple (Account const& account, Args const&... args)
+nodivvy (Account const& account, Args const&... args)
 {
     return {{account, args...}};
 }
@@ -72,7 +72,7 @@ FeatureBitset
 supported_amendments()
 {
     static const FeatureBitset ids = []{
-        auto const& sa = ripple::detail::supportedAmendments();
+        auto const& sa = divvy::detail::supportedAmendments();
         std::vector<uint256> feats;
         feats.reserve(sa.size());
         for (auto const& s : sa)
@@ -273,7 +273,7 @@ public:
         return *bundle_.timeKeeper;
     }
 
-    /** Returns the current Ripple Network Time
+    /** Returns the current Divvy Network Time
 
         @note This is manually advanced when ledgers
               close or by callers.
@@ -407,7 +407,7 @@ public:
     lookup (std::string const& base58ID) const;
     /** @} */
 
-    /** Returns the XRP balance on an account.
+    /** Returns the XDV balance on an account.
         Returns 0 if the account does not exist.
     */
     PrettyAmount
@@ -561,7 +561,7 @@ public:
 
 private:
     void
-    fund (bool setDefaultRipple,
+    fund (bool setDefaultDivvy,
         STAmount const& amount,
             Account const& account);
 
@@ -590,30 +590,30 @@ private:
     }
 public:
 
-    /** Create a new account with some XRP.
+    /** Create a new account with some XDV.
 
         These convenience functions are for easy set-up
         of the environment, they bypass fee, seq, and sig
-        settings. The XRP is transferred from the master
+        settings. The XDV is transferred from the master
         account.
 
         Preconditions:
             The account must not already exist
 
         Effects:
-            The asfDefaultRipple on the account is set,
+            The asfDefaultDivvy on the account is set,
             and the sequence number is incremented, unless
-            the account is wrapped with a call to noripple.
+            the account is wrapped with a call to nodivvy.
 
-            The account's XRP balance is set to amount.
+            The account's XDV balance is set to amount.
 
             Generates a test that the balance is set.
 
-        @param amount The amount of XRP to transfer to
+        @param amount The amount of XDV to transfer to
                       each account.
 
         @param args A heterogeneous list of accounts to fund
-                    or calls to noripple with lists of accounts
+                    or calls to nodivvy with lists of accounts
                     to fund.
     */
     template<class Arg, class... Args>
@@ -768,6 +768,6 @@ Env::rpc(std::string const& cmd, Args&&... args)
 
 } // jtx
 } // test
-} // ripple
+} // divvy
 
 #endif

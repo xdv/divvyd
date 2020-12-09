@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012-2017 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012-2017 Divvy Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -20,11 +20,11 @@
 #include <test/jtx.h>
 #include <test/jtx/Env.h>
 #include <test/jtx/envconfig.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/protocol/JsonFields.h>
 #include <boost/container/static_vector.hpp>
 #include <algorithm>
 
-namespace ripple {
+namespace divvy {
 
 class TransactionHistory_test : public beast::unit_test::suite
 {
@@ -68,7 +68,7 @@ class TransactionHistory_test : public beast::unit_test::suite
         {
             accounts.emplace_back("A" + std::to_string(i));
             auto const& acct=accounts.back();
-            env.fund(XRP(10000), acct);
+            env.fund(XDV(10000), acct);
             env.close();
             if(i > 0)
             {
@@ -76,7 +76,7 @@ class TransactionHistory_test : public beast::unit_test::suite
                 env.trust(acct["USD"](1000), prev);
                 env(pay(acct, prev, acct["USD"](5)));
             }
-            env(offer(acct, XRP(100), acct["USD"](1)));
+            env(offer(acct, XDV(100), acct["USD"](1)));
             env.close();
 
             // verify the latest transaction in env (offer)
@@ -149,6 +149,6 @@ public:
     }
 };
 
-BEAST_DEFINE_TESTSUITE (TransactionHistory, rpc, ripple);
+BEAST_DEFINE_TESTSUITE (TransactionHistory, rpc, divvy);
 
-}  // ripple
+}  // divvy

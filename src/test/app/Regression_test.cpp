@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
-    This file is part of rippled: https://github.com/ripple/rippled
-    Copyright (c) 2012, 2013 Ripple Labs Inc.
+    This file is part of divvyd: https://github.com/xdv/divvyd
+    Copyright (c) 2012, 2013 Divvy Labs Inc.
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
@@ -17,13 +17,13 @@
 
 #include <test/jtx.h>
 #include <test/jtx/envconfig.h>
-#include <ripple/app/tx/apply.h>
-#include <ripple/basics/StringUtilities.h>
-#include <ripple/json/json_reader.h>
-#include <ripple/protocol/Feature.h>
-#include <ripple/protocol/JsonFields.h>
+#include <divvy/app/tx/apply.h>
+#include <divvy/basics/StringUtilities.h>
+#include <divvy/json/json_reader.h>
+#include <divvy/protocol/Feature.h>
+#include <divvy/protocol/JsonFields.h>
 
-namespace ripple {
+namespace divvy {
 namespace test {
 
 struct Regression_test : public beast::unit_test::suite
@@ -35,16 +35,16 @@ struct Regression_test : public beast::unit_test::suite
         Env env(*this);
         auto const gw = Account("gw");
         auto const USD = gw["USD"];
-        env.fund(XRP(10000), "alice", gw);
-        env(offer("alice", USD(10), XRP(10)), require(owners("alice", 1)));
-        env(offer("alice", USD(20), XRP(10)), json(R"raw(
+        env.fund(XDV(10000), "alice", gw);
+        env(offer("alice", USD(10), XDV(10)), require(owners("alice", 1)));
+        env(offer("alice", USD(20), XDV(10)), json(R"raw(
                 { "OfferSequence" : 2 }
             )raw"), require(owners("alice", 1)));
     }
 
     void testLowBalanceDestroy()
     {
-        testcase("Account balance < fee destroys correct amount of XRP");
+        testcase("Account balance < fee destroys correct amount of XDV");
         using namespace jtx;
         Env env(*this);
         env.memoize("alice");
@@ -58,8 +58,8 @@ struct Regression_test : public beast::unit_test::suite
         auto expectedDrops = SYSTEM_CURRENCY_START;
         BEAST_EXPECT(closed->info().drops == expectedDrops);
 
-        auto const aliceXRP = 400;
-        auto const aliceAmount = XRP(aliceXRP);
+        auto const aliceXDV = 400;
+        auto const aliceAmount = XDV(aliceXDV);
 
         auto next = std::make_shared<Ledger>(
             *closed,
@@ -69,7 +69,7 @@ struct Regression_test : public beast::unit_test::suite
             auto const jt = env.jt(pay(env.master, "alice", aliceAmount));
             OpenView accum(&*next);
 
-            auto const result = ripple::apply(env.app(),
+            auto const result = divvy::apply(env.app(),
                 accum, *jt.stx, tapNONE, env.journal);
             BEAST_EXPECT(result.first == tesSUCCESS);
             BEAST_EXPECT(result.second);
@@ -95,7 +95,7 @@ struct Regression_test : public beast::unit_test::suite
 
             OpenView accum(&*next);
 
-            auto const result = ripple::apply(env.app(),
+            auto const result = divvy::apply(env.app(),
                 accum, *jt.stx, tapNONE, env.journal);
             BEAST_EXPECT(result.first == tecINSUFF_FEE);
             BEAST_EXPECT(result.second);
@@ -108,9 +108,9 @@ struct Regression_test : public beast::unit_test::suite
             BEAST_EXPECT(sle);
             auto balance = sle->getFieldAmount(sfBalance);
 
-            BEAST_EXPECT(balance == XRP(0));
+            BEAST_EXPECT(balance == XDV(0));
         }
-        expectedDrops -= aliceXRP * dropsPerXRP<int>::value;
+        expectedDrops -= aliceXDV * dropsPerXDV<int>::value;
         BEAST_EXPECT(next->info().drops == expectedDrops);
     }
 
@@ -154,7 +154,7 @@ struct Regression_test : public beast::unit_test::suite
         Account const alice {"alice", KeyType::secp256k1};
         Account const becky {"becky", KeyType::ed25519};
 
-        env.fund(XRP(10000), alice, becky);
+        env.fund(XDV(10000), alice, becky);
 
         test256r1key (alice);
         test256r1key (becky);
@@ -173,7 +173,7 @@ struct Regression_test : public beast::unit_test::suite
         Env_ss envs(env);
 
         auto const alice = Account("alice");
-        env.fund(XRP(100000), alice);
+        env.fund(XDV(100000), alice);
 
         auto params = Json::Value(Json::objectValue);
         // Max fee = 50k drops
@@ -225,7 +225,7 @@ struct Regression_test : public beast::unit_test::suite
     }
 };
 
-BEAST_DEFINE_TESTSUITE(Regression,app,ripple);
+BEAST_DEFINE_TESTSUITE(Regression,app,divvy);
 
 } // test
-} // ripple
+} // divvy
