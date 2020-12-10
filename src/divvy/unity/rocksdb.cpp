@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of divvyd: https://github.com/xdv/divvyd
-    Copyright (c) 2012, 2013 Divvy Labs Inc.
+    Copyright (c) 2012, 2013 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -195,7 +195,7 @@ const char* rocksdb_build_git_sha = "<none>";
 const char* rocksdb_build_git_datetime = "<none>";
 // Don't use __DATE__ and __TIME__, otherwise
 // builds will be nondeterministic.
-const char* rocksdb_build_compile_date = "Divvy Labs";
+const char* rocksdb_build_compile_date = "Ripple Labs";
 const char* rocksdb_build_compile_time = "C++ Team";
 //const char* rocksdb_build_compile_date = __DATE__;
 //const char* rocksdb_build_compile_time = __TIME__;

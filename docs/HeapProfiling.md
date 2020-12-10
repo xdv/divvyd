@@ -8,7 +8,7 @@ the jemalloc site:
 [https://github.com/jemalloc/jemalloc/wiki/Use-Case:-Heap-Profiling](https://github.com/jemalloc/jemalloc/wiki/Use-Case:-Heap-Profiling)
 
 jemalloc is acquired separately from divvyd, and is not affiliated
-with Divvy Labs. If you compile and install jemalloc from the
+with Ripple Labs. If you compile and install jemalloc from the
 source release with default options, it will install the library and header
 under `/usr/local/lib` and `/usr/local/include`, respectively. Heap
 profiling has been tested with divvyd on a Linux platform. It should

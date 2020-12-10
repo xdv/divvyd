@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of divvyd: https://github.com/xdv/divvyd
-    Copyright (c) 2012, 2013 Divvy Labs Inc.
+    Copyright (c) 2012, 2013 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above
@@ -392,7 +392,7 @@ get_context (std::string const& cipherList)
             LogicError ("SSL_CTX_set_cipher_list failed");
     }
 
-    // These are the raw DH parameters that Divvy Labs has
+    // These are the raw DH parameters that Ripple Labs has
     // chosen for Divvy, in the binary format needed by
     // d2i_DHparams.
     //

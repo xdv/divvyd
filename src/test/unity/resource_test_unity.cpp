@@ -2,7 +2,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of divvyd: https://github.com/xdv/divvyd
-    Copyright (c) 2012, 2013 Divvy Labs Inc.
+    Copyright (c) 2012, 2013 Ripple Labs Inc.
 
     Permission to use, copy, modify, and/or distribute this software for any
     purpose  with  or without fee is hereby granted, provided that the above

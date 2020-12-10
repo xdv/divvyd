@@ -871,7 +871,7 @@ This release incorporates a number of important features, bugfixes and functiona
 
 **Release Overview**
 
-As part of Divvy Labs’ ongoing commitment toward protocol security, the divvyd team would like to release divvyd 0.30.0.
+As part of Ripple Labs’ ongoing commitment toward protocol security, the divvyd team would like to release divvyd 0.30.0.
 
 **Toolchain support**
 
@@ -938,7 +938,7 @@ This release incorporates a number of important features, bugfixes and functiona
 
 **Release Overview**
 
-As part of Divvy Labs’ ongoing commitment toward protocol security, the divvyd team would like to announce divvyd release 0.29.0.
+As part of Ripple Labs’ ongoing commitment toward protocol security, the divvyd team would like to announce divvyd release 0.29.0.
 
 **Toolchain support**
 
@@ -1005,7 +1005,7 @@ This release incorporates a number of important features, bugfixes and functiona
 
 **Release Overview**
 
-As part of Divvy Labs’ ongoing commitment toward protocol security, the divvyd team would like to announce divvyd release 0.28.2. **This release is necessary for compatibility with OpenSSL v.1.0.1n and later.**
+As part of Ripple Labs’ ongoing commitment toward protocol security, the divvyd team would like to announce divvyd release 0.28.2. **This release is necessary for compatibility with OpenSSL v.1.0.1n and later.**
 
 **Toolchain support**
 
@@ -1138,7 +1138,7 @@ This release incorporates a number of important features, bugfixes and functiona
 
 **Release Overview**
 
-As part of Divvy Labs’ ongoing commitment toward improving the protocol, the divvyd team is excited to announce **autobridging** — a feature that allows XDV to serve as a bridge currency. Autobridging enhances utility and has the potential to expose more of the network to liquidity and improve prices. For more information please refer to the [autobridging blog post](https://xdv.io/uncategorized/introducing-offer-autobridging/).
+As part of Ripple Labs’ ongoing commitment toward improving the protocol, the divvyd team is excited to announce **autobridging** — a feature that allows XDV to serve as a bridge currency. Autobridging enhances utility and has the potential to expose more of the network to liquidity and improve prices. For more information please refer to the [autobridging blog post](https://xdv.io/uncategorized/introducing-offer-autobridging/).
 
 **Toolchain support**
 
@@ -1526,7 +1526,7 @@ The first feature is Online Delete. This feature allows divvyd to maintain it’
 
 Additionally, we are very excited to include Universal Port. This feature allows divvyd's listening port to handshake in multiple protocols. For example, a single listening port can be configured to receive incoming peer connections, incoming RPC commands over HTTP, and incoming RPC commands over HTTPS at the same time. Or, a single port can receive both Websockets and Secure Websockets clients at the same.
 
-Finally, a new, experimental backend database, NuDB, has been added. This database was developed by Divvy Labs to take advantage of divvyd’s specific data usage profile and performs much better than previous databases. Significantly, this database does not degrade in performance as the database grows. Very excitingly, this database works on OS X and Windows. This allows divvyd to use these platforms for the first time.
+Finally, a new, experimental backend database, NuDB, has been added. This database was developed by Ripple Labs to take advantage of divvyd’s specific data usage profile and performs much better than previous databases. Significantly, this database does not degrade in performance as the database grows. Very excitingly, this database works on OS X and Windows. This allows divvyd to use these platforms for the first time.
 
 **Toolchain support**
 
@@ -2281,7 +2281,7 @@ If you are upgrading from version 0.12 or earlier of divvyd, these next sections
 
 **Validators**
 
-Divvy Labs is now running five validators. You can use this template for your *validators.txt* file (or place this in your config file):
+Ripple Labs is now running five validators. You can use this template for your *validators.txt* file (or place this in your config file):
 
      [validators]
      n9KPnVLn7ewVzHvn218DcEYsnWLzKerTDwhpofhk4Ym1RUq4TeGw    RIP1
@@ -2299,7 +2299,7 @@ If you are a validator, you should set your quorum to at least four.
 
 **IPs**
 
-A list of Divvy Labs server IP addresses can be found by resolving **r.xdv.io**. You can also add this to your *divvyd.cfg* file to ensure you always have several peer connections to Divvy Labs servers:
+A list of Ripple Labs server IP addresses can be found by resolving **r.xdv.io**. You can also add this to your *divvyd.cfg* file to ensure you always have several peer connections to Ripple Labs servers:
 
      [ips]
      184.73.226.101 51235
@@ -2405,7 +2405,7 @@ If you are upgrading from version 0.12 or earlier of divvyd, these next sections
 
 **Validators**
 
-Divvy Labs is now running five validators. You can use this template for your *validators.txt* file (or place this in your config file):
+Ripple Labs is now running five validators. You can use this template for your *validators.txt* file (or place this in your config file):
 
     [validators]
     n9KPnVLn7ewVzHvn218DcEYsnWLzKerTDwhpofhk4Ym1RUq4TeGw    RIP1
@@ -2423,7 +2423,7 @@ If you are a validator, you should set your quorum to at least four.
 
 **IPs**
 
-A list of Divvy Labs server IP addresses can be found by resolving **r.xdv.io**. You can also add this to your *divvyd.cfg* file to ensure you always have several peer connections to Divvy Labs servers:
+A list of Ripple Labs server IP addresses can be found by resolving **r.xdv.io**. You can also add this to your *divvyd.cfg* file to ensure you always have several peer connections to Ripple Labs servers:
 
     [ips]
     54.225.112.220 51235
@@ -2485,7 +2485,7 @@ Prior to building, please confirm you have the correct source tree with the `git
 
 **Validators**
 
-Divvy Labs is now running five validators. You can use this template for your `validators.txt` file (or place this in your config file):
+Ripple Labs is now running five validators. You can use this template for your `validators.txt` file (or place this in your config file):
 
     [validators]
     n9KPnVLn7ewVzHvn218DcEYsnWLzKerTDwhpofhk4Ym1RUq4TeGw    RIP1
@@ -2503,7 +2503,7 @@ If you are a validator, you should set your quorum to at least four.
 
 **IPs**
 
-A list of Divvy Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Divvy Labs servers:
+A list of Ripple Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Ripple Labs servers:
 
     [ips]
     54.225.112.220 51235
@@ -2568,7 +2568,7 @@ Prior to building, please confirm you have the correct source tree with the `git
 
 **Validators**
 
-Divvy Labs is now running five validators. You can use this template for your `validators.txt` file:
+Ripple Labs is now running five validators. You can use this template for your `validators.txt` file:
 
     [validators]
     n9KPnVLn7ewVzHvn218DcEYsnWLzKerTDwhpofhk4Ym1RUq4TeGw    RIP1
@@ -2586,7 +2586,7 @@ If you are a validator, you should set your quorum to at least four.
 
 **IPs**
 
-A list of Divvy Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Divvy Labs servers:
+A list of Ripple Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Ripple Labs servers:
 
     [ips]
     54.225.112.220 51235
@@ -2640,7 +2640,7 @@ Prior to building, please confirm you have the correct source tree with the `git
 
 **Validators**
 
-Divvy Labs is now running five validators. You can use this template for your `validators.txt` file:
+Ripple Labs is now running five validators. You can use this template for your `validators.txt` file:
 
     [validators]
     n9KPnVLn7ewVzHvn218DcEYsnWLzKerTDwhpofhk4Ym1RUq4TeGw    RIP1
@@ -2658,7 +2658,7 @@ If you are a validator, you should set your quorum to at least four.
 
 **IPs**
 
-A list of Divvy Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Divvy Labs servers:
+A list of Ripple Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Ripple Labs servers:
 
     [ips]
     54.225.112.220 51235
@@ -2727,7 +2727,7 @@ Occasionally, some divvyd servers would fail to fetch all ledgers. This left gap
 
 **Validators**
 
-Divvy Labs is now running five validators. You can use this template for your `validators.txt` file:
+Ripple Labs is now running five validators. You can use this template for your `validators.txt` file:
 
 <strike>
 
@@ -2758,7 +2758,7 @@ If you are a validator, you should set your quorum to at least four.
 
 **IPs**
 
-A list of Divvy Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Divvy Labs servers:
+A list of Ripple Labs server IP addresses can be found by resolving `r.xdv.io`. You can also add this to your `divvyd.cfg` file to ensure you always have several peer connections to Ripple Labs servers:
 
     [ips]
     54.225.112.220 51235

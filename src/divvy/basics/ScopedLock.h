@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of divvyd: https://github.com/xdv/divvyd
-    Copyright (c) 2012, 2013 Divvy Labs Inc.
+    Copyright (c) 2012, 2013 Ripple Labs Inc.
 
     Portions of this file are from JUCE.
     Copyright (c) 2013 - Raw Material Software Ltd.
