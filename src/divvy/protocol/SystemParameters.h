@@ -67,7 +67,7 @@ systemCurrencyCode ()
 /** The XDV ledger network's earliest allowed sequence */
 static
 std::uint32_t constexpr
-XDV_LEDGER_EARLIEST_SEQ {32570};
+XDV_LEDGER_EARLIEST_SEQ {1};
 
 } // divvy
 
