@@ -1,6 +1,6 @@
 # Release Notes
 
-![Divvy](docs/images/divvy.png)
+![Divvy](docs/images/xdv.png)
 
 This document contains the release notes for `divvyd`, the reference server implementation of the Divvy protocol. To learn more about how to build and run a `divvyd` server, visit https://xdv.io/build/divvyd-setup/
 
