@@ -64,7 +64,7 @@ ED2677ABFFD1B33AC6FBC3062B71F1E8397C1505E1C42C64D11AD1B28FF73F4734
 # use the following configuration instead:
 #
 # [validator_list_sites]
-# https://vl.altnet.divvytest.net
+# https://vl.altnet.xdv.io
 #
 # [validator_list_keys]
 # ED264807102805220DA0F312E71FC2C69E1552C9C5790F6C25E3729DEB573D5860
