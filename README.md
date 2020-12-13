@@ -29,8 +29,8 @@ The server software that powers the XDV Ledger is called `divvyd` and is availab
 
 
 ## Source Code
-[![travis-ci.org: Build Status](https://travis-ci.org/divvy/divvyd.png?branch=develop)](https://travis-ci.org/divvy/divvyd)
-[![codecov.io: Code Coverage](https://codecov.io/gh/divvy/divvyd/branch/develop/graph/badge.svg)](https://codecov.io/gh/divvy/divvyd)
+[![travis-ci.org: Build Status](https://travis-ci.org/xdv/divvyd.png?branch=develop)](https://travis-ci.org/xdv/divvyd)
+[![codecov.io: Code Coverage](https://codecov.io/gh/xdv/divvyd/branch/develop/graph/badge.svg)](https://codecov.io/gh/xdv/divvyd)
 
 ### Repository Contents
 
